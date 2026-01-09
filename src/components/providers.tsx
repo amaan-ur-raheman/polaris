@@ -10,8 +10,8 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 
 import { ClerkProvider, useAuth, UserButton } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import { UnauthenticatedView } from "@/features/auth/unauthenticated-view";
-import { AuthLoadingView } from "@/features/auth/auth-loading-view";
+import { UnauthenticatedView } from "@/features/auth/components/unauthenticated-view";
+import { AuthLoadingView } from "@/features/auth/components/auth-loading-view";
 
 import { ThemeProvider } from "./theme-provider";
 
