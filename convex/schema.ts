@@ -5,7 +5,7 @@ export default defineSchema({
     projects: defineTable({
         name: v.string(),
         ownerId: v.string(),
-        updatedAt: v.number(), 
+        updatedAt: v.number(),
         importStatus: v.optional(
             v.union(
                 v.literal("importing"),
@@ -22,5 +22,5 @@ export default defineSchema({
             )
         ),
         exportRepoUrl: v.optional(v.string()),
-    }).index("by_owner", ["ownerId"]),
+    }).index("by_owner_updatedAt", ["ownerId", "updatedAt"]),
 });
