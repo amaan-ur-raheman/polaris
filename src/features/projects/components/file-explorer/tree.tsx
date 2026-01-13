@@ -1,4 +1,5 @@
 import { ChevronRightIcon } from "lucide-react";
+import { useState } from "react";
 
 import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
 import { cn } from "@/lib/utils";
@@ -13,9 +14,9 @@ import {
 import { getItemPadding } from "./constants";
 import { LoadingRow } from "./loading-row";
 import { CreateInput } from "./create-input";
-import { Doc, Id } from "../../../../../convex/_generated/dataModel";
-import { useState } from "react";
 import { TreeItemWrapper } from "./tree-item-wrapper";
+import { RenameInput } from "./rename-input";
+import { Doc, Id } from "../../../../../convex/_generated/dataModel";
 
 export const Tree = ({
     item,
@@ -65,8 +66,33 @@ export const Tree = ({
         }
     };
 
+    const handleRename = (newName: string) => {
+        setIsRenaming(false);
+
+        if (newName === item.name) {
+            return;
+        }
+
+        renameFile({
+            id: item._id,
+            newName,
+        });
+    };
+
     if (item.type === "file") {
         const filename = item.name;
+
+        if (isRenaming) {
+            return (
+                <RenameInput
+                    type="file"
+                    level={level}
+                    defaultValue={filename}
+                    onSubmit={handleRename}
+                    onCancel={() => setIsRenaming(false)}
+                />
+            );
+        }
 
         return (
             <TreeItemWrapper
@@ -88,7 +114,7 @@ export const Tree = ({
     }
 
     const folderName = item.name;
-    const folderContent = (
+    const folderRender = (
         <>
             <div className="flex items-center gap-0.5">
                 <ChevronRightIcon
@@ -111,7 +137,7 @@ export const Tree = ({
                     className="group flex items-center gap-1 h-5.5 hover:bg-accent/30 w-full"
                     style={{ paddingLeft: getItemPadding(level, false) }}
                 >
-                    {folderContent}
+                    {folderRender}
                 </button>
                 {isOpen && (
                     <>
@@ -124,6 +150,34 @@ export const Tree = ({
                             onSubmit={handleCreate}
                             onCancel={() => setCreating(null)}
                         />
+                        {folderContents?.map((subItem) => (
+                            <Tree
+                                key={subItem._id}
+                                item={subItem}
+                                level={level + 1}
+                                projectId={projectId}
+                            />
+                        ))}
+                    </>
+                )}
+            </>
+        );
+    }
+    if (isRenaming) {
+        return (
+            <>
+                <RenameInput
+                    type={item.type}
+                    level={level}
+                    defaultValue={item.name}
+                    onSubmit={handleRename}
+                    onCancel={() => setIsRenaming(false)}
+                />
+                {isOpen && (
+                    <>
+                        {folderContents === undefined && (
+                            <LoadingRow level={level + 1} />
+                        )}
                         {folderContents?.map((subItem) => (
                             <Tree
                                 key={subItem._id}
@@ -158,7 +212,7 @@ export const Tree = ({
                     startCreating("folder");
                 }}
             >
-                {folderContent}
+                {folderRender}
             </TreeItemWrapper>
             {isOpen && (
                 <>
