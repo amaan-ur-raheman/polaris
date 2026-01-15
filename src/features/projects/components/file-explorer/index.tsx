@@ -22,7 +22,7 @@ import { LoadingRow } from "./loading-row";
 import { Tree } from "./tree";
 
 export const FileExplorer = ({ projectId }: { projectId: Id<"projects"> }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
     const [collapseKey, setCollapseKey] = useState(0);
     const [creating, setCreating] = useState<"file" | "folder" | null>(null);
 
@@ -122,7 +122,7 @@ export const FileExplorer = ({ projectId }: { projectId: Id<"projects"> }) => {
                             />
                         )}
                         {rootFiles?.map((item) => (
-                            <Tree 
+                            <Tree
                                 key={`${item._id}-${collapseKey}`}
                                 item={item}
                                 level={0}
