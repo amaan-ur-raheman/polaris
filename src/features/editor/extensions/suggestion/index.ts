@@ -8,22 +8,14 @@ import {
     keymap,
 } from "@codemirror/view";
 import { StateEffect, StateField } from "@codemirror/state";
+import { fetcher } from "./fetcher";
 
-// StateEffect: A way to send "messages" to update state
-// We define on effect type for setting the suggestion text
 const setSuggestionEffect = StateEffect.define<string | null>();
-
-// StateField: Holds our suggestion state in our editor
-// - create(): Returns the initial value when the editor loads
-// - update(): Called on every transaction (keystrokes, etc) to potentially update the value
 const suggestionState = StateField.define<string | null>({
     create() {
-        return "// TODO: implement this";
+        return null;
     },
     update(value, transaction) {
-        // Check each effect in this transaction
-        // If we find our setSuggestionEffect, return its new value
-        // Otherwise, return the current value unchanged
         for (const effect of transaction.effects) {
             if (effect.is(setSuggestionEffect)) {
                 return effect.value;
@@ -33,8 +25,6 @@ const suggestionState = StateField.define<string | null>({
     },
 });
 
-// WidgetType: Creates c custom DOM elements to display in the editor.
-// toDOM() is called by CodeMirror to create the actual HTML element.
 class SuggestionWidget extends WidgetType {
     constructor(readonly text: string) {
         super();
@@ -43,11 +33,122 @@ class SuggestionWidget extends WidgetType {
     toDOM() {
         const span = document.createElement("span");
         span.textContent = this.text;
-        span.style.opacity = "0.4"; // Ghost text appearance
-        span.style.pointerEvents = "none"; // Don't interfere with clicks
+        span.style.opacity = "0.4";
+        span.style.pointerEvents = "none";
         return span;
     }
 }
+
+let debounceTimer: number | null = null;
+let isWaitingForSuggestion = false;
+let currentAbortController: AbortController | null = null;
+const DEBOUNCE_DELAY = 300;
+
+const generatePayload = (view: EditorView, fileName: string) => {
+    const code = view.state.doc.toString();
+
+    if (!code || code.trim().length === 0) {
+        return null;
+    }
+
+    const cursorPosition = view.state.selection.main.head;
+    const currentLine = view.state.doc.lineAt(cursorPosition);
+    const cursorInLine = cursorPosition - currentLine.from;
+
+    const previousLines: string[] = [];
+    const previousLinesToFetch = Math.min(5, currentLine.number - 1);
+
+    for (let i = previousLinesToFetch; i >= 1; i--) {
+        previousLines.push(view.state.doc.line(currentLine.number - i).text);
+    }
+
+    const nextLines: string[] = [];
+    const totalLines = view.state.doc.lines;
+    const linesToFetch = Math.min(5, totalLines - currentLine.number);
+
+    for (let i = 1; i <= linesToFetch; i++) {
+        nextLines.push(view.state.doc.line(currentLine.number + i).text);
+    }
+
+    return {
+        fileName,
+        code,
+        currentLine: currentLine.text,
+        previousLines: previousLines.join("\n"),
+        textBeforeCursor: currentLine.text.slice(0, cursorInLine),
+        textAfterCursor: currentLine.text.slice(cursorInLine),
+        nextLines: nextLines.join("\n"),
+        lineNumber: currentLine.number,
+    };
+};
+
+const createDebouncePlugin = (fileName: string) =>
+    ViewPlugin.fromClass(
+        class {
+            constructor(view: EditorView) {
+                this.triggerSuggestion(view);
+            }
+
+            update(update: ViewUpdate) {
+                if (update.docChanged || update.selectionSet) {
+                    this.triggerSuggestion(update.view);
+                }
+            }
+
+            triggerSuggestion(view: EditorView) {
+                if (debounceTimer !== null) {
+                    clearTimeout(debounceTimer);
+                }
+
+                if (currentAbortController !== null) {
+                    currentAbortController.abort();
+                }
+
+                isWaitingForSuggestion = true;
+
+                debounceTimer = window.setTimeout(async () => {
+                    const payload = generatePayload(view, fileName);
+
+                    if (!payload) {
+                        isWaitingForSuggestion = false;
+                        view.dispatch({
+                            effects: setSuggestionEffect.of(null),
+                        });
+                        return;
+                    }
+
+                    currentAbortController = new AbortController();
+                    try {
+                        const suggestion = await fetcher(
+                            payload,
+                            currentAbortController.signal,
+                        );
+                        isWaitingForSuggestion = false;
+                        view.dispatch({
+                            effects: setSuggestionEffect.of(suggestion),
+                        });
+                    } catch (error) {
+                        isWaitingForSuggestion = false;
+                        if (error instanceof Error && error.name === "AbortError") {
+                            // Request was cancelled, ignore
+                            return;
+                        }
+                        // Optionally log or handle other errors
+                        console.error("Suggestion fetch failed:", error);
+                    }
+                }, DEBOUNCE_DELAY);
+            }
+
+            destroy() {
+                if (debounceTimer !== null) {
+                    clearTimeout(debounceTimer);
+                }
+                if (currentAbortController !== null) {
+                    currentAbortController.abort();
+                }
+            }
+        },
+    );
 
 const renderPlugin = ViewPlugin.fromClass(
     class {
@@ -58,18 +159,15 @@ const renderPlugin = ViewPlugin.fromClass(
         }
 
         update(update: ViewUpdate) {
-            // Rebuild decorations if doc changed, cursor moved or suggestion changed
-            const suggestionChanged = update.transactions.some(
-                (transaction) => {
-                    return transaction.effects.some((effect) => {
-                        return effect.is(setSuggestionEffect);
-                    });
-                },
+            const docChanged = update.docChanged;
+            const cursorMoved = update.selectionSet;
+            const suggestionChanged = update.transactions.some((transaction) =>
+                transaction.effects.some((effect) =>
+                    effect.is(setSuggestionEffect),
+                ),
             );
-
-            // Rebuild decorations if doc changed, cursor moved or suggestion changed
             const shouldRebuild =
-                update.docChanged || update.selectionSet || suggestionChanged;
+                docChanged || cursorMoved || suggestionChanged;
 
             if (shouldRebuild) {
                 this.decorations = this.build(update.view);
@@ -77,23 +175,25 @@ const renderPlugin = ViewPlugin.fromClass(
         }
 
         build(view: EditorView) {
-            // Get the current suggestion from the state
+            if (isWaitingForSuggestion) {
+                return Decoration.none;
+            }
+
             const suggestion = view.state.field(suggestionState);
             if (!suggestion) {
                 return Decoration.none;
             }
 
-            // Create a widget decoration at the cursor position
             const cursor = view.state.selection.main.head;
             return Decoration.set([
                 Decoration.widget({
                     widget: new SuggestionWidget(suggestion),
-                    side: 1, // Render after the cursor(side: 1) not before(side: -1)
+                    side: 1,
                 }).range(cursor),
             ]);
         }
     },
-    { decorations: (plugin) => plugin.decorations }, // Tell CodeMirror to use our decorations
+    { decorations: (plugin) => plugin.decorations },
 );
 
 const acceptSuggestionKeymap = keymap.of([
@@ -102,22 +202,23 @@ const acceptSuggestionKeymap = keymap.of([
         run: (view) => {
             const suggestion = view.state.field(suggestionState);
             if (!suggestion) {
-                return false; // No suggestion? Let tab to do its normal job (indent)
+                return false;
             }
 
             const cursor = view.state.selection.main.head;
             view.dispatch({
-                changes: { from: cursor, insert: suggestion }, // Insert the suggestion text
-                selection: { anchor: cursor + suggestion.length }, // Move cursor to end
-                effects: setSuggestionEffect.of(null), // Clear the suggestion
+                changes: { from: cursor, insert: suggestion },
+                selection: { anchor: cursor + suggestion.length },
+                effects: setSuggestionEffect.of(null),
             });
-            return true; // We handled Tab, don't indent
+            return true;
         },
     },
 ]);
 
 export const suggestion = (fileName: string) => [
-    suggestionState, // Our state storage
-    renderPlugin, // Renders the ghost text
-    acceptSuggestionKeymap, // Tab tp accept
+    suggestionState,
+    createDebouncePlugin(fileName),
+    renderPlugin,
+    acceptSuggestionKeymap,
 ];
