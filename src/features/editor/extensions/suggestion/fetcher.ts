@@ -1,6 +1,6 @@
 import ky from "ky";
-import z from "zod";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const suggestionRequestSchema = z.object({
     fileName: z.string(),
@@ -23,7 +23,7 @@ type SuggestionResponse = z.infer<typeof suggestionResponseSchema>;
 export const fetcher = async (
     payload: SuggestionRequest,
     signal: AbortSignal,
-) => {
+): Promise<string | null> => {
     try {
         const validatedPayload = suggestionRequestSchema.parse(payload);
 
@@ -31,7 +31,7 @@ export const fetcher = async (
             .post("/api/suggestion", {
                 json: validatedPayload,
                 signal,
-                timeout: 10_000,
+                timeout: 10000,
                 retry: 0,
             })
             .json<SuggestionResponse>();
@@ -43,8 +43,6 @@ export const fetcher = async (
         if (error instanceof Error && error.name === "AbortError") {
             return null;
         }
-
-        console.error("Failed to fetch suggestion:", error);
         toast.error("Failed to fetch AI completion");
         return null;
     }
