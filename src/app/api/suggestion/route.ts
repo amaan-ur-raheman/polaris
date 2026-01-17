@@ -72,14 +72,14 @@ export async function POST(request: Request) {
         if (!code) {
             return NextResponse.json(
                 { error: "Code is required" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         if (lineNumber === undefined || lineNumber === null) {
             return NextResponse.json(
                 { error: "lineNumber is required" },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
             .replace("{lineNumber}", lineNumber.toString());
 
         const { output } = await generateText({
-            model: google("gemini-flash-lite-latest"),
+            model: google("gemini-flash-latest"),
             output: Output.object({ schema: suggestionSchema }),
             prompt,
         });
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
         console.error("Failed to generate suggestion:", error);
         return NextResponse.json(
             { error: "Failed to generate suggestion" },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
