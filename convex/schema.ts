@@ -10,16 +10,16 @@ export default defineSchema({
             v.union(
                 v.literal("importing"),
                 v.literal("completed"),
-                v.literal("failed")
-            )
+                v.literal("failed"),
+            ),
         ),
         exportStatus: v.optional(
             v.union(
                 v.literal("exporting"),
                 v.literal("completed"),
                 v.literal("failed"),
-                v.literal("cancelled")
-            )
+                v.literal("cancelled"),
+            ),
         ),
         exportRepoUrl: v.optional(v.string()),
     }).index("by_owner_updatedAt", ["ownerId", "updatedAt"]),
@@ -36,4 +36,26 @@ export default defineSchema({
         .index("by_project", ["projectId"])
         .index("by_parent", ["parentId"])
         .index("by_project_parent", ["projectId", "parentId"]),
+
+    conversations: defineTable({
+        projectId: v.id("projects"),
+        title: v.string(),
+        updatedAt: v.number(),
+    }).index("by_project", ["projectId"]),
+
+    messages: defineTable({
+        conversationId: v.id("conversations"),
+        projectId: v.id("projects"),
+        role: v.union(v.literal("user"), v.literal("assistant")),
+        content: v.string(),
+        status: v.optional(
+            v.union(
+                v.literal("processing"),
+                v.literal("completed"),
+                v.literal("cancelled"),
+            ),
+        ),
+    })
+        .index("by_conversation", ["conversationId"])
+        .index("by_project_status", ["projectId", "status"]),
 });
