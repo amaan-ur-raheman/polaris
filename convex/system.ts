@@ -79,3 +79,39 @@ export const updateMessageContent = mutation({
         });
     },
 });
+
+export const updateMessageStatus = mutation({
+    args: {
+        internalKey: v.string(),
+        messageId: v.id("messages"),
+        status: v.union(
+            v.literal("processing"),
+            v.literal("completed"),
+            v.literal("cancelled"),
+        ),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        await ctx.db.patch(args.messageId, {
+            status: args.status,
+        });
+    },
+});
+
+export const getProcessingMessages = query({
+    args: {
+        internalKey: v.string(),
+        projectId: v.id("projects"),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        return await ctx.db
+            .query("messages")
+            .withIndex("by_project_status", (q) =>
+                q.eq("projectId", args.projectId).eq("status", "processing"),
+            )
+            .collect();
+    },
+});

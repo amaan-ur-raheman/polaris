@@ -53,7 +53,7 @@ export const processMessage = inngest.createFunction(
             );
         }
 
-        await step.sleep("wait-for-ai-processing", "5s");
+        await step.sleep("wait-for-ai-processing", "50s");
 
         await step.run("update-assistant-message", async () => {
             await convex.mutation(api.system.updateMessageContent, {
