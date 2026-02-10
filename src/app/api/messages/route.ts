@@ -3,10 +3,10 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@clerk/nextjs/server";
 import { convex } from "@/lib/convex-client";
+import { inngest } from "@/inngest/client";
 
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { inngest } from "@/inngest/client";
 
 const requestSchema = z.object({
     conversationId: z.string(),
@@ -46,7 +46,34 @@ export async function POST(request: Request) {
 
     const projectId = conversation.projectId;
 
-    // TODO: Check for processing message
+    // Find all processing messages in this project
+    const processingMessages = await convex.query(
+        api.system.getProcessingMessages,
+        {
+            internalKey,
+            projectId,
+        },
+    );
+
+    if (processingMessages.length > 0) {
+        // Cancel all processing messages
+        await Promise.all(
+            processingMessages.map(async (msg) => {
+                await inngest.send({
+                    name: "message/cancel",
+                    data: {
+                        messageId: msg._id,
+                    },
+                });
+
+                await convex.mutation(api.system.updateMessageStatus, {
+                    internalKey,
+                    messageId: msg._id,
+                    status: "cancelled",
+                });
+            }),
+        );
+    }
 
     await convex.mutation(api.system.createMessage, {
         internalKey,
@@ -66,7 +93,7 @@ export async function POST(request: Request) {
         status: "processing",
     });
 
-    // TODO: Invoke inngest background job to process message
+    // Trigger Inngest background job to process message
     const event = await inngest.send({
         name: "message/sent",
         data: {
