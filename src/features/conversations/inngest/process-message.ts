@@ -8,6 +8,9 @@ import { api } from "../../../../convex/_generated/api";
 
 interface MessageEvent {
     messageId: Id<"messages">;
+    conversationId: Id<"conversations">;
+    projectId: Id<"projects">;
+    message: string;
 }
 
 export const processMessage = inngest.createFunction(
@@ -44,7 +47,8 @@ export const processMessage = inngest.createFunction(
     },
     { event: "message/sent" },
     async ({ event, step }) => {
-        const { messageId } = event.data as MessageEvent;
+        const { messageId, conversationId, projectId, message } =
+            event.data as MessageEvent;
 
         const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
         if (!internalKey) {
