@@ -1,6 +1,6 @@
 import { NonRetriableError } from "inngest";
 
-import { createAgent, gemini, openai } from "@inngest/agent-kit";
+import { createAgent, createNetwork, gemini, openai } from "@inngest/agent-kit";
 import { inngest } from "@/inngest/client";
 import { convex } from "@/lib/convex-client";
 
@@ -9,6 +9,8 @@ import {
     TITLE_GENERATOR_SYSTEM_PROMPT,
 } from "./constant";
 import { DEFAULT_CONVERSATION_TITLE } from "../constants";
+import { createReadFilesTool } from "./tools/read-file";
+import { createListFilesTool } from "./tools/list-files";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { api } from "../../../../convex/_generated/api";
 
@@ -150,12 +152,78 @@ export const processMessage = inngest.createFunction(
             }
         }
 
+        // Create the coding agent with fallback
+        const codingAgent = createAgent({
+            name: "polaris",
+            description: "An expert AI coding assistant",
+            system: systemPrompt,
+            model: openai({
+                model: "minimaxai/minimax-m2.1",
+                apiKey: process.env.NVIDIA_API_KEY,
+                baseUrl: "https://integrate.api.nvidia.com/v1",
+            }),
+            tools: [
+                createListFilesTool({ projectId, internalKey }),
+                createReadFilesTool({ internalKey }),
+            ],
+        });
+
+        // Create a network for single agent
+        const network = createNetwork({
+            name: "polaris-network",
+            agents: [codingAgent],
+            maxIter: 20,
+            router: ({ network }) => {
+                const lastResult = network.state.results.at(-1);
+
+                const hasTextResponse = lastResult?.output.some(
+                    (m) => m.type === "text" && m.role === "assistant",
+                );
+
+                const hasToolCall = lastResult?.output.some(
+                    (m) => m.type === "tool_call",
+                );
+
+                // Only stop if there's text without tool call
+                if (hasTextResponse && !hasToolCall) {
+                    return undefined;
+                }
+
+                return codingAgent;
+            },
+        });
+
+        // Run the agent
+        const result = await network.run(message);
+
+        // Extracts the assistant's final text response from last agent result
+        const lastResult = result.state.results.at(-1);
+        const textMessage = lastResult?.output.find(
+            (m) => m.type === "text" && m.role === "assistant",
+        );
+
+        let assistantResponse =
+            "I processed your request. Let me know if you need anything else!";
+
+        if (textMessage?.type === "text") {
+            const rawContent =
+                typeof textMessage.content === "string"
+                    ? textMessage.content
+                    : textMessage.content.map((c) => c.text).join("");
+            
+            // Remove <think> tags from MiniMax reasoning
+            assistantResponse = rawContent.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
+        }
+
+        // Update the assistant message with the response
         await step.run("update-assistant-message", async () => {
             await convex.mutation(api.system.updateMessageContent, {
                 internalKey,
                 messageId,
-                content: "AI processed this message",
+                content: assistantResponse,
             });
         });
+
+        return { success: true, messageId, conversationId };
     },
 );
