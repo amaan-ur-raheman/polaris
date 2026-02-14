@@ -13,6 +13,11 @@ import { createReadFilesTool } from "./tools/read-file";
 import { createListFilesTool } from "./tools/list-files";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { api } from "../../../../convex/_generated/api";
+import { createUpdateFileTool } from "./tools/update-file";
+import { createCreateFilesTool } from "./tools/create-files";
+import { createCreateFolderTool } from "./tools/create-folder";
+import { createDeleteFilesTool } from "./tools/delete-files";
+import { createScrapeUrlsTool } from "./tools/scrape-urls";
 
 interface MessageEvent {
     messageId: Id<"messages">;
@@ -111,13 +116,18 @@ export const processMessage = inngest.createFunction(
         const shouldGenerateTitle =
             conversation.title === DEFAULT_CONVERSATION_TITLE;
 
+        const groqApiKey = process.env.GROQ_API_KEY;
+        if (!groqApiKey) {
+            throw new NonRetriableError("GROQ_API_KEY not configured");
+        }
+
         if (shouldGenerateTitle) {
             const titleAgent = createAgent({
                 name: "title-generator",
                 system: TITLE_GENERATOR_SYSTEM_PROMPT,
                 model: openai({
                     model: "llama-3.1-8b-instant",
-                    apiKey: process.env.GROQ_API_KEY,
+                    apiKey: groqApiKey,
                     baseUrl: "https://api.groq.com/openai/v1",
                 }),
             });
@@ -152,19 +162,29 @@ export const processMessage = inngest.createFunction(
             }
         }
 
+        const nvidiaApiKey = process.env.NVIDIA_API_KEY;
+        if (!nvidiaApiKey) {
+            throw new NonRetriableError("NVIDIA_API_KEY not configured");
+        }
+
         // Create the coding agent with fallback
         const codingAgent = createAgent({
             name: "polaris",
             description: "An expert AI coding assistant",
             system: systemPrompt,
             model: openai({
-                model: "minimaxai/minimax-m2.1",
-                apiKey: process.env.NVIDIA_API_KEY,
+                model: "qwen/qwen3-coder-480b-a35b-instruct",
+                apiKey: nvidiaApiKey,
                 baseUrl: "https://integrate.api.nvidia.com/v1",
             }),
             tools: [
                 createListFilesTool({ projectId, internalKey }),
                 createReadFilesTool({ internalKey }),
+                createUpdateFileTool({ internalKey }),
+                createCreateFilesTool({ projectId, internalKey }),
+                createCreateFolderTool({ projectId, internalKey }),
+                createDeleteFilesTool({ internalKey }),
+                createScrapeUrlsTool(),
             ],
         });
 
@@ -172,7 +192,7 @@ export const processMessage = inngest.createFunction(
         const network = createNetwork({
             name: "polaris-network",
             agents: [codingAgent],
-            maxIter: 20,
+            maxIter: 50,
             router: ({ network }) => {
                 const lastResult = network.state.results.at(-1);
 
@@ -210,9 +230,11 @@ export const processMessage = inngest.createFunction(
                 typeof textMessage.content === "string"
                     ? textMessage.content
                     : textMessage.content.map((c) => c.text).join("");
-            
+
             // Remove <think> tags from MiniMax reasoning
-            assistantResponse = rawContent.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
+            assistantResponse = rawContent
+                .replace(/<think>[\s\S]*?<\/think>\s*/g, "")
+                .trim();
         }
 
         // Update the assistant message with the response
