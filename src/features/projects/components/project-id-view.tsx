@@ -9,6 +9,7 @@ import { EditorView } from "@/features/editor/components/editor-view";
 
 import { Id } from "../../../../convex/_generated/dataModel";
 import { FileExplorer } from "./file-explorer";
+import { PreviewView } from "./preview-view";
 
 const MIN_SIDEBAR_WIDTH = 200;
 const MAX_SIDEBAR_WIDTH = 800;
@@ -29,7 +30,7 @@ const Tab = ({
             onClick={onClick}
             className={cn(
                 "flex items-center gap-2 px-3 h-full cursor-pointer text-muted-foreground border-r hover:bg-accent/30",
-                isActive && "bg-background text-foreground"
+                isActive && "bg-background text-foreground",
             )}
         >
             <span className="text-sm">{label}</span>
@@ -39,7 +40,7 @@ const Tab = ({
 
 export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
     const [activeView, setActiveView] = useState<"editor" | "preview">(
-        "editor"
+        "editor",
     );
 
     return (
@@ -66,7 +67,7 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
                 <div
                     className={cn(
                         "absolute inset-0",
-                        activeView === "editor" ? "visible" : "invisible"
+                        activeView === "editor" ? "visible" : "invisible",
                     )}
                 >
                     <Allotment
@@ -91,10 +92,10 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
                 <div
                     className={cn(
                         "absolute inset-0",
-                        activeView === "preview" ? "visible" : "invisible"
+                        activeView === "preview" ? "visible" : "invisible",
                     )}
                 >
-                    <div>Preview</div>
+                    <PreviewView projectId={projectId} />
                 </div>
             </div>
         </div>
