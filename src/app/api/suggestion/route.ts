@@ -2,8 +2,8 @@ import { generateText, Output } from "ai";
 import z from "zod";
 import { NextResponse } from "next/server";
 
-import { google } from "@ai-sdk/google";
 import { auth } from "@clerk/nextjs/server";
+import { aiModel } from "@/lib/ai-model";
 
 const suggestionSchema = z.object({
     suggestion: z
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
             .replace("{lineNumber}", lineNumber.toString());
 
         const { output } = await generateText({
-            model: google("gemini-flash-latest"),
+            model: aiModel,
             output: Output.object({ schema: suggestionSchema }),
             prompt,
         });

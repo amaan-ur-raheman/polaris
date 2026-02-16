@@ -2,9 +2,9 @@ import { generateText, Output } from "ai";
 import { NextResponse } from "next/server";
 import z from "zod";
 
-import { google } from "@ai-sdk/google";
 import { firecrawl } from "@/lib/firecrawl";
 import { auth } from "@clerk/nextjs/server";
+import { aiModel } from "@/lib/ai-model";
 
 const quickEditSchema = z.object({
     editedCode: z
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
             .replace("{documentation}", documentation);
 
         const { output } = await generateText({
-            model: google("gemini-flash-latest"),
+            model: aiModel,
             output: Output.object({ schema: quickEditSchema }),
             prompt,
         });
