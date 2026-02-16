@@ -35,7 +35,7 @@ export const useCreateProject = () => {
                     ...existingProjects,
                 ]);
             }
-        }
+        },
     );
 };
 
@@ -56,7 +56,7 @@ export const useRenameProject = () => {
                         ...existingProject,
                         name: args.name,
                         updatedAt: Date.now(),
-                    }
+                    },
                 );
             }
 
@@ -74,9 +74,13 @@ export const useRenameProject = () => {
                                   updatedAt: Date.now(),
                               }
                             : project;
-                    })
+                    }),
                 );
             }
-        }
+        },
     );
+};
+
+export const useUpdateProjectSettings = () => {
+    return useMutation(api.projects.updateSettings);
 };
