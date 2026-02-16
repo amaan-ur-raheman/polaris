@@ -18,6 +18,7 @@ import { createCreateFilesTool } from "./tools/create-files";
 import { createCreateFolderTool } from "./tools/create-folder";
 import { createDeleteFilesTool } from "./tools/delete-files";
 import { createScrapeUrlsTool } from "./tools/scrape-urls";
+import { createRenameFileTool } from "./tools/rename-file";
 
 interface MessageEvent {
     messageId: Id<"messages">;
@@ -173,7 +174,7 @@ export const processMessage = inngest.createFunction(
             description: "An expert AI coding assistant",
             system: systemPrompt,
             model: openai({
-                model: "qwen/qwen3-coder-480b-a35b-instruct",
+                model: "stepfun-ai/step-3.5-flash",
                 apiKey: nvidiaApiKey,
                 baseUrl: "https://integrate.api.nvidia.com/v1",
             }),
@@ -183,6 +184,7 @@ export const processMessage = inngest.createFunction(
                 createUpdateFileTool({ internalKey }),
                 createCreateFilesTool({ projectId, internalKey }),
                 createCreateFolderTool({ projectId, internalKey }),
+                createRenameFileTool({ internalKey }),
                 createDeleteFilesTool({ internalKey }),
                 createScrapeUrlsTool(),
             ],
@@ -192,7 +194,7 @@ export const processMessage = inngest.createFunction(
         const network = createNetwork({
             name: "polaris-network",
             agents: [codingAgent],
-            maxIter: 50,
+            maxIter: 75,
             router: ({ network }) => {
                 const lastResult = network.state.results.at(-1);
 
