@@ -78,10 +78,31 @@ export const useWebContainer = ({
                     setTerminalOutput((prev) => prev + data);
                 };
 
+                // Debug: log files to check content
+                console.log("Files fetched:", files);
+                const filesWithContent = files.filter(
+                    (f) => f.type === "file" && f.content
+                );
+                const filesWithStorage = files.filter(
+                    (f) => f.type === "file" && f.storageId
+                );
+                console.log(
+                    `Files with content: ${filesWithContent.length}, with storageId: ${filesWithStorage.length}`
+                );
+
                 const container = await getWebContainer();
                 containerRef.current = container;
 
                 const fileTree = buildFileTree(files);
+                console.log("Built file tree:", fileTree);
+
+                // Check if file tree is empty
+                if (Object.keys(fileTree).length === 0) {
+                    throw new Error(
+                        "No files to mount. Make sure your project has files with content."
+                    );
+                }
+
                 await container.mount(fileTree);
 
                 container.on("server-ready", (_port, url) => {
