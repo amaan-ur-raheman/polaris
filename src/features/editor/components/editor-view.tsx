@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import { AlertTriangleIcon } from "lucide-react";
 
 import { useFile, useUpdateFile } from "@/features/projects/hooks/use-files";
 
@@ -64,13 +65,14 @@ export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
             )}
             {isActiveBinaryFile && (
                 <div className="size-full flex items-center justify-center">
-                    <Image
-                        src={"/logo-alt.svg"}
-                        alt="Polaris"
-                        width={50}
-                        height={50}
-                        className="opacity-25"
-                    />
+                    <div className="flex flex-col items-center gap-2.5 max-w-md text-center">
+                        <AlertTriangleIcon className="size-10 text-yellow-500" />
+                        <p className="text-sm">
+                            The file is not displayed in the text editor because
+                            it is either binary or uses unsupported text
+                            encoding.
+                        </p>
+                    </div>
                 </div>
             )}
         </div>
