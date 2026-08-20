@@ -22,7 +22,7 @@ import {
     type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 interface NewProjectDialogProps {
     open: boolean;

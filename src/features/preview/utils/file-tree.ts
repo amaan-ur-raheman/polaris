@@ -1,6 +1,6 @@
 import { FileSystemTree } from "@webcontainer/api";
 
-import { Doc, Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 
 type FileDoc = Doc<"files">;
 

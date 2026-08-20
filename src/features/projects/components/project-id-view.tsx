@@ -6,7 +6,7 @@ import { Allotment } from "allotment";
 import { cn } from "@/lib/utils";
 import { EditorView } from "@/features/editor/components/editor-view";
 
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 import { FileExplorer } from "./file-explorer";
 import { PreviewView } from "./preview-view";
 import { ExportPopover } from "./export-github";

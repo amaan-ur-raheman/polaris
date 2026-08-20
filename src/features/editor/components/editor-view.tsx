@@ -8,7 +8,7 @@ import { useEditor } from "../hooks/use-editor";
 import { FileBreadCrumbs } from "./file-breadcrumbs";
 import { TopNavigation } from "./top-navigation";
 import { CodeEditor } from "./code-editor";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 const DEBOUNCE_MS = 1500;
 

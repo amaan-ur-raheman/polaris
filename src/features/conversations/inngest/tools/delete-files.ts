@@ -3,8 +3,8 @@ import { z } from "zod";
 import { createTool } from "@inngest/agent-kit";
 import { convex } from "@/lib/convex-client";
 
-import { api } from "../../../../../convex/_generated/api";
-import { Id } from "../../../../../convex/_generated/dataModel";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 
 interface DeleteFilesToolParams {
     internalKey: string;

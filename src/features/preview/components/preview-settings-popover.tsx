@@ -15,7 +15,7 @@ import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useUpdateProjectSettings } from "@/features/projects/hooks/use-projects";
 
-import { Doc, Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 
 const formSchema = z.object({
     installCommand: z.string(),

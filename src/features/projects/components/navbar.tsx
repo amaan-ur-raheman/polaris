@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
 
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 import { useProject, useRenameProject } from "../hooks/use-projects";
 
 const font = Poppins({

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/command";
 
 import { useConversations } from "../hooks/use-conversations";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 interface PastConversationsDialogProps {
     projectId: Id<"projects">;

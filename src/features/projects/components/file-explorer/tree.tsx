@@ -16,7 +16,7 @@ import { LoadingRow } from "./loading-row";
 import { CreateInput } from "./create-input";
 import { TreeItemWrapper } from "./tree-item-wrapper";
 import { RenameInput } from "./rename-input";
-import { Doc, Id } from "../../../../../convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 import { useEditor } from "@/features/editor/hooks/use-editor";
 
 export const Tree = ({
