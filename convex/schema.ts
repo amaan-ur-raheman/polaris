@@ -78,4 +78,24 @@ export default defineSchema({
         ),
         createdAt: v.number(),
     }).index("by_project", ["projectId"]),
+
+    collaborative_documents: defineTable({
+        fileId: v.id("files"),
+        projectId: v.id("projects"),
+        state: v.bytes(),
+        awareness: v.optional(v.bytes()),
+        updatedAt: v.number(),
+    })
+        .index("by_file", ["fileId"])
+        .index("by_project", ["projectId"]),
+
+    collaborative_updates: defineTable({
+        fileId: v.id("files"),
+        projectId: v.id("projects"),
+        update: v.bytes(),
+        clock: v.number(),
+        createdAt: v.number(),
+    })
+        .index("by_file_clock", ["fileId", "clock"])
+        .index("by_file", ["fileId"]),
 });

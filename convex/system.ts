@@ -814,3 +814,102 @@ export const deleteVersion = mutation({
         return { success: true };
     },
 });
+
+// === Collaborative Document Management ===
+
+export const getCollaborativeDocument = query({
+    args: {
+        internalKey: v.string(),
+        fileId: v.id("files"),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        const doc = await ctx.db
+            .query("collaborative_documents")
+            .withIndex("by_file", (q) => q.eq("fileId", args.fileId))
+            .order("desc")
+            .first();
+
+        return doc ?? null;
+    },
+});
+
+export const upsertCollaborativeDocument = mutation({
+    args: {
+        internalKey: v.string(),
+        fileId: v.id("files"),
+        projectId: v.id("projects"),
+        state: v.bytes(),
+        clock: v.number(),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        const existing = await ctx.db
+            .query("collaborative_documents")
+            .withIndex("by_file", (q) => q.eq("fileId", args.fileId))
+            .order("desc")
+            .first();
+
+        if (existing) {
+            await ctx.db.patch(existing._id, {
+                state: args.state,
+                updatedAt: Date.now(),
+            });
+        } else {
+            await ctx.db.insert("collaborative_documents", {
+                fileId: args.fileId,
+                projectId: args.projectId,
+                state: args.state,
+                updatedAt: Date.now(),
+            });
+        }
+
+        return { success: true };
+    },
+});
+
+export const createCollaborativeUpdate = mutation({
+    args: {
+        internalKey: v.string(),
+        fileId: v.id("files"),
+        projectId: v.id("projects"),
+        update: v.bytes(),
+        clock: v.number(),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        await ctx.db.insert("collaborative_updates", {
+            fileId: args.fileId,
+            projectId: args.projectId,
+            update: args.update,
+            clock: args.clock,
+            createdAt: Date.now(),
+        });
+
+        return { success: true };
+    },
+});
+
+export const getCollaborativeUpdatesSince = query({
+    args: {
+        internalKey: v.string(),
+        fileId: v.id("files"),
+        sinceClock: v.number(),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        const updates = await ctx.db
+            .query("collaborative_updates")
+            .withIndex("by_file_clock", (q) =>
+                q.eq("fileId", args.fileId).gt("clock", args.sinceClock),
+            )
+            .order("asc")
+            .collect();
+
+        return updates;
+    },
+});
