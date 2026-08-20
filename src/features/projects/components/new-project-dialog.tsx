@@ -23,6 +23,8 @@ import {
 } from "@/components/ai-elements/prompt-input";
 
 import { Id } from "@convex/_generated/dataModel";
+import { TemplateSelector } from "./template-selector";
+import { getTemplateById } from "../templates";
 
 interface NewProjectDialogProps {
     open: boolean;
@@ -35,6 +37,7 @@ export const NewProjectDialog = ({
 }: NewProjectDialogProps) => {
     const router = useRouter();
     const [input, setInput] = useState("");
+    const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (message: PromptInputMessage) => {
@@ -43,9 +46,16 @@ export const NewProjectDialog = ({
         setIsSubmitting(true);
 
         try {
+            const template = selectedTemplateId
+                ? getTemplateById(selectedTemplateId)
+                : undefined;
+
             const { projectId } = await ky
                 .post("/api/projects/create-with-prompt", {
-                    json: { prompt: message.text.trim() },
+                    json: {
+                        prompt: message.text.trim(),
+                        templateId: template?.id,
+                    },
                 })
                 .json<{ projectId: Id<"projects"> }>();
 
@@ -69,6 +79,12 @@ export const NewProjectDialog = ({
                         Describe your project and AI will help you create it.
                     </DialogDescription>
                 </DialogHeader>
+                <div className="px-4 pt-4">
+                    <TemplateSelector
+                        selectedTemplateId={selectedTemplateId}
+                        onSelect={setSelectedTemplateId}
+                    />
+                </div>
                 <PromptInput onSubmit={handleSubmit} className="border-none!">
                     <PromptInputBody>
                         <PromptInputTextarea
