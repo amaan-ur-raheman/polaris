@@ -34,7 +34,7 @@ import {
 } from "../hooks/use-conversations";
 import { DEFAULT_CONVERSATION_TITLE } from "../constants";
 import { PastConversationsDialog } from "./past-conversations-dialog";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 interface ConversationSidebarProps {
     projectId: Id<"projects">;

@@ -15,7 +15,7 @@ import { PreviewTerminal } from "@/features/preview/components/preview-terminal"
 import { Button } from "@/components/ui/button";
 
 import { useProject } from "../hooks/use-projects";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 import { err } from "inngest/types";
 
 interface PreviewViewProps {
