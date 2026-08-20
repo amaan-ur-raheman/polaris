@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/command";
 
 import { useProjects } from "../hooks/use-projects";
-import { Doc } from "../../../../convex/_generated/dataModel";
+import { Doc } from "@convex/_generated/dataModel";
 
 const getProjectIcon = (project: Doc<"projects">) => {
     if (project.importStatus === "completed") {

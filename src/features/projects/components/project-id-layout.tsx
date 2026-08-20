@@ -3,8 +3,9 @@
 import { Allotment } from "allotment";
 
 import { ConversationSidebar } from "@/features/conversations/components/conversation-sidebar";
+import { ErrorBoundary } from "@/components/error-boundary";
 
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 import { Navbar } from "./navbar";
 import "allotment/dist/style.css";
 
@@ -38,7 +39,9 @@ export const ProjectIdLayout = ({
                         maxSize={MAX_SIDEBAR_WIDTH}
                         preferredSize={DEFAULT_CONVERSATION_SIDEBAR_WIDTH}
                     >
-                        <ConversationSidebar projectId={projectId} />
+                        <ErrorBoundary feature="AI Chat">
+                            <ConversationSidebar projectId={projectId} />
+                        </ErrorBoundary>
                     </Allotment.Pane>
                     <Allotment.Pane
                         preferredSize={DEFAULT_MAIN_SIZE}

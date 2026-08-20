@@ -5,8 +5,9 @@ import { Allotment } from "allotment";
 
 import { cn } from "@/lib/utils";
 import { EditorView } from "@/features/editor/components/editor-view";
+import { ErrorBoundary } from "@/components/error-boundary";
 
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 import { FileExplorer } from "./file-explorer";
 import { PreviewView } from "./preview-view";
 import { ExportPopover } from "./export-github";
@@ -79,10 +80,14 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
                             maxSize={MAX_SIDEBAR_WIDTH}
                             preferredSize={DEFAULT_SIDEBAR_WIDTH}
                         >
-                            <FileExplorer projectId={projectId} />
+                            <ErrorBoundary feature="File Explorer">
+                                <FileExplorer projectId={projectId} />
+                            </ErrorBoundary>
                         </Allotment.Pane>
                         <Allotment.Pane>
-                            <EditorView projectId={projectId} />
+                            <ErrorBoundary feature="Code Editor">
+                                <EditorView projectId={projectId} />
+                            </ErrorBoundary>
                         </Allotment.Pane>
                     </Allotment>
                 </div>
@@ -92,7 +97,9 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
                         activeView === "preview" ? "visible" : "invisible",
                     )}
                 >
-                    <PreviewView projectId={projectId} />
+                    <ErrorBoundary feature="Preview">
+                        <PreviewView projectId={projectId} />
+                    </ErrorBoundary>
                 </div>
             </div>
         </div>

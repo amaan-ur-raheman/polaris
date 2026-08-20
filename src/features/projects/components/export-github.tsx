@@ -32,7 +32,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 import { useProject } from "../hooks/use-projects";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 const formSchema = z.object({
     repoName: z

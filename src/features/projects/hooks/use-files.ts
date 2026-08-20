@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 
-import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 
 // Sort: folders first, then files, alphabetically within each group
 const sortFiles = <T extends { type: "folder" | "file"; name: string }>(

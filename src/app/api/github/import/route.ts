@@ -5,7 +5,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { convex } from "@/lib/convex-client";
 import { inngest } from "@/inngest/client";
 
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 
 const requestSchema = z.object({
     url: z.url(),

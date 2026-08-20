@@ -5,10 +5,12 @@ import { AlertTriangleIcon } from "lucide-react";
 import { useFile, useUpdateFile } from "@/features/projects/hooks/use-files";
 
 import { useEditor } from "../hooks/use-editor";
+import { useCodeReview } from "../hooks/use-code-review";
 import { FileBreadCrumbs } from "./file-breadcrumbs";
 import { TopNavigation } from "./top-navigation";
 import { CodeEditor } from "./code-editor";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { ReviewPanel } from "./review-panel";
+import { Id } from "@convex/_generated/dataModel";
 
 const DEBOUNCE_MS = 1500;
 
@@ -17,6 +19,13 @@ export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
     const activeFile = useFile(activeTabId);
     const updateFile = useUpdateFile();
     const timeoutRef = useRef<NodeJS.Timeout>(null);
+    const {
+        suggestions,
+        isReviewing,
+        reviewedFile,
+        requestReview,
+        clearReview,
+    } = useCodeReview({ debounceMs: 2000 });
 
     const isActiveBinaryFile = activeFile && activeFile.storageId;
     const isActiveTextFile = activeFile && !activeFile.storageId;
@@ -59,6 +68,10 @@ export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
 
                         timeoutRef.current = setTimeout(() => {
                             updateFile({ id: activeFile._id, content });
+                            requestReview(
+                                activeFile.name,
+                                content,
+                            );
                         }, DEBOUNCE_MS);
                     }}
                 />
@@ -75,6 +88,12 @@ export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
                     </div>
                 </div>
             )}
+            <ReviewPanel
+                suggestions={suggestions}
+                isReviewing={isReviewing}
+                reviewedFile={reviewedFile}
+                onDismiss={clearReview}
+            />
         </div>
     );
 };
