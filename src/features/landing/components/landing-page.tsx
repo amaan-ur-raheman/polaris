@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { SignUpButton } from "@clerk/nextjs";
 import {
   Sparkles,
@@ -11,11 +11,10 @@ import {
   GitBranch,
   Eye,
   Zap,
-  Cloud,
   ArrowRight,
+  Check,
   ChevronRight,
   Play,
-  Check,
 } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -23,47 +22,36 @@ import dynamic from "next/dynamic";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { BackgroundBeams } from "./background-beams";
+import { SpotlightCard } from "./spotlight-card";
+import { TextGradient } from "./text-gradient";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Lazy load Three.js scene (heavy)
+// Lazy load Three.js scene
 const HeroScene = dynamic(
   () => import("./hero-scene").then((mod) => ({ default: mod.HeroScene })),
   { ssr: false }
 );
 
-// Smooth scroll hook
-function useSmoothScroll() {
-  const [scrollY, setScrollY] = useState(0);
+// Navigation
+function Navigation() {
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return scrollY;
-}
-
-// Navigation component
-function Navigation() {
-  const [scrolled, setScrolled] = useState(false);
-  const scrollY = useSmoothScroll();
-
-  useEffect(() => {
-    setScrolled(scrollY > 50);
-  }, [scrollY]);
-
   return (
     <motion.nav
-      initial={{ y: -100, opacity: 0 }}
+      initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         scrolled
@@ -72,7 +60,7 @@ function Navigation() {
       )}
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
@@ -82,24 +70,15 @@ function Navigation() {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <Link
-            href="#features"
-            className="text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            Features
-          </Link>
-          <Link
-            href="#how-it-works"
-            className="text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            How it works
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            Pricing
-          </Link>
+          {["Features", "How it works", "Pricing"].map((item) => (
+            <Link
+              key={item}
+              href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+              className="text-sm text-zinc-400 hover:text-white transition-colors"
+            >
+              {item}
+            </Link>
+          ))}
         </div>
 
         <div className="flex items-center gap-3">
@@ -123,7 +102,7 @@ function Navigation() {
   );
 }
 
-// Hero section with Three.js background
+// Hero Section
 function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -133,7 +112,7 @@ function HeroSection() {
 
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
-  const y = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
+  const y = useTransform(scrollYProgress, [0, 0.5], [0, 80]);
 
   return (
     <section
@@ -144,8 +123,8 @@ function HeroSection() {
       <HeroScene />
 
       {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/50 via-transparent to-zinc-950 z-10" />
-      <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/30 via-transparent to-zinc-950/30 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/60 via-transparent to-zinc-950 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/40 via-transparent to-zinc-950/40 z-10" />
 
       {/* Content */}
       <motion.div
@@ -153,34 +132,32 @@ function HeroSection() {
         className="relative z-20 max-w-5xl mx-auto px-6 text-center"
       >
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-6"
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-8"
         >
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
             Now in public beta
           </span>
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight leading-[0.95]"
         >
           Build with
           <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500">
-            intelligence
-          </span>
+          <TextGradient>intelligence</TextGradient>
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed"
         >
           Describe what you want to build. Watch AI create complete applications
@@ -188,9 +165,9 @@ function HeroSection() {
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <SignUpButton mode="modal">
@@ -217,7 +194,7 @@ function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
       >
         <motion.div
@@ -227,11 +204,7 @@ function HeroSection() {
         >
           <motion.div
             animate={{ y: [0, 12, 0] }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="w-1 h-2 rounded-full bg-zinc-500"
           />
         </motion.div>
@@ -240,25 +213,25 @@ function HeroSection() {
   );
 }
 
-// Asymmetric feature showcase
-function FeatureShowcase() {
+// Features Section
+function FeaturesSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      gsap.from(".feature-item", {
+      gsap.from(".feature-card", {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 80%",
           end: "bottom 20%",
           toggleActions: "play none none reverse",
         },
-        y: 60,
+        y: 40,
         opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
+        duration: 0.6,
+        stagger: 0.1,
         ease: "power3.out",
       });
     }, sectionRef);
@@ -269,27 +242,39 @@ function FeatureShowcase() {
   const features = [
     {
       icon: Sparkles,
-      title: "AI that understands context",
+      title: "AI Code Generation",
       description:
-        "Reads your entire project structure before making changes. No more explaining the same thing twice.",
+        "Describe features in plain English and watch AI create complete, working code with context awareness.",
     },
     {
       icon: Code2,
-      title: "Professional-grade editor",
+      title: "Professional Editor",
       description:
-        "CodeMirror 6 with syntax highlighting for 20+ languages, intelligent completions, and real-time error detection.",
+        "CodeMirror 6 with syntax highlighting for 20+ languages, intelligent completions, and error detection.",
     },
     {
       icon: Terminal,
-      title: "Integrated development",
+      title: "Integrated Terminal",
       description:
-        "Full terminal, live preview, and file explorer. Everything you need, running entirely in your browser.",
+        "Full xterm.js terminal with command history, running npm scripts and build commands directly.",
+    },
+    {
+      icon: Eye,
+      title: "Live Preview",
+      description:
+        "WebContainer-powered in-browser Node.js runtime with hot module reloading and instant feedback.",
     },
     {
       icon: GitBranch,
-      title: "Version control built in",
+      title: "GitHub Integration",
       description:
-        "Import from GitHub, push your creations back. Full version history with snapshots you can restore anytime.",
+        "Import existing projects from GitHub or push your creations back. Full version control workflow.",
+    },
+    {
+      icon: Zap,
+      title: "Instant Deploy",
+      description:
+        "Deploy to Vercel with one click. Share your creations with the world in seconds.",
     },
   ];
 
@@ -299,54 +284,47 @@ function FeatureShowcase() {
       id="features"
       className="relative py-32 px-6 bg-zinc-950"
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          {/* Left: Sticky headline */}
-          <div className="lg:sticky lg:top-32">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-                Everything you need
-              </h2>
-              <p className="text-lg text-zinc-400 max-w-md">
-                A complete development environment that runs in your browser.
-                No setup, no configuration, just code.
-              </p>
-            </motion.div>
-          </div>
+      <BackgroundBeams />
 
-          {/* Right: Scrolling feature list */}
-          <div className="space-y-12">
-            {features.map((feature, i) => (
-              <div key={feature.title} className="feature-item">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center shrink-0">
-                    <feature.icon className="w-5 h-5 text-zinc-300" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-zinc-400 leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
+      <div className="max-w-7xl mx-auto relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+            Everything you need
+          </h2>
+          <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+            A complete development environment that runs in your browser. No
+            setup, no configuration, just code.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((feature, i) => (
+            <SpotlightCard key={feature.title} className="feature-card p-6">
+              <div className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-4">
+                <feature.icon className="w-5 h-5 text-zinc-300" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                {feature.description}
+              </p>
+            </SpotlightCard>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-// Horizontal scroll section
-function HorizontalScroll() {
+// How It Works Section
+function HowItWorksSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -405,11 +383,12 @@ function HorizontalScroll() {
   return (
     <section
       ref={containerRef}
+      id="how-it-works"
       className="relative h-[100dvh] overflow-hidden bg-zinc-900"
     >
-      <div ref={trackRef} className="flex h-full items-center px-8 gap-16">
+      <div ref={trackRef} className="flex h-full items-center px-8 gap-20">
         {/* Section intro */}
-        <div className="w-[60vw] shrink-0 flex items-center">
+        <div className="w-[50vw] shrink-0 flex items-center">
           <div>
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
               From idea to app
@@ -421,12 +400,12 @@ function HorizontalScroll() {
         </div>
 
         {/* Steps */}
-        {steps.map((step, i) => (
+        {steps.map((step) => (
           <div
             key={step.step}
-            className="w-[40vw] shrink-0 flex flex-col justify-center"
+            className="w-[35vw] shrink-0 flex flex-col justify-center"
           >
-            <span className="text-7xl font-bold text-zinc-800 mb-4">
+            <span className="text-8xl font-bold text-zinc-800/50 mb-4">
               {step.step}
             </span>
             <h3 className="text-3xl font-bold text-white mb-3">{step.title}</h3>
@@ -440,47 +419,44 @@ function HorizontalScroll() {
   );
 }
 
-// Bento grid section
-function BentoGrid() {
+// Bento Grid Section
+function BentoSection() {
   const items = [
     {
       title: "AI Code Generation",
-      description: "Describe features in plain English and watch AI create complete code.",
+      description:
+        "Describe features in plain English and watch AI create complete code.",
       icon: Sparkles,
-      colSpan: "col-span-1 md:col-span-2",
-      rowSpan: "row-span-1",
+      colSpan: "md:col-span-2",
       gradient: "from-blue-500/20 to-cyan-500/10",
     },
     {
       title: "Live Preview",
       description: "WebContainer-powered runtime with hot module reloading.",
       icon: Eye,
-      colSpan: "col-span-1",
-      rowSpan: "row-span-1 md:row-span-2",
+      colSpan: "md:col-span-1",
+      rowSpan: "md:row-span-2",
       gradient: "from-purple-500/20 to-pink-500/10",
     },
     {
       title: "Integrated Terminal",
       description: "Full xterm.js terminal with command history.",
       icon: Terminal,
-      colSpan: "col-span-1",
-      rowSpan: "row-span-1",
+      colSpan: "md:col-span-1",
       gradient: "from-emerald-500/20 to-teal-500/10",
     },
     {
       title: "GitHub Integration",
       description: "Import and export projects with full version control.",
       icon: GitBranch,
-      colSpan: "col-span-1",
-      rowSpan: "row-span-1",
+      colSpan: "md:col-span-1",
       gradient: "from-orange-500/20 to-amber-500/10",
     },
     {
-      title: "Cloud Storage",
-      description: "Projects saved automatically. Access from anywhere.",
-      icon: Cloud,
-      colSpan: "col-span-1 md:col-span-2",
-      rowSpan: "row-span-1",
+      title: "Instant Deploy",
+      description: "Deploy to Vercel with one click. Share in seconds.",
+      icon: Zap,
+      colSpan: "md:col-span-2",
       gradient: "from-cyan-500/20 to-blue-500/10",
     },
   ];
@@ -489,10 +465,10 @@ function BentoGrid() {
     <section className="relative py-32 px-6 bg-zinc-950">
       <div className="max-w-7xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
@@ -507,12 +483,12 @@ function BentoGrid() {
           {items.map((item, i) => (
             <motion.div
               key={item.title}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{
-                duration: 0.6,
-                delay: i * 0.1,
+                duration: 0.5,
+                delay: i * 0.08,
                 ease: [0.16, 1, 0.3, 1],
               }}
               className={cn(
@@ -546,7 +522,7 @@ function BentoGrid() {
   );
 }
 
-// Pricing section
+// Pricing Section
 function PricingSection() {
   const plans = [
     {
@@ -596,10 +572,10 @@ function PricingSection() {
     <section id="pricing" className="relative py-32 px-6 bg-zinc-900">
       <div className="max-w-7xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
@@ -614,11 +590,11 @@ function PricingSection() {
           {plans.map((plan, i) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{
-                duration: 0.6,
+                duration: 0.5,
                 delay: i * 0.1,
                 ease: [0.16, 1, 0.3, 1],
               }}
@@ -681,19 +657,18 @@ function PricingSection() {
   );
 }
 
-// CTA section
+// CTA Section
 function CTASection() {
   return (
     <section className="relative py-32 px-6 bg-zinc-950 overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-transparent to-transparent" />
+      <BackgroundBeams />
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
             Ready to build?
@@ -722,7 +697,7 @@ function Footer() {
   return (
     <footer className="py-12 px-6 bg-zinc-950 border-t border-zinc-800">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <div className="w-6 h-6 rounded bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
             <Sparkles className="w-3 h-3 text-white" />
           </div>
@@ -730,24 +705,15 @@ function Footer() {
         </div>
 
         <div className="flex items-center gap-6">
-          <Link
-            href="#"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-          >
-            Privacy
-          </Link>
-          <Link
-            href="#"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-          >
-            Terms
-          </Link>
-          <Link
-            href="#"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-          >
-            Contact
-          </Link>
+          {["Privacy", "Terms", "Contact"].map((item) => (
+            <Link
+              key={item}
+              href="#"
+              className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              {item}
+            </Link>
+          ))}
         </div>
 
         <p className="text-sm text-zinc-600">
@@ -758,15 +724,15 @@ function Footer() {
   );
 }
 
-// Main landing page
+// Main Landing Page
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
       <Navigation />
       <HeroSection />
-      <FeatureShowcase />
-      <HorizontalScroll />
-      <BentoGrid />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <BentoSection />
       <PricingSection />
       <CTASection />
       <Footer />
