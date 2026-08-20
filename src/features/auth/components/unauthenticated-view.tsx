@@ -1,39 +1,36 @@
-import { ShieldAlertIcon } from "lucide-react";
+"use client";
 
-import {
-    Item,
-    ItemActions,
-    ItemContent,
-    ItemDescription,
-    ItemMedia,
-    ItemTitle,
-} from "@/components/ui/item";
-import { SignInButton } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { LandingPage } from "@/features/landing/components";
+import { Loader2 } from "lucide-react";
 
 export const UnauthenticatedView = () => {
-    return (
-        <div className="flex items-center justify-center h-screen bg-background">
-            <div className="w-full max-w-lg bg-muted">
-                <Item variant={"outline"}>
-                    <ItemMedia variant={"icon"}>
-                        <ShieldAlertIcon />
-                    </ItemMedia>
-                    <ItemContent>
-                        <ItemTitle>Unauthorized Access</ItemTitle>
-                        <ItemDescription>
-                            You are not authorized to access this resource.
-                        </ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
-                        <SignInButton>
-                            <Button variant={"outline"} size={"sm"}>
-                                Sign In
-                            </Button>
-                        </SignInButton>
-                    </ItemActions>
-                </Item>
+    const { isSignedIn, isLoaded } = useAuth();
+    const router = useRouter();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        // Redirect to projects if already signed in
+        if (isLoaded && isSignedIn) {
+            router.push("/projects");
+        }
+    }, [isLoaded, isSignedIn, router]);
+
+    // Show loading state while checking auth
+    if (!mounted || !isLoaded) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
             </div>
-        </div>
-    );
+        );
+    }
+
+    // Show landing page for unauthenticated users
+    return <LandingPage />;
 };
