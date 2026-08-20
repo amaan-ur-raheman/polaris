@@ -115,6 +115,8 @@
         "unique-names-generator": "^4.7.1",
         "use-stick-to-bottom": "^1.1.1",
         "vaul": "^1.1.2",
+        "y-codemirror.next": "^0.3.6",
+        "yjs": "^13.6.32",
         "zod": "^4.3.5",
         "zustand": "^5.0.9"
     },
