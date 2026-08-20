@@ -630,3 +630,187 @@ export const createProjectWithConversation = mutation({
         return { projectId, conversationId };
     },
 });
+
+// === Version Management ===
+
+const MAX_VERSIONS = 10;
+
+export const getVersions = query({
+    args: {
+        internalKey: v.string(),
+        projectId: v.id("projects"),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        return await ctx.db
+            .query("versions")
+            .withIndex("by_project", (q) =>
+                q.eq("projectId", args.projectId),
+            )
+            .order("desc")
+ .collect();
+    },
+});
+
+export const createVersion = mutation({
+    args: {
+        internalKey: v.string(),
+        projectId: v.id("projects"),
+        label: v.string(),
+        description: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        // Get all files for this project
+        const files = await ctx.db
+            .query("files")
+            .withIndex("by_project", (q) =>
+                q.eq("projectId", args.projectId),
+            )
+            .collect();
+
+        // Build file paths by traversing parent chain
+        const filesMap = new Map(files.map((f) => [f._id, f]));
+
+        const getFilePath = (file: typeof files[0]): string => {
+            const parts: string[] = [file.name];
+            let parentId = file.parentId;
+            while (parentId) {
+                const parent = filesMap.get(parentId);
+                if (!parent) break;
+                parts.unshift(parent.name);
+                parentId = parent.parentId;
+            }
+            return parts.join("/");
+        };
+
+        const snapshot = files
+            .filter((f) => f.type === "file" && f.content !== undefined)
+            .map((f) => ({
+                path: getFilePath(f),
+                content: f.content || "",
+                type: "file" as const,
+            }));
+
+        const versionId = await ctx.db.insert("versions", {
+            projectId: args.projectId,
+            label: args.label,
+            description: args.description,
+            files: snapshot,
+            createdAt: Date.now(),
+        });
+
+        // Enforce MAX_VERSIONS limit
+        const allVersions = await ctx.db
+            .query("versions")
+            .withIndex("by_project", (q) =>
+                q.eq("projectId", args.projectId),
+            )
+            .order("asc")
+            .collect();
+
+        if (allVersions.length > MAX_VERSIONS) {
+            const toDelete = allVersions.slice(
+                0,
+                allVersions.length - MAX_VERSIONS,
+            );
+            for (const v of toDelete) {
+                await ctx.db.delete(v._id);
+            }
+        }
+
+        return versionId;
+    },
+});
+
+export const restoreVersion = mutation({
+    args: {
+        internalKey: v.string(),
+        versionId: v.id("versions"),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        const version = await ctx.db.get(args.versionId);
+        if (!version) {
+            throw new Error("Version not found");
+        }
+
+        // Delete all current files in the project
+        const currentFiles = await ctx.db
+            .query("files")
+            .withIndex("by_project", (q) =>
+                q.eq("projectId", version.projectId),
+            )
+            .collect();
+
+        for (const file of currentFiles) {
+            if (file.storageId) {
+                await ctx.storage.delete(file.storageId);
+            }
+            await ctx.db.delete(file._id);
+        }
+
+        // Recreate files from snapshot
+        const folderCache = new Map<string, string>();
+
+        for (const snapshotFile of version.files) {
+            const parts = snapshotFile.path.split("/");
+            let parentId: string | undefined;
+
+            // Create intermediate folders
+            for (let i = 0; i < parts.length - 1; i++) {
+                const folderPath = parts.slice(0, i + 1).join("/");
+                if (folderCache.has(folderPath)) {
+                    parentId = folderCache.get(folderPath);
+                } else {
+                    const folderId = await ctx.db.insert("files", {
+                        projectId: version.projectId,
+                        name: parts[i],
+                        type: "folder",
+                        parentId: parentId as any,
+                        updatedAt: Date.now(),
+                    });
+                    folderCache.set(folderPath, folderId);
+                    parentId = folderId;
+                }
+            }
+
+            await ctx.db.insert("files", {
+                projectId: version.projectId,
+                name: parts[parts.length - 1],
+                content: snapshotFile.content,
+                type: "file",
+                parentId: parentId as any,
+                updatedAt: Date.now(),
+            });
+        }
+
+        // Update project timestamp
+        await ctx.db.patch(version.projectId, {
+            updatedAt: Date.now(),
+        });
+
+        return { success: true, filesRestored: version.files.length };
+    },
+});
+
+export const deleteVersion = mutation({
+    args: {
+        internalKey: v.string(),
+        versionId: v.id("versions"),
+    },
+    handler: async (ctx, args) => {
+        validateInternalKey(args.internalKey);
+
+        const version = await ctx.db.get(args.versionId);
+        if (!version) {
+            throw new Error("Version not found");
+        }
+
+        await ctx.db.delete(args.versionId);
+        return { success: true };
+    },
+});

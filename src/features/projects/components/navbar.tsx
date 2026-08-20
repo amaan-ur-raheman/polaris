@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Poppins } from "next/font/google";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
-import { CloudCheckIcon, LoaderIcon } from "lucide-react";
+import { CloudCheckIcon, History, LoaderIcon } from "lucide-react";
 
 import {
     Breadcrumb,
@@ -21,11 +21,13 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
 
 import { Id } from "@convex/_generated/dataModel";
 import { useProject, useRenameProject } from "../hooks/use-projects";
+import { VersionHistory } from "./version-history";
 
 const font = Poppins({
     subsets: ["latin"],
@@ -37,6 +39,7 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
     const renameProject = useRenameProject();
     const [isRenaming, setIsRenaming] = useState(false);
     const [name, setName] = useState("");
+    const [showVersionHistory, setShowVersionHistory] = useState(false);
 
     const handleRenameStart = () => {
         if (!project) return;
@@ -144,6 +147,27 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                 )}
             </div>
             <div className="flex items-center gap-2">
+                <Sheet
+                    open={showVersionHistory}
+                    onOpenChange={setShowVersionHistory}
+                >
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <History className="h-4 w-4" />
+                                </Button>
+                            </SheetTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Version History</TooltipContent>
+                    </Tooltip>
+                    <SheetContent className="w-[400px] sm:w-[540px] p-0">
+                        <VersionHistory
+                            projectId={projectId}
+                            onClose={() => setShowVersionHistory(false)}
+                        />
+                    </SheetContent>
+                </Sheet>
                 <UserButton />
             </div>
         </nav>
