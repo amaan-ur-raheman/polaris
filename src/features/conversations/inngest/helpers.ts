@@ -10,6 +10,7 @@ import { createCreateFolderTool } from "./tools/create-folder";
 import { createDeleteFilesTool } from "./tools/delete-files";
 import { createScrapeUrlsTool } from "./tools/scrape-urls";
 import { createRenameFileTool } from "./tools/rename-file";
+import { createGetContextTool } from "./tools/get-context";
 import { Id } from "@convex/_generated/dataModel";
 
 /**
@@ -91,6 +92,7 @@ export function createCodingAgent(
             baseUrl: "https://integrate.api.nvidia.com/v1",
         }),
         tools: [
+            createGetContextTool({ projectId, internalKey }),
             createListFilesTool({ projectId, internalKey }),
             createReadFilesTool({ internalKey }),
             createUpdateFileTool({ internalKey }),
