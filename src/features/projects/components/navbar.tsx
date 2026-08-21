@@ -117,7 +117,7 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                                     onClick={handleRenameStart}
                                     className="text-sm cursor-pointer hover:text-primary font-medium max-w-40 truncate"
                                 >
-                                    {project?.name ?? "Loading..."}
+                                    {project?.name ?? "Loading…"}
                                 </BreadcrumbPage>
                             )}
                         </BreadcrumbItem>
@@ -128,7 +128,7 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                         <TooltipTrigger asChild>
                             <LoaderIcon className="size-4 text-muted-foreground animate-spin" />
                         </TooltipTrigger>
-                        <TooltipContent>Importing project...</TooltipContent>
+                        <TooltipContent>Importing project…</TooltipContent>
                     </Tooltip>
                 ) : (
                     <Tooltip>
@@ -141,7 +141,7 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                                 ? formatDistanceToNow(project.updatedAt, {
                                       addSuffix: true,
                                   })
-                                : "Loading..."}
+                                : "Loading…"}
                         </TooltipContent>
                     </Tooltip>
                 )}
@@ -154,7 +154,7 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Version history">
                                     <History className="h-4 w-4" />
                                 </Button>
                             </SheetTrigger>

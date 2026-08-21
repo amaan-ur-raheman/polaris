@@ -65,7 +65,7 @@ export function ReviewPanel({
                         <>
                             <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
                             <span className="text-muted-foreground">
-                                Reviewing {reviewedFile}...
+                                Reviewing {reviewedFile}…
                             </span>
                         </>
                     ) : suggestions.length === 0 ? (
@@ -85,6 +85,7 @@ export function ReviewPanel({
                 </div>
                 <button
                     onClick={onDismiss}
+                    aria-label="Dismiss review panel"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                     <X className="size-3.5" />

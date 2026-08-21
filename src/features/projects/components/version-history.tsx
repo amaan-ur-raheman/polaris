@@ -138,11 +138,12 @@ export const VersionHistory = ({
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                                         <Button
                                             variant="ghost"
                                             size="icon"
                                             className="h-6 w-6"
+                                            aria-label={`Restore ${version.label}`}
                                             onClick={() =>
                                                 setShowRestoreDialog(
                                                     version._id,
@@ -156,6 +157,7 @@ export const VersionHistory = ({
                                             variant="ghost"
                                             size="icon"
                                             className="h-6 w-6 text-destructive hover:text-destructive"
+                                            aria-label={`Delete ${version.label}`}
                                             onClick={() =>
                                                 setShowDeleteDialog(
                                                     version._id,
@@ -211,7 +213,7 @@ export const VersionHistory = ({
                             onClick={handleCreate}
                             disabled={!newLabel.trim() || isCreating}
                         >
-                            {isCreating ? "Saving..." : "Save Snapshot"}
+                            {isCreating ? "Saving…" : "Save Snapshot"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -249,7 +251,7 @@ export const VersionHistory = ({
                                 disabled={isRestoring}
                             >
                                 {isRestoring
-                                    ? "Restoring..."
+                                    ? "Restoring…"
                                     : "Restore Version"}
                             </Button>
                         </DialogFooter>
@@ -287,7 +289,7 @@ export const VersionHistory = ({
                                 }
                                 disabled={isDeleting}
                             >
-                                {isDeleting ? "Deleting..." : "Delete Version"}
+                                {isDeleting ? "Deleting…" : "Delete Version"}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
