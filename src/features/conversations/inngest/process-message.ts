@@ -7,8 +7,6 @@ import { Id } from "@convex/_generated/dataModel";
 import { api } from "@convex/_generated/api";
 import {
     buildSystemPrompt,
-    createTitleAgent,
-    extractTitle,
     createCodingAgent,
     createAgentNetwork,
     extractAssistantResponse,
@@ -85,25 +83,12 @@ export const processMessage = inngest.createFunction(
             messageId,
         );
 
+        // Fire title generation in parallel — don't block the coding agent
         if (shouldGenerateTitle(conversation.title)) {
-            const groqApiKey = process.env.GROQ_API_KEY;
-            if (!groqApiKey) {
-                throw new NonRetriableError("GROQ_API_KEY not configured");
-            }
-
-            const titleAgent = createTitleAgent(groqApiKey);
-            const { output } = await titleAgent.run(message, { step });
-            const title = extractTitle(output);
-
-            if (title) {
-                await step.run("update-conversation-title", async () => {
-                    await convex.mutation(api.system.updateConversationTitle, {
-                        internalKey,
-                        conversationId,
-                        title,
-                    });
-                });
-            }
+            await inngest.send({
+                name: "message/title-generate",
+                data: { conversationId, message },
+            });
         }
 
         const nvidiaApiKey = process.env.NVIDIA_API_KEY;
