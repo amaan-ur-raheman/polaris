@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { buildFilePath, buildFileSnapshot, collectDescendantIds, nameExists } from "./system-files";
 import { versionsToDelete } from "./system-versions";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";

@@ -64,10 +64,11 @@ export const useRenameFile = ({
     projectId: Id<"projects">;
     parentId?: Id<"files">;
 }) => {
-    return useOptimisticFileMutation(api.files.renameFile, (existing, args) =>
+    return useOptimisticFileMutation(api.files.renameFile, (existing, args: { id: Id<"files">; newName: string }) =>
         existing.map((file) =>
-            file._id === (args as any).id ? { ...file, name: (args as any).newName } : file,
+            file._id === args.id ? { ...file, name: args.newName } : file,
         ),
+        { projectId, parentId },
     );
 };
 
@@ -78,8 +79,9 @@ export const useDeleteFile = ({
     projectId: Id<"projects">;
     parentId?: Id<"files">;
 }) => {
-    return useOptimisticFileMutation(api.files.deleteFile, (existing, args) =>
-        existing.filter((file) => file._id !== (args as any).id),
+    return useOptimisticFileMutation(api.files.deleteFile, (existing, args: { id: Id<"files"> }) =>
+        existing.filter((file) => file._id !== args.id),
+        { projectId, parentId },
     );
 };
 

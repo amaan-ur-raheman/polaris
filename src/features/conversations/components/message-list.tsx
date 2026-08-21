@@ -15,7 +15,7 @@ import {
     MessageAction,
 } from "@/components/ai-elements/message";
 
-import { Doc, Id } from "@convex/_generated/dataModel";
+import { Doc } from "@convex/_generated/dataModel";
 
 interface MessageListProps {
     messages: Doc<"messages">[] | undefined;
