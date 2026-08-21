@@ -9,7 +9,7 @@ export const AuthLoadingView = () => {
             aria-label="Loading authentication"
         >
             <Spinner className="size-6 text-ring" />
-            <span className="sr-only">Loading authentication, please wait...</span>
+            <span className="sr-only">Loading authentication, please wait…</span>
         </div>
     );
 };
