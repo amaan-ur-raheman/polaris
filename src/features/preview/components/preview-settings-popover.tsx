@@ -74,6 +74,7 @@ export const PreviewSettingsPopover = ({
                     size={"sm"}
                     variant={"ghost"}
                     className="h-full rounded-none"
+                    aria-label="Preview settings"
                     title="Preview Settings"
                 >
                     <SettingsIcon className="size-3" />
@@ -153,7 +154,7 @@ export const PreviewSettingsPopover = ({
                                     disabled={!canSubmit || isSubmitting}
                                 >
                                     {isSubmitting
-                                        ? "Saving..."
+                                        ? "Saving…"
                                         : "Save Changes"}
                                 </Button>
                             )}

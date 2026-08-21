@@ -5,6 +5,17 @@ import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
 import { cn } from "@/lib/utils";
 
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+import {
     useCreateFile,
     useCreateFolder,
     useDeleteFile,
@@ -31,6 +42,7 @@ export const Tree = ({
     const [isOpen, setIsOpen] = useState(false);
     const [isRenaming, setIsRenaming] = useState(false);
     const [creating, setCreating] = useState<"file" | "folder" | null>(null);
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     const renameFile = useRenameFile({
         projectId,
@@ -101,7 +113,20 @@ export const Tree = ({
             );
         }
 
-        return (
+    const handleDelete = () => {
+        closeTab(item._id);
+        deleteFile({ id: item._id });
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "Backspace") {
+            e.preventDefault();
+            setConfirmDelete(true);
+        }
+    };
+
+    return (
+        <>
             <TreeItemWrapper
                 item={item}
                 level={level}
@@ -109,16 +134,40 @@ export const Tree = ({
                 onClick={() => openFile(item._id, { pinned: false })}
                 onDoubleClick={() => openFile(item._id, { pinned: true })}
                 onRename={() => setIsRenaming(true)}
-                onDelete={() => {
-                    closeTab(item._id);
-                    deleteFile({ id: item._id });
-                }}
+                onDelete={() => setConfirmDelete(true)}
+                onKeyDown={handleKeyDown}
             >
                 <FileIcon fileName={filename} autoAssign className="size-4" />
                 <span className="truncate text-sm">{filename}</span>
             </TreeItemWrapper>
-        );
-    }
+            <AlertDialog
+                open={confirmDelete}
+                onOpenChange={setConfirmDelete}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Delete {filename}?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This permanently removes the file. This action
+                            cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-destructive text-white hover:bg-destructive/90"
+                            onClick={handleDelete}
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
+    );
+}
 
     const folderName = item.name;
     const folderRender = (

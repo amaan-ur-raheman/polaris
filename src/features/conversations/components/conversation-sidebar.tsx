@@ -160,11 +160,11 @@ export const ConversationSidebar = ({
                                     {message.status === "processing" ? (
                                         <div className="flex items-center gap-2 text-muted-foreground">
                                             <LoaderIcon className="size-4 animate-spin" />
-                                            <span>Thinking...</span>
+                                            <span>Thinking…</span>
                                         </div>
                                     ) : message.status === "cancelled" ? (
                                         <div className="text-muted-foreground italic">
-                                            <span>Request Cancelled</span>
+                                            <span>Request cancelled</span>
                                         </div>
                                     ) : (
                                         <MessageResponse>
@@ -199,7 +199,7 @@ export const ConversationSidebar = ({
                     <PromptInput onSubmit={handleSubmit} className="mt-2">
                         <PromptInputBody>
                             <PromptInputTextarea
-                                placeholder="Ask polaris anything..."
+                                placeholder="Ask Polaris anything…"
                                 onChange={(e) => setInput(e.target.value)}
                                 value={input}
                                 disabled={isProcessing}

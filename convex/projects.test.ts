@@ -16,6 +16,15 @@ import { verifyAuth } from "./auth";
 import * as projects from "./projects";
 
 const mockVerifyAuth = vi.mocked(verifyAuth);
+const MOCK_IDENTITY = {
+    tokenIdentifier: "token-test",
+    subject: "user-1",
+    issuer: "https://test.clerk.accounts.dev",
+} as any;
+const MOCK_IDENTITY_2 = {
+    ...MOCK_IDENTITY,
+    subject: "user-2",
+};
 
 function createMockCtx(overrides: Partial<any> = {}) {
     return {
@@ -47,7 +56,7 @@ describe("projects", () => {
 
     describe("create", () => {
         it("creates a project with authenticated user", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
 
             const handler = (projects as any).create.handler;
@@ -74,7 +83,7 @@ describe("projects", () => {
 
     describe("getById", () => {
         it("returns project when owner matches", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue({
                 _id: "proj-1",
@@ -89,7 +98,7 @@ describe("projects", () => {
         });
 
         it("throws when project not found", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue(null);
 
@@ -100,7 +109,7 @@ describe("projects", () => {
         });
 
         it("throws when user is not owner", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-2" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY_2);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue({
                 _id: "proj-1",
@@ -117,7 +126,7 @@ describe("projects", () => {
 
     describe("rename", () => {
         it("renames project when owner matches", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue({
                 _id: "proj-1",
@@ -135,7 +144,7 @@ describe("projects", () => {
         });
 
         it("throws when not owner", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-2" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY_2);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue({
                 _id: "proj-1",

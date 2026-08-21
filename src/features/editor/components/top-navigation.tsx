@@ -23,14 +23,23 @@ const Tab = ({
 
     const isActive = activeTabId === fileId;
     const isPreview = previewTabId === fileId;
-    const fileName = file?.name ?? "Loading...";
+    const fileName = file?.name ?? "Loading…";
 
     return (
         <div
+            role="tab"
+            aria-selected={isActive}
+            tabIndex={0}
             onClick={() => setActiveTab(fileId)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setActiveTab(fileId);
+                }
+            }}
             onDoubleClick={() => openFile(fileId, { pinned: true })}
             className={cn(
-                "flex items-center gap-2 h-8.75 pl-2 pr-1.5 cursor-pointer text-muted-foreground group border-y border-x border-transparent hover:bg-accent/30",
+                "flex items-center gap-2 h-8.75 pl-2 pr-1.5 cursor-pointer text-muted-foreground group border-y border-x border-transparent hover:bg-accent/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring",
                 isActive && "bg-background text-foreground border-x-border",
                 isFirst && "border-l-transparent"
             )}
@@ -49,6 +58,7 @@ const Tab = ({
                 {fileName}
             </span>
             <button
+                aria-label={`Close ${fileName} tab`}
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -62,7 +72,7 @@ const Tab = ({
                     }
                 }}
                 className={cn(
-                    "p-0.5 rounded-sm hover:bg-white/10 opacity-0 group-hover:opacity-100",
+                    "p-0.5 rounded-sm hover:bg-white/10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
                     isActive && "opacity-100"
                 )}
             >
@@ -77,7 +87,7 @@ export const TopNavigation = ({ projectId }: { projectId: Id<"projects"> }) => {
 
     return (
         <ScrollArea className="flex-1">
-            <nav className="bg-sidebar flex items-center h-8.75 border-b">
+            <nav role="tablist" className="bg-sidebar flex items-center h-8.75 border-b">
                 {openTabs.map((fileId, index) => (
                     <Tab
                         key={fileId}

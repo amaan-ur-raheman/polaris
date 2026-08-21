@@ -54,7 +54,7 @@ export const ImportGithubDialog = ({
                         eventId: string;
                     }>();
 
-                toast.success("Importing repository...");
+                toast.success("Importing repository…");
                 onOpenChange(false);
                 form.reset();
 
@@ -121,13 +121,17 @@ export const ImportGithubDialog = ({
                                     <Input
                                         id={field.name}
                                         name={field.name}
+                                        type="url"
+                                        inputMode="url"
+                                        autoComplete="off"
+                                        spellCheck={false}
                                         value={field.state.value}
                                         onBlur={field.handleBlur}
                                         onChange={(e) =>
                                             field.handleChange(e.target.value)
                                         }
                                         aria-invalid={isInvalid}
-                                        placeholder="https://github.com/owner/repo"
+                                        placeholder="https://github.com/owner/repo…"
                                     />
                                     {isInvalid && (
                                         <FieldError
@@ -157,7 +161,7 @@ export const ImportGithubDialog = ({
                                     type="submit"
                                     disabled={!canSubmit || isSubmitting}
                                 >
-                                    {isSubmitting ? "Importing..." : "Import"}
+                                    {isSubmitting ? "Importing…" : "Import"}
                                 </Button>
                             )}
                         </form.Subscribe>

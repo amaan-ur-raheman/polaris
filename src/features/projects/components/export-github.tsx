@@ -79,7 +79,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                     },
                 });
 
-                toast.success("Exporting repository...");
+                toast.success("Exporting repository…");
             } catch (error) {
                 if (error instanceof HTTPError) {
                     const body = await error.response.json<{ error: string }>();
@@ -336,7 +336,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                                 disabled={!canSubmit || isSubmitting}
                             >
                                 {isSubmitting
-                                    ? "Creating..."
+                                    ? "Creating…"
                                     : "Create Repository"}
                             </Button>
                         )}

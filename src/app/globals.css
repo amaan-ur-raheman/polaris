@@ -134,6 +134,7 @@
     --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1
         var(--delay, 0ms);
     --animate-float-up: float-up linear infinite;
+    --animate-marquee: marquee 36s linear infinite;
 
     @keyframes cell-ripple {
         0% {
@@ -159,6 +160,18 @@
             transform: translateY(-100vh);
             opacity: 0;
         }
+    }
+
+    @keyframes marquee {
+        to {
+            transform: translateX(-50%);
+        }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
     }
 }
 

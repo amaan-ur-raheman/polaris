@@ -27,15 +27,18 @@ const Tab = ({
     onClick: () => void;
 }) => {
     return (
-        <div
+        <button
+            type="button"
+            role="tab"
+            aria-selected={isActive}
             onClick={onClick}
             className={cn(
-                "flex items-center gap-2 px-3 h-full cursor-pointer text-muted-foreground border-r hover:bg-accent/30",
+                "flex items-center gap-2 px-3 h-full cursor-pointer text-muted-foreground border-r hover:bg-accent/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring",
                 isActive && "bg-background text-foreground",
             )}
         >
             <span className="text-sm">{label}</span>
-        </div>
+        </button>
     );
 };
 
@@ -46,7 +49,7 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
 
     return (
         <div className="h-full flex flex-col">
-            <nav className="h-[35px] flex items-center bg-sidebar border-b">
+            <nav role="tablist" className="h-[35px] flex items-center bg-sidebar border-b">
                 <Tab
                     label="Code"
                     isActive={activeView === "editor"}

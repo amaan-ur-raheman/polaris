@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 
 import { useProject } from "../hooks/use-projects";
 import { Id } from "@convex/_generated/dataModel";
-import { err } from "inngest/types";
 
 interface PreviewViewProps {
     projectId: Id<"projects">;
@@ -44,6 +43,7 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
                     className="h-full rounded-none"
                     disabled={isLoading}
                     onClick={restart}
+                    aria-label="Restart container"
                     title="Restart container"
                 >
                     <RefreshCwIcon className="size-3" />
@@ -54,8 +54,8 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
                         <div className="flex items-center gap-1.5">
                             <Loader2Icon className="size-3 animate-spin" />
                             {status === "booting"
-                                ? "Starting..."
-                                : "Installing..."}
+                                ? "Starting…"
+                                : "Installing…"}
                         </div>
                     )}
                     {previewUrl && (
@@ -70,6 +70,7 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
                     size={"sm"}
                     variant={"ghost"}
                     className="h-full rounded-none"
+                    aria-label="Toggle terminal"
                     title="Toggle terminal"
                     onClick={() => setShowTerminal((prev) => !prev)}
                 >
@@ -111,8 +112,8 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
                                     <Loader2Icon className="size-6 animate-spin" />
                                     <p className="text-sm font-medium">
                                         {status === "booting"
-                                            ? "Starting..."
-                                            : "Installing..."}
+                                            ? "Starting…"
+                                            : "Installing…"}
                                     </p>
                                 </div>
                             </div>
