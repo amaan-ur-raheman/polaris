@@ -44,7 +44,7 @@ export function createTitleAgent(groqApiKey: string) {
         name: "title-generator",
         system: TITLE_GENERATOR_SYSTEM_PROMPT,
         model: openai({
-            model: "llama-3.1-8b-instant",
+            model: "openai/gpt-oss-20b",
             apiKey: groqApiKey,
             baseUrl: "https://api.groq.com/openai/v1",
         }),
