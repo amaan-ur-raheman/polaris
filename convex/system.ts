@@ -1,17 +1,9 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-
-const validateInternalKey = (key: string) => {
-    const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
-    if (!internalKey) {
-        throw new Error("POLARIS_CONVEX_INTERNAL_KEY not configured");
-    }
-
-    if (key !== internalKey) {
-        throw new Error("Invalid internal key");
-    }
-};
+import { validateInternalKey } from "./system-helpers";
+import { buildFileSnapshot, collectDescendantIds, nameExists } from "./system-files";
+import { versionsToDelete } from "./system-versions";
 
 export const getConversationById = query({
     args: {
@@ -208,16 +200,14 @@ export const createFile = mutation({
     handler: async (ctx, args) => {
         validateInternalKey(args.internalKey);
 
-        const files = await ctx.db
+        const siblings = await ctx.db
             .query("files")
             .withIndex("by_project_parent", (q) =>
                 q.eq("projectId", args.projectId).eq("parentId", args.parentId),
             )
             .collect();
 
-        const existing = files.find((file) => file.name === args.name && file.type === "file");
-
-        if (existing) {
+        if (nameExists(args.name, "file", siblings)) {
             throw new Error("File already exists");
         }
 
@@ -297,16 +287,14 @@ export const createFolder = mutation({
     handler: async (ctx, args) => {
         validateInternalKey(args.internalKey);
 
-        const files = await ctx.db
+        const siblings = await ctx.db
             .query("files")
             .withIndex("by_project_parent", (q) =>
                 q.eq("projectId", args.projectId).eq("parentId", args.parentId),
             )
             .collect();
 
-        const existing = files.find((file) => file.name === args.name && file.type === "folder");
-
-        if (existing) {
+        if (nameExists(args.name, "folder", siblings)) {
             throw new Error("Folder already exists");
         }
 
@@ -336,7 +324,6 @@ export const renameFile = mutation({
             throw new Error("File not found");
         }
 
-        // Check if the file with the new name already exists in the same parent folder
         const siblings = await ctx.db
             .query("files")
             .withIndex("by_project_parent", (q) =>
@@ -344,14 +331,7 @@ export const renameFile = mutation({
             )
             .collect();
 
-        const existing = siblings.find(
-            (sibling) =>
-                sibling.name === args.newName &&
-                sibling.type === file.type &&
-                sibling._id !== args.fileId,
-        );
-
-        if (existing) {
+        if (nameExists(args.newName, file.type, siblings, args.fileId)) {
             throw new Error(`A ${file.type} with the name ${args.newName} already exists`);
         }
 
@@ -377,38 +357,29 @@ export const deleteFile = mutation({
             throw new Error("File not found");
         }
 
-        // Recursively delete file / folder and all descendants
-        const deleteRecursive = async (fileId: typeof args.fileId) => {
-            const item = await ctx.db.get(fileId);
+        // Collect all descendants using pure function
+        const allFiles = await ctx.db
+            .query("files")
+            .withIndex("by_project", (q) => q.eq("projectId", file.projectId))
+            .collect();
 
-            if (!item) {
-                return;
-            }
+        const descendantIds = file.type === "folder"
+            ? collectDescendantIds(args.fileId, allFiles)
+            : [];
 
-            // If its a folder delete all its children first
-            if (item.type === "folder") {
-                const children = await ctx.db
-                    .query("files")
-                    .withIndex("by_project_parent", (q) =>
-                        q.eq("projectId", item.projectId).eq("parentId", fileId),
-                    )
-                    .collect();
-
-                for (const child of children) {
-                    await deleteRecursive(child._id);
-                }
-            }
-
-            // Delete storage file if its exists
-            if (item.storageId) {
+        // Delete all descendants, then the file itself
+        for (const id of descendantIds) {
+            const item = await ctx.db.get(id);
+            if (item?.storageId) {
                 await ctx.storage.delete(item.storageId);
             }
+            await ctx.db.delete(id);
+        }
 
-            // Delete the file / folder itself
-            await ctx.db.delete(fileId);
-        };
-
-        await deleteRecursive(args.fileId);
+        if (file.storageId) {
+            await ctx.storage.delete(file.storageId);
+        }
+        await ctx.db.delete(args.fileId);
 
         return args.fileId;
     },
@@ -605,10 +576,6 @@ export const createProjectWithConversation = mutation({
     },
 });
 
-// === Version Management ===
-
-const MAX_VERSIONS = 10;
-
 export const getVersions = query({
     args: {
         internalKey: v.string(),
@@ -635,34 +602,12 @@ export const createVersion = mutation({
     handler: async (ctx, args) => {
         validateInternalKey(args.internalKey);
 
-        // Get all files for this project
         const files = await ctx.db
             .query("files")
             .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
             .collect();
 
-        // Build file paths by traversing parent chain
-        const filesMap = new Map(files.map((f) => [f._id, f]));
-
-        const getFilePath = (file: (typeof files)[0]): string => {
-            const parts: string[] = [file.name];
-            let parentId = file.parentId;
-            while (parentId) {
-                const parent = filesMap.get(parentId);
-                if (!parent) break;
-                parts.unshift(parent.name);
-                parentId = parent.parentId;
-            }
-            return parts.join("/");
-        };
-
-        const snapshot = files
-            .filter((f) => f.type === "file" && f.content !== undefined)
-            .map((f) => ({
-                path: getFilePath(f),
-                content: f.content || "",
-                type: "file" as const,
-            }));
+        const snapshot = buildFileSnapshot(files);
 
         const versionId = await ctx.db.insert("versions", {
             projectId: args.projectId,
@@ -679,11 +624,9 @@ export const createVersion = mutation({
             .order("asc")
             .collect();
 
-        if (allVersions.length > MAX_VERSIONS) {
-            const toDelete = allVersions.slice(0, allVersions.length - MAX_VERSIONS);
-            for (const v of toDelete) {
-                await ctx.db.delete(v._id);
-            }
+        const toDelete = versionsToDelete(allVersions);
+        for (const v of toDelete) {
+            await ctx.db.delete(v);
         }
 
         return versionId;
