@@ -2,19 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-
-// Sort: folders first, then files, alphabetically within each group
-const sortFiles = <T extends { type: "folder" | "file"; name: string }>(files: T[]): T[] => {
-    return files.sort((a, b) => {
-        if (a.type === "folder" && b.type === "file") {
-            return -1;
-        }
-        if (a.type === "file" && b.type === "folder") {
-            return 1;
-        }
-        return a.name.localeCompare(b.name);
-    });
-};
+import { useOptimisticFileMutation } from "./use-optimistic-file-mutation";
 
 export const useFile = (fileId: Id<"files"> | null) => {
     return useQuery(api.files.getFile, fileId ? { id: fileId } : "skip");
@@ -29,36 +17,21 @@ export const useFilePath = (fileId: Id<"files"> | null) => {
 };
 
 export const useCreateFile = () => {
-    return useMutation(api.files.createFile).withOptimisticUpdate((localStore, args) => {
-        const existingFiles = localStore.getQuery(api.files.getFolderContents, {
-            projectId: args.projectId,
-            parentId: args.parentId,
-        });
-
-        if (existingFiles !== undefined) {
-            // Convex invokes optimistic update callbacks outside render.
-            // eslint-disable-next-line react-hooks/purity
-            const now = Date.now();
-            const newFile = {
+    return useOptimisticFileMutation(api.files.createFile, (existing, args) => {
+        const now = Date.now();
+        return [
+            ...existing,
+            {
                 _id: crypto.randomUUID() as Id<"files">,
                 _creationTime: now,
                 projectId: args.projectId,
-                parentId: args.parentId,
                 name: args.name,
                 content: args.content,
                 type: "file" as const,
+                parentId: args.parentId,
                 updatedAt: now,
-            };
-
-            localStore.setQuery(
-                api.files.getFolderContents,
-                {
-                    projectId: args.projectId,
-                    parentId: args.parentId,
-                },
-                sortFiles([...existingFiles, newFile]),
-            );
-        }
+            },
+        ];
     });
 };
 
@@ -67,35 +40,20 @@ export const useUpdateFile = () => {
 };
 
 export const useCreateFolder = () => {
-    return useMutation(api.files.createFolder).withOptimisticUpdate((localStore, args) => {
-        const existingFiles = localStore.getQuery(api.files.getFolderContents, {
-            projectId: args.projectId,
-            parentId: args.parentId,
-        });
-
-        if (existingFiles !== undefined) {
-            // Convex invokes optimistic update callbacks outside render.
-            // eslint-disable-next-line react-hooks/purity
-            const now = Date.now();
-            const newFolder = {
+    return useOptimisticFileMutation(api.files.createFolder, (existing, args) => {
+        const now = Date.now();
+        return [
+            ...existing,
+            {
                 _id: crypto.randomUUID() as Id<"files">,
                 _creationTime: now,
                 projectId: args.projectId,
-                parentId: args.parentId,
                 name: args.name,
                 type: "folder" as const,
+                parentId: args.parentId,
                 updatedAt: now,
-            };
-
-            localStore.setQuery(
-                api.files.getFolderContents,
-                {
-                    projectId: args.projectId,
-                    parentId: args.parentId,
-                },
-                sortFiles([...existingFiles, newFolder]),
-            );
-        }
+            },
+        ];
     });
 };
 
@@ -106,27 +64,11 @@ export const useRenameFile = ({
     projectId: Id<"projects">;
     parentId?: Id<"files">;
 }) => {
-    return useMutation(api.files.renameFile).withOptimisticUpdate((localStore, args) => {
-        const existingFiles = localStore.getQuery(api.files.getFolderContents, {
-            projectId,
-            parentId,
-        });
-
-        if (existingFiles !== undefined) {
-            const updatedFiles = existingFiles.map((file) =>
-                file._id === args.id ? { ...file, name: args.newName } : file,
-            );
-
-            localStore.setQuery(
-                api.files.getFolderContents,
-                {
-                    projectId,
-                    parentId,
-                },
-                sortFiles(updatedFiles),
-            );
-        }
-    });
+    return useOptimisticFileMutation(api.files.renameFile, (existing, args) =>
+        existing.map((file) =>
+            file._id === (args as any).id ? { ...file, name: (args as any).newName } : file,
+        ),
+    );
 };
 
 export const useDeleteFile = ({
@@ -136,23 +78,9 @@ export const useDeleteFile = ({
     projectId: Id<"projects">;
     parentId?: Id<"files">;
 }) => {
-    return useMutation(api.files.deleteFile).withOptimisticUpdate((localStore, args) => {
-        const existingFiles = localStore.getQuery(api.files.getFolderContents, {
-            projectId,
-            parentId,
-        });
-
-        if (existingFiles !== undefined) {
-            localStore.setQuery(
-                api.files.getFolderContents,
-                {
-                    projectId,
-                    parentId,
-                },
-                existingFiles.filter((file) => file._id !== args.id),
-            );
-        }
-    });
+    return useOptimisticFileMutation(api.files.deleteFile, (existing, args) =>
+        existing.filter((file) => file._id !== (args as any).id),
+    );
 };
 
 export const useFolderContents = ({
