@@ -86,7 +86,7 @@ export function createCodingAgent(
         description: "An expert AI coding assistant",
         system: systemPrompt,
         model: openai({
-            model: "stepfun-ai/step-3.5-flash",
+            model: "nvidia/nemotron-3.5-lightning-30b-a3b",
             apiKey: nvidiaApiKey,
             baseUrl: "https://integrate.api.nvidia.com/v1",
         }),
