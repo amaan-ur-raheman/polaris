@@ -20,8 +20,9 @@ export function useOptimisticFileMutation<TArgs extends Record<string, any>>(
     cacheContext?: CacheContext,
 ) {
     return useMutation(mutation).withOptimisticUpdate((localStore, args) => {
-        const projectId = cacheContext?.projectId ?? (args as TArgs).projectId as Id<"projects">;
-        const parentId = cacheContext?.parentId ?? (args as TArgs).parentId as Id<"files"> | undefined;
+        const projectId = cacheContext?.projectId ?? ((args as TArgs).projectId as Id<"projects">);
+        const parentId =
+            cacheContext?.parentId ?? ((args as TArgs).parentId as Id<"files"> | undefined);
 
         const existingFiles = localStore.getQuery(api.files.getFolderContents, {
             projectId,
