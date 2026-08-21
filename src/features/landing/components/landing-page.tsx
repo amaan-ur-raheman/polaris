@@ -4,7 +4,8 @@ import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll } from "motion/react";
-import { SignUpButton } from "@clerk/nextjs";
+import { useAuth, SignUpButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -17,6 +18,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SpotlightCard } from "./spotlight-card";
+import { AuthRedirect } from "@/features/auth/components/auth-redirect";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -49,6 +51,7 @@ function LogoMark({ className }: { className?: string }) {
 
 function Navigation() {
   const [scrolled, setScrolled] = useState(false);
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -90,19 +93,30 @@ function Navigation() {
         </div>
 
         <div className="flex items-center gap-2">
-          <SignUpButton mode="modal">
-            <Button
-              variant="ghost"
-              className="text-muted-foreground hover:text-foreground"
+          {isSignedIn ? (
+            <Link
+              href="/projects"
+              className="inline-flex items-center justify-center bg-foreground text-background hover:bg-foreground/90 h-9 px-4 text-sm font-medium rounded-md transition-colors"
             >
-              Sign in
-            </Button>
-          </SignUpButton>
-          <SignUpButton mode="modal">
-            <Button className="bg-foreground text-background hover:bg-foreground/90 h-9 px-4 text-sm font-medium">
-              Get started
-            </Button>
-          </SignUpButton>
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <SignUpButton mode="modal">
+                <Button
+                  variant="ghost"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Sign in
+                </Button>
+              </SignUpButton>
+              <SignUpButton mode="modal">
+                <Button className="bg-foreground text-background hover:bg-foreground/90 h-9 px-4 text-sm font-medium">
+                  Get started
+                </Button>
+              </SignUpButton>
+            </>
+          )}
         </div>
       </div>
     </motion.nav>
@@ -290,6 +304,7 @@ function HeroSection() {
     target: ref,
     offset: ["start start", "end start"],
   });
+  const { isSignedIn } = useAuth();
 
   return (
     <section
@@ -348,15 +363,29 @@ function HeroSection() {
             transition={{ duration: 0.6, delay: 0.5, ease: EASE }}
             className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3"
           >
-            <SignUpButton mode="modal">
+            {isSignedIn ? (
               <Button
                 size="lg"
-                className="bg-foreground text-background hover:bg-foreground/90 h-12 px-7 font-medium group active:scale-[0.98] transition-transform"
+                variant="outline"
+                asChild
+                className="border-border text-foreground hover:bg-accent hover:text-foreground h-12 px-7 font-medium"
               >
-                Start building free
-                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                <Link href="/projects">
+                  Dashboard
+                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
               </Button>
-            </SignUpButton>
+            ) : (
+              <SignUpButton mode="modal">
+                <Button
+                  size="lg"
+                  className="bg-foreground text-background hover:bg-foreground/90 h-12 px-7 font-medium group active:scale-[0.98] transition-transform"
+                >
+                  Start building free
+                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                </Button>
+              </SignUpButton>
+            )}
             <Button
               variant="outline"
               size="lg"
@@ -744,6 +773,7 @@ const PLANS = [
 ];
 
 function PricingSection() {
+  const { isSignedIn } = useAuth();
   return (
     <section id="pricing" className="relative py-28 md:py-36 px-6">
       <div className="max-w-6xl mx-auto">
@@ -804,7 +834,7 @@ function PricingSection() {
                 ))}
               </ul>
 
-              <SignUpButton mode="modal">
+              {isSignedIn ? (
                 <Button
                   className={cn(
                     "mt-8 w-full active:scale-[0.98] transition-transform",
@@ -812,10 +842,24 @@ function PricingSection() {
                       ? "bg-foreground text-background hover:bg-foreground/90"
                       : "bg-transparent border border-border text-foreground hover:bg-accent"
                   )}
+                  asChild
                 >
-                  {plan.cta}
+                  <Link href="/projects">Dashboard</Link>
                 </Button>
-              </SignUpButton>
+              ) : (
+                <SignUpButton mode="modal">
+                  <Button
+                    className={cn(
+                      "mt-8 w-full active:scale-[0.98] transition-transform",
+                      plan.popular
+                        ? "bg-foreground text-background hover:bg-foreground/90"
+                        : "bg-transparent border border-border text-foreground hover:bg-accent"
+                    )}
+                  >
+                    {plan.cta}
+                  </Button>
+                </SignUpButton>
+              )}
             </motion.div>
           ))}
         </div>
@@ -827,6 +871,8 @@ function PricingSection() {
 // ---------------------------------------------------------------------- CTA
 
 function CTASection() {
+  const { isSignedIn } = useAuth();
+
   return (
     <section className="relative py-32 md:py-44 px-6 overflow-hidden border-t border-border">
       <div
@@ -845,15 +891,29 @@ function CTASection() {
           to build.
         </p>
         <div className="mt-10">
-          <SignUpButton mode="modal">
+          {isSignedIn ? (
             <Button
               size="lg"
-              className="bg-foreground text-background hover:bg-foreground/90 h-14 px-9 text-base font-medium group active:scale-[0.98] transition-transform"
+              variant="outline"
+              asChild
+              className="border-border text-foreground hover:bg-accent hover:text-foreground h-14 px-9 text-base font-medium"
             >
-              Start building free
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              <Link href="/projects">
+                Dashboard
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </Button>
-          </SignUpButton>
+          ) : (
+            <SignUpButton mode="modal">
+              <Button
+                size="lg"
+                className="bg-foreground text-background hover:bg-foreground/90 h-14 px-9 text-base font-medium group active:scale-[0.98] transition-transform"
+              >
+                Start building free
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </SignUpButton>
+          )}
         </div>
       </motion.div>
     </section>
@@ -863,6 +923,8 @@ function CTASection() {
 // ------------------------------------------------------------------- Footer
 
 function Footer() {
+  const { isSignedIn } = useAuth();
+
   return (
     <footer className="border-t border-border py-10 px-6">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
@@ -877,11 +939,20 @@ function Footer() {
           >
             Open app
           </Link>
-          <SignUpButton mode="modal">
-            <button className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-              Create account
-            </button>
-          </SignUpButton>
+          {isSignedIn ? (
+            <Link
+              href="/projects"
+              className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <SignUpButton mode="modal">
+              <button className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                Create account
+              </button>
+            </SignUpButton>
+          )}
         </div>
 
         <p className="font-mono text-xs text-muted-foreground">
@@ -896,7 +967,8 @@ function Footer() {
 
 export function LandingPage() {
   return (
-    <div className="dark min-h-screen bg-background text-foreground font-sans antialiased select-text overflow-x-clip">
+    <AuthRedirect>
+      <div className="dark min-h-screen bg-background text-foreground font-sans antialiased select-text overflow-x-clip">
       {/* Film grain */}
       <div
         aria-hidden
@@ -914,6 +986,7 @@ export function LandingPage() {
         <CTASection />
       </main>
       <Footer />
-    </div>
+      </div>
+    </AuthRedirect>
   );
 }
