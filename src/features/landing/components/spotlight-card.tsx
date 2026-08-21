@@ -34,15 +34,15 @@ export function SpotlightCard({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "relative flex flex-col overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800",
+        "group relative flex flex-col overflow-hidden rounded-xl bg-background border border-border transition-colors hover:border-white/20",
         className
       )}
     >
       <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        className="pointer-events-none absolute -inset-px transition duration-300"
         style={{
-          opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(59,130,246,.1), transparent 40%)`,
+          background: `radial-gradient(480px circle at ${position.x}px ${position.y}px, var(--ring), transparent 40%)`,
+          opacity: opacity * 0.08,
         }}
       />
       {children}

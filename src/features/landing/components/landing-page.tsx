@@ -2,98 +2,105 @@
 
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "motion/react";
+import Image from "next/image";
+import { motion, useScroll } from "motion/react";
 import { SignUpButton } from "@clerk/nextjs";
 import {
-  Sparkles,
-  Code2,
-  Terminal,
-  GitBranch,
-  Eye,
-  Zap,
   ArrowRight,
+  ArrowUpRight,
   Check,
-  ChevronRight,
-  Play,
+  Sparkles,
 } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import dynamic from "next/dynamic";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { BackgroundBeams } from "./background-beams";
 import { SpotlightCard } from "./spotlight-card";
-import { TextGradient } from "./text-gradient";
 
-// Register GSAP plugins
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Lazy load Three.js scene
-const HeroScene = dynamic(
-  () => import("./hero-scene").then((mod) => ({ default: mod.HeroScene })),
-  { ssr: false }
-);
+const EASE = [0.16, 1, 0.3, 1] as const;
 
-// Navigation
+const reveal = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-80px" },
+  transition: { duration: 0.7, ease: EASE },
+};
+
+const NOISE =
+  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+function LogoMark({ className }: { className?: string }) {
+  return (
+    <div className={cn("flex items-center gap-2.5", className)}>
+      <Image src="/logo.svg" alt="Polaris logo" width={28} height={28} priority />
+      <span className="text-lg font-semibold tracking-tight text-foreground">
+        Polaris
+      </span>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------- Navigation
+
 function Navigation() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <motion.nav
-      initial={{ y: -20, opacity: 0 }}
+      initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.6, ease: EASE }}
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        "fixed top-0 inset-x-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500",
         scrolled
-          ? "bg-zinc-950/80 backdrop-blur-xl border-b border-white/5"
-          : "bg-transparent"
+          ? "bg-background/80 backdrop-blur-xl border-b border-border"
+          : "bg-transparent border-b border-transparent"
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-lg font-semibold text-white tracking-tight">
-            Polaris
-          </span>
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/" aria-label="Polaris home">
+          <LogoMark />
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          {["Features", "How it works", "Pricing"].map((item) => (
+          {[
+            ["Features", "#features"],
+            ["Process", "#process"],
+            ["Pricing", "#pricing"],
+          ].map(([label, href]) => (
             <Link
-              key={item}
-              href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
+              key={label}
+              href={href}
+              className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
             >
-              {item}
+              {label}
             </Link>
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <SignUpButton mode="modal">
             <Button
               variant="ghost"
-              className="text-zinc-400 hover:text-white hover:bg-white/5"
+              className="text-muted-foreground hover:text-foreground"
             >
               Sign in
             </Button>
           </SignUpButton>
           <SignUpButton mode="modal">
-            <Button className="bg-white text-zinc-950 hover:bg-zinc-200 px-4 h-9 text-sm font-medium">
+            <Button className="bg-foreground text-background hover:bg-foreground/90 h-9 px-4 text-sm font-medium">
               Get started
-              <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </SignUpButton>
         </div>
@@ -102,220 +109,388 @@ function Navigation() {
   );
 }
 
-// Hero Section
+// --------------------------------------------------------------- Hero window
+
+const CODE = [
+  [
+    ["import", "text-ring"],
+    [" { Pricing } ", "text-white/80"],
+    ["from", "text-ring"],
+    [" \"@/components/pricing\"", "text-emerald-400"],
+    [";", "text-white/60"],
+  ],
+  [
+    ["export default function", "text-ring"],
+    [" Page", "text-yellow-200/90"],
+    ["() {", "text-white/60"],
+  ],
+  [
+    ["  return", "text-ring"],
+    [" (", "text-white/60"],
+  ],
+  [
+    ["    <", "text-white/60"],
+    ["div", "text-sky-300"],
+    [" className", "text-yellow-200/90"],
+    ["=", "text-white/60"],
+    ["\"mx-auto py-24\"", "text-emerald-400"],
+    [">", "text-white/60"],
+  ],
+  [
+    ["      <", "text-white/60"],
+    ["Pricing", "text-sky-300"],
+    [" tiers", "text-yellow-200/90"],
+    ["=", "text-white/60"],
+    [" {[", "text-white/60"],
+    ["\"free\"", "text-emerald-400"],
+    [", ", "text-white/60"],
+    ["\"pro\"", "text-emerald-400"],
+    [", ", "text-white/60"],
+    ["\"team\"", "text-emerald-400"],
+    ["]} ", "text-white/60"],
+    ["/>", "text-white/60"],
+  ],
+  [
+    ["    </", "text-white/60"],
+    ["div", "text-sky-300"],
+    [">", "text-white/60"],
+  ],
+  [["  );", "text-white/60"]],
+  [["}", "text-white/60"]],
+];
+
+function ProductWindow() {
+  return (
+    <div className="relative" style={{ perspective: 1400 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 80, rotateX: 18 }}
+        whileInView={{ opacity: 1, y: 0, rotateX: 6 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 1, ease: EASE }}
+        style={{ transformStyle: "preserve-3d" }}
+        className="relative rounded-xl border border-border bg-card shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)] overflow-hidden"
+      >
+        {/* Title bar */}
+        <div className="flex items-center gap-3 px-4 h-11 border-b border-border bg-background/60">
+          <div className="flex gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
+            <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
+            <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
+          </div>
+          <div className="flex-1 flex justify-center gap-2">
+            <span className="font-mono text-[10px] px-2 py-1 rounded-md bg-accent text-foreground/80 border border-border">
+              page.tsx
+            </span>
+            <span className="font-mono text-[10px] px-2 py-1 rounded-md text-muted-foreground border border-transparent">
+              layout.tsx
+            </span>
+          </div>
+          <span className="font-mono text-[10px] text-muted-foreground border border-border rounded-full px-2.5 py-1">
+            localhost:3000
+          </span>
+        </div>
+
+        {/* Body */}
+        <div className="grid md:grid-cols-[220px_1.1fr_1fr] divide-y md:divide-y-0 md:divide-x divide-border">
+          {/* Chat */}
+          <div className="p-4 space-y-3">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              Chat
+            </p>
+            <div className="rounded-lg bg-accent border border-border p-2.5 text-xs text-foreground/90">
+              Add a pricing section with three tiers.
+            </div>
+            <div className="rounded-lg border border-border p-2.5 space-y-2">
+              <div className="flex items-center gap-1.5 text-ring">
+                <Sparkles className="w-3 h-3" />
+                <span className="font-mono text-[10px] uppercase tracking-widest">
+                  Polaris
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                <div className="h-1.5 w-full rounded-full bg-white/[0.07]" />
+                <div className="h-1.5 w-5/6 rounded-full bg-white/[0.07]" />
+                <div className="h-1.5 w-2/3 rounded-full bg-white/[0.07]" />
+              </div>
+              <div className="font-mono text-[10px] text-ring/90 pt-1">
+                + pricing.tsx · + tiers.ts · ~ page.tsx
+              </div>
+            </div>
+          </div>
+
+          {/* Editor */}
+          <div className="p-4 overflow-hidden">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-3">
+              Editor
+            </p>
+            <pre className="font-mono text-[11px] leading-5 overflow-hidden">
+              {CODE.map((tokens, i) => (
+                <div key={i} className="flex gap-4">
+                  <span className="w-4 text-right text-white/15 select-none">
+                    {i + 1}
+                  </span>
+                  <code className="whitespace-pre">
+                    {tokens.map(([text, cls], j) => (
+                      <span key={j} className={cls}>
+                        {text}
+                      </span>
+                    ))}
+                  </code>
+                </div>
+              ))}
+            </pre>
+          </div>
+
+          {/* Preview */}
+          <div className="p-4">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-3">
+              Preview
+            </p>
+            <div className="rounded-lg border border-border bg-white/[0.02] p-3 space-y-2.5">
+              <div className="h-2 w-1/3 rounded-full bg-white/10" />
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "rounded-md border p-2.5 space-y-1.5",
+                    i === 1 ? "border-ring/50 bg-ring/[0.06]" : "border-border"
+                  )}
+                >
+                  <div className="h-1.5 w-8 rounded-full bg-white/15" />
+                  <div className="h-3 w-14 rounded-sm bg-white/25" />
+                  <div className="h-1 w-full rounded-full bg-white/[0.08]" />
+                  <div className="h-1 w-2/3 rounded-full bg-white/[0.08]" />
+                  <div
+                    className={cn(
+                      "h-4 w-16 rounded-md mt-1",
+                      i === 1 ? "bg-ring/70" : "bg-white/10"
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Status bar */}
+        <div className="flex items-center justify-between px-4 h-7 border-t border-border bg-background/60 font-mono text-[10px] text-muted-foreground">
+          <span>* WebContainer — ready</span>
+          <span>main* ↑2</span>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// --------------------------------------------------------------------- Hero
+
 function HeroSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: ref,
     offset: ["start start", "end start"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
-  const y = useTransform(scrollYProgress, [0, 0.5], [0, 80]);
-
   return (
     <section
-      ref={containerRef}
-      className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden"
+      ref={ref}
+      className="relative overflow-hidden pt-40 pb-24 px-6"
     >
-      {/* Three.js Background */}
-      <HeroScene />
+      {/* Grid backdrop */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 [background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black_30%,transparent_75%)]"
+      />
+      {/* Accent glow */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 -z-10 h-[480px] bg-[radial-gradient(ellipse_55%_60%_at_50%_-10%,var(--ring),transparent_65%)] opacity-[0.14]"
+      />
 
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/60 via-transparent to-zinc-950 z-10" />
-      <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/40 via-transparent to-zinc-950/40 z-10" />
-
-      {/* Content */}
-      <motion.div
-        style={{ opacity, scale, y }}
-        className="relative z-20 max-w-5xl mx-auto px-6 text-center"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-8"
-        >
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            Now in public beta
-          </span>
-        </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight leading-[0.95]"
-        >
-          Build with
-          <br />
-          <TextGradient>intelligence</TextGradient>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
-          Describe what you want to build. Watch AI create complete applications
-          in your browser with live preview and instant deployment.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <SignUpButton mode="modal">
-            <Button
-              size="lg"
-              className="bg-white text-zinc-950 hover:bg-zinc-200 px-6 h-12 text-sm font-medium group"
-            >
-              Start building free
-              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </SignUpButton>
-          <Button
-            variant="outline"
-            size="lg"
-            className="border-zinc-800 text-zinc-300 hover:bg-zinc-800/50 px-6 h-12 text-sm"
-          >
-            <Play className="w-4 h-4 mr-2" />
-            Watch demo
-          </Button>
-        </motion.div>
-      </motion.div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 0.8 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="w-5 h-8 rounded-full border border-zinc-700 flex items-start justify-center p-1"
-        >
+      <div className="max-w-6xl mx-auto">
+        <div className="max-w-3xl mx-auto text-center">
           <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="w-1 h-2 rounded-full bg-zinc-500"
-          />
-        </motion.div>
-      </motion.div>
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
+            className="mb-8"
+          >
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-ring/30 bg-ring/[0.06] font-mono text-xs tracking-[0.14em] uppercase text-ring">
+              <span className="w-1.5 h-1.5 rounded-full bg-ring animate-pulse" />
+              Public beta
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
+            className="text-5xl md:text-7xl lg:text-[5.5rem] font-semibold leading-[0.95] tracking-[-0.04em] text-balance"
+          >
+            Describe it.
+            <br />
+            <span className="text-muted-foreground">Watch it run.</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
+            className="mt-7 text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto text-pretty"
+          >
+            Polaris turns plain English into complete, running web apps —
+            editor, terminal, and live preview in one browser tab.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5, ease: EASE }}
+            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3"
+          >
+            <SignUpButton mode="modal">
+              <Button
+                size="lg"
+                className="bg-foreground text-background hover:bg-foreground/90 h-12 px-7 font-medium group active:scale-[0.98] transition-transform"
+              >
+                Start building free
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
+              </Button>
+            </SignUpButton>
+            <Button
+              variant="outline"
+              size="lg"
+              asChild
+              className="border-border text-foreground hover:bg-accent hover:text-foreground h-12 px-7 font-mono text-sm"
+            >
+              <Link href="#process">See how it works</Link>
+            </Button>
+          </motion.div>
+        </div>
+
+        <div className="mt-20">
+          <ProductWindow />
+        </div>
+      </div>
     </section>
   );
 }
 
-// Features Section
-function FeaturesSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
+// ------------------------------------------------------------------- Marquee
 
-  useEffect(() => {
-    if (!sectionRef.current) return;
+const MARQUEE_ITEMS = [
+  "AI code generation",
+  "WebContainer runtime",
+  "CodeMirror 6 editor",
+  "xterm.js terminal",
+  "GitHub import / export",
+  "One-click deploy",
+];
 
-    const ctx = gsap.context(() => {
-      gsap.from(".feature-card", {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-        },
-        y: 40,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power3.out",
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  const features = [
-    {
-      icon: Sparkles,
-      title: "AI Code Generation",
-      description:
-        "Describe features in plain English and watch AI create complete, working code with context awareness.",
-    },
-    {
-      icon: Code2,
-      title: "Professional Editor",
-      description:
-        "CodeMirror 6 with syntax highlighting for 20+ languages, intelligent completions, and error detection.",
-    },
-    {
-      icon: Terminal,
-      title: "Integrated Terminal",
-      description:
-        "Full xterm.js terminal with command history, running npm scripts and build commands directly.",
-    },
-    {
-      icon: Eye,
-      title: "Live Preview",
-      description:
-        "WebContainer-powered in-browser Node.js runtime with hot module reloading and instant feedback.",
-    },
-    {
-      icon: GitBranch,
-      title: "GitHub Integration",
-      description:
-        "Import existing projects from GitHub or push your creations back. Full version control workflow.",
-    },
-    {
-      icon: Zap,
-      title: "Instant Deploy",
-      description:
-        "Deploy to Vercel with one click. Share your creations with the world in seconds.",
-    },
-  ];
+function Marquee() {
+  const row = (hidden: boolean) => (
+    <div
+      aria-hidden={hidden}
+      className="flex shrink-0 items-center gap-10 pr-10"
+    >
+      {MARQUEE_ITEMS.map((item) => (
+        <span key={item} className="flex items-center gap-10">
+          <span className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground whitespace-nowrap">
+            {item}
+          </span>
+          <span className="text-ring text-[10px]">✦</span>
+        </span>
+      ))}
+    </div>
+  );
 
   return (
-    <section
-      ref={sectionRef}
-      id="features"
-      className="relative py-32 px-6 bg-zinc-950"
-    >
-      <BackgroundBeams />
+    <div className="border-y border-border py-4 overflow-hidden">
+      <div className="flex w-max animate-marquee">
+        {row(false)}
+        {row(true)}
+      </div>
+    </div>
+  );
+}
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-            Everything you need
+// ----------------------------------------------------------------- Features
+
+const FEATURES = [
+  {
+    title: "AI code generation",
+    description:
+      "Describe features in plain English. The agent writes the files, wires the logic, and edits its own work until it runs.",
+  },
+  {
+    title: "Professional editor",
+    description:
+      "CodeMirror 6 with syntax highlighting for 20+ languages, intelligent completions, and inline error detection.",
+  },
+  {
+    title: "Integrated terminal",
+    description:
+      "A full xterm.js terminal with command history. Run npm scripts and build commands without leaving the tab.",
+  },
+  {
+    title: "Live preview",
+    description:
+      "WebContainer runs Node.js in your browser. Hot module reloading gives instant feedback on every change.",
+  },
+  {
+    title: "GitHub integration",
+    description:
+      "Import existing repositories or push your creations back. Your normal version-control workflow, intact.",
+  },
+  {
+    title: "Instant deploy",
+    description:
+      "Ship to Vercel with one click and share a live URL in seconds — not minutes.",
+  },
+];
+
+function FeaturesSection() {
+  return (
+    <section id="features" className="relative py-28 md:py-36 px-6">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1.5fr] gap-12 lg:gap-20">
+        <motion.div {...reveal} className="lg:sticky lg:top-32 self-start">
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-ring mb-5">
+            Capabilities
+          </p>
+          <h2 className="text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-[1.05] text-balance">
+            Everything a full build needs.
           </h2>
-          <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
-            A complete development environment that runs in your browser. No
-            setup, no configuration, just code.
+          <p className="mt-5 text-muted-foreground leading-relaxed max-w-sm">
+            A complete development environment in the browser. No setup, no
+            configuration — just a prompt and a running app.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, i) => (
-            <SpotlightCard key={feature.title} className="feature-card p-6">
-              <div className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-4">
-                <feature.icon className="w-5 h-5 text-zinc-300" />
+        <div>
+          {FEATURES.map((feature, i) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.5, delay: i * 0.05, ease: EASE }}
+              className="group grid grid-cols-[3rem_1fr] gap-4 md:gap-6 border-t border-border last:border-b py-7 md:py-8 hover:bg-white/[0.02] transition-colors"
+            >
+              <span className="font-mono text-sm text-muted-foreground group-hover:text-ring transition-colors pt-1">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <div className="flex items-center justify-between gap-4">
+                  <h3 className="text-lg md:text-xl font-medium tracking-tight">
+                    {feature.title}
+                  </h3>
+                  <ArrowUpRight className="w-5 h-5 text-muted-foreground opacity-0 -translate-x-1 translate-y-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-[opacity,transform]" />
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed max-w-lg">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                {feature.title}
-              </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
-                {feature.description}
-              </p>
-            </SpotlightCard>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -323,7 +498,36 @@ function FeaturesSection() {
   );
 }
 
-// How It Works Section
+// -------------------------------------------------------------- How it works
+
+const STEPS = [
+  {
+    step: "01",
+    title: "Describe",
+    description: "Tell the AI what you want to build in plain English.",
+  },
+  {
+    step: "02",
+    title: "Watch",
+    description: "See the agent create every file, component, and route.",
+  },
+  {
+    step: "03",
+    title: "Preview",
+    description: "Your app boots instantly in the browser with hot reload.",
+  },
+  {
+    step: "04",
+    title: "Iterate",
+    description: "Chat to refine, add features, or fix issues as it runs.",
+  },
+  {
+    step: "05",
+    title: "Ship",
+    description: "Deploy or export to GitHub when it's ready.",
+  },
+];
+
 function HowItWorksSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -347,174 +551,147 @@ function HowItWorksSection() {
           invalidateOnRefresh: true,
         },
       });
+
+      gsap.fromTo(
+        ".process-progress",
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: () => `+=${distance}`,
+            scrub: 1,
+          },
+        }
+      );
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
-  const steps = [
-    {
-      step: "01",
-      title: "Describe",
-      description: "Tell the AI what you want to build in plain English.",
-    },
-    {
-      step: "02",
-      title: "Watch",
-      description: "See AI create all the files, components, and logic.",
-    },
-    {
-      step: "03",
-      title: "Preview",
-      description: "Your app runs instantly in the browser with hot reload.",
-    },
-    {
-      step: "04",
-      title: "Iterate",
-      description: "Chat with AI to refine, add features, or fix issues.",
-    },
-    {
-      step: "05",
-      title: "Ship",
-      description: "Deploy or export to GitHub when you're ready.",
-    },
-  ];
-
   return (
     <section
       ref={containerRef}
-      id="how-it-works"
-      className="relative h-[100dvh] overflow-hidden bg-zinc-900"
+      id="process"
+      className="relative h-[100dvh] overflow-hidden bg-card"
     >
-      <div ref={trackRef} className="flex h-full items-center px-8 gap-20">
-        {/* Section intro */}
-        <div className="w-[50vw] shrink-0 flex items-center">
+      <div ref={trackRef} className="flex h-full items-center px-8 gap-16 md:gap-24">
+        <div className="w-[70vw] md:w-[42vw] shrink-0 flex items-center">
           <div>
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
-              From idea to app
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-ring mb-5">
+              Process
+            </p>
+            <h2 className="text-4xl md:text-6xl font-semibold tracking-[-0.03em] leading-[1.02] text-balance">
+              Idea to app in five moves.
             </h2>
-            <p className="text-xl text-zinc-400 max-w-md">
-              Five simple steps to turn your vision into reality.
+            <p className="mt-5 text-lg text-muted-foreground max-w-md">
+              Keep scrolling — the whole workflow fits on one screen.
             </p>
           </div>
         </div>
 
-        {/* Steps */}
-        {steps.map((step) => (
+        {STEPS.map((step) => (
           <div
             key={step.step}
-            className="w-[35vw] shrink-0 flex flex-col justify-center"
+            className="w-[78vw] md:w-[32vw] shrink-0 flex flex-col justify-center"
           >
-            <span className="text-8xl font-bold text-zinc-800/50 mb-4">
+            <span
+              className="block text-8xl md:text-[10rem] font-semibold leading-none mb-6 text-transparent select-none"
+              style={{ WebkitTextStroke: "1px rgba(255,255,255,0.16)" }}
+            >
               {step.step}
             </span>
-            <h3 className="text-3xl font-bold text-white mb-3">{step.title}</h3>
-            <p className="text-lg text-zinc-400 max-w-sm">
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground mb-3">
+              Step {step.step}
+            </p>
+            <h3 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
+              {step.title}
+            </h3>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-sm">
               {step.description}
             </p>
           </div>
         ))}
       </div>
+
+      {/* Progress hairline */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-48 h-px bg-border overflow-hidden">
+        <div className="process-progress h-full w-full bg-ring origin-left" />
+      </div>
     </section>
   );
 }
 
-// Bento Grid Section
-function BentoSection() {
-  const items = [
-    {
-      title: "AI Code Generation",
-      description:
-        "Describe features in plain English and watch AI create complete code.",
-      icon: Sparkles,
-      colSpan: "md:col-span-2",
-      gradient: "from-blue-500/20 to-cyan-500/10",
-    },
-    {
-      title: "Live Preview",
-      description: "WebContainer-powered runtime with hot module reloading.",
-      icon: Eye,
-      colSpan: "md:col-span-1",
-      rowSpan: "md:row-span-2",
-      gradient: "from-purple-500/20 to-pink-500/10",
-    },
-    {
-      title: "Integrated Terminal",
-      description: "Full xterm.js terminal with command history.",
-      icon: Terminal,
-      colSpan: "md:col-span-1",
-      gradient: "from-emerald-500/20 to-teal-500/10",
-    },
-    {
-      title: "GitHub Integration",
-      description: "Import and export projects with full version control.",
-      icon: GitBranch,
-      colSpan: "md:col-span-1",
-      gradient: "from-orange-500/20 to-amber-500/10",
-    },
-    {
-      title: "Instant Deploy",
-      description: "Deploy to Vercel with one click. Share in seconds.",
-      icon: Zap,
-      colSpan: "md:col-span-2",
-      gradient: "from-cyan-500/20 to-blue-500/10",
-    },
-  ];
+// ----------------------------------------------------------------- Under the hood
 
+const STACK = [
+  {
+    tag: "EDIT",
+    title: "CodeMirror 6",
+    description: "A professional-grade editor core with 20+ language modes.",
+    span: "md:col-span-1",
+  },
+  {
+    tag: "RUN",
+    title: "WebContainer",
+    description:
+      "Node.js executed entirely in your browser. The dev server is a tab, not a process.",
+    span: "md:col-span-2",
+  },
+  {
+    tag: "EXEC",
+    title: "xterm.js",
+    description: "A real terminal with command history and streaming output.",
+    span: "md:col-span-1",
+  },
+  {
+    tag: "AGENT",
+    title: "Inngest Agent Kit",
+    description:
+      "Multi-model agent tooling that plans, writes, and verifies its own changes.",
+    span: "md:col-span-1",
+  },
+  {
+    tag: "DATA",
+    title: "Convex",
+    description:
+      "Realtime database with optimistic updates — files sync as you type.",
+    span: "md:col-span-2",
+  },
+];
+
+function StackSection() {
   return (
-    <section className="relative py-32 px-6 bg-zinc-950">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-            Built for developers
-          </h2>
-          <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
-            Every tool you need, integrated seamlessly.
-          </p>
+    <section className="relative py-28 md:py-36 px-6 bg-card border-y border-border">
+      <div className="max-w-6xl mx-auto">
+        <motion.div {...reveal} className="mb-14 flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-ring mb-5">
+              Under the hood
+            </p>
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-[1.05] text-balance">
+              Proven tools, composed into one instrument.
+            </h2>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {items.map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.5,
-                delay: i * 0.08,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className={cn(
-                "relative p-6 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden group hover:border-zinc-700 transition-colors",
-                item.colSpan,
-                item.rowSpan
-              )}
-            >
-              <div
-                className={cn(
-                  "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                  item.gradient
-                )}
-              />
-              <div className="relative">
-                <div className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-4">
-                  <item.icon className="w-5 h-5 text-zinc-300" />
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
+          {STACK.map((item) => (
+            <SpotlightCard key={item.title} className={item.span}>
+              <div className="p-6 md:p-7 h-full flex flex-col">
+                <p className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-6">
+                  {item.tag}
+                </p>
+                <h3 className="text-lg font-medium tracking-tight mb-2">
                   {item.title}
                 </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {item.description}
                 </p>
               </div>
-            </motion.div>
+            </SpotlightCard>
           ))}
         </div>
       </div>
@@ -522,116 +699,106 @@ function BentoSection() {
   );
 }
 
-// Pricing Section
-function PricingSection() {
-  const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      description: "Perfect for trying out Polaris.",
-      features: [
-        "3 projects",
-        "AI code generation",
-        "Live preview",
-        "1 GB storage",
-      ],
-      cta: "Get started",
-      popular: false,
-    },
-    {
-      name: "Pro",
-      price: "$20",
-      description: "For serious developers.",
-      features: [
-        "Unlimited projects",
-        "All AI models",
-        "GitHub export",
-        "10 GB storage",
-        "Priority support",
-      ],
-      cta: "Start free trial",
-      popular: true,
-    },
-    {
-      name: "Team",
-      price: "$50",
-      description: "For collaborative teams.",
-      features: [
-        "Everything in Pro",
-        "Real-time collaboration",
-        "Team management",
-        "100 GB storage",
-        "Custom domains",
-      ],
-      cta: "Contact sales",
-      popular: false,
-    },
-  ];
+// ------------------------------------------------------------------ Pricing
 
+const PLANS = [
+  {
+    name: "Free",
+    price: "$0",
+    period: "",
+    description: "For trying things out.",
+    features: ["3 projects", "AI code generation", "Live preview", "1 GB storage"],
+    cta: "Get started",
+    popular: false,
+  },
+  {
+    name: "Pro",
+    price: "$20",
+    period: "/mo",
+    description: "For serious building.",
+    features: [
+      "Unlimited projects",
+      "All AI models",
+      "GitHub export",
+      "10 GB storage",
+      "Priority support",
+    ],
+    cta: "Start free trial",
+    popular: true,
+  },
+  {
+    name: "Team",
+    price: "$50",
+    period: "/mo",
+    description: "For collaborative teams.",
+    features: [
+      "Everything in Pro",
+      "Real-time collaboration",
+      "Team management",
+      "100 GB storage",
+      "Custom domains",
+    ],
+    cta: "Contact sales",
+    popular: false,
+  },
+];
+
+function PricingSection() {
   return (
-    <section id="pricing" className="relative py-32 px-6 bg-zinc-900">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-            Simple pricing
-          </h2>
-          <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
-            Start free, upgrade when you need more.
+    <section id="pricing" className="relative py-28 md:py-36 px-6">
+      <div className="max-w-6xl mx-auto">
+        <motion.div {...reveal} className="text-center mb-14 max-w-2xl mx-auto">
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-ring mb-5">
+            Pricing
           </p>
+          <h2 className="text-4xl md:text-5xl font-semibold tracking-[-0.03em] leading-[1.05] text-balance">
+            Start free. Scale when you do.
+          </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {plans.map((plan, i) => (
+        <div className="grid md:grid-cols-3 gap-4 max-w-5xl mx-auto items-stretch">
+          {PLANS.map((plan) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.5,
-                delay: i * 0.1,
-                ease: [0.16, 1, 0.3, 1],
-              }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.6, ease: EASE }}
               className={cn(
-                "relative p-8 rounded-2xl border transition-colors",
+                "relative flex flex-col rounded-xl border bg-card p-8",
                 plan.popular
-                  ? "bg-zinc-800 border-blue-500/50"
-                  : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
+                  ? "border-ring/50 shadow-[0_0_80px_-24px_var(--ring)]"
+                  : "border-border hover:border-white/20 transition-colors"
               )}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-blue-500 text-xs font-medium text-white">
-                  Most popular
-                </div>
+                <p className="absolute -top-3 left-8 font-mono text-[10px] uppercase tracking-[0.2em] text-ring bg-card border border-ring/40 rounded-full px-3 py-1">
+                  Recommended
+                </p>
               )}
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {plan.name}
-                </h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">
-                    {plan.price}
-                  </span>
-                  {plan.price !== "$0" && (
-                    <span className="text-zinc-500">/month</span>
-                  )}
-                </div>
-                <p className="text-sm text-zinc-400 mt-2">{plan.description}</p>
-              </div>
 
-              <ul className="space-y-3 mb-8">
+              <h3 className="font-medium text-foreground">{plan.name}</h3>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-5xl font-semibold tracking-tight tabular-nums">
+                  {plan.price}
+                </span>
+                {plan.period && (
+                  <span className="text-sm text-muted-foreground">
+                    {plan.period}
+                  </span>
+                )}
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {plan.description}
+              </p>
+
+              <ul className="mt-8 space-y-3 flex-1">
                 {plan.features.map((feature) => (
                   <li
                     key={feature}
-                    className="flex items-center gap-2 text-sm text-zinc-300"
+                    className="flex items-center gap-2.5 text-sm text-foreground/85"
                   >
-                    <Check className="w-4 h-4 text-green-400 shrink-0" />
+                    <Check className="w-4 h-4 text-ring shrink-0" />
                     {feature}
                   </li>
                 ))}
@@ -640,10 +807,10 @@ function PricingSection() {
               <SignUpButton mode="modal">
                 <Button
                   className={cn(
-                    "w-full",
+                    "mt-8 w-full active:scale-[0.98] transition-transform",
                     plan.popular
-                      ? "bg-blue-500 hover:bg-blue-600 text-white"
-                      : "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+                      ? "bg-foreground text-background hover:bg-foreground/90"
+                      : "bg-transparent border border-border text-foreground hover:bg-accent"
                   )}
                 >
                   {plan.cta}
@@ -657,84 +824,95 @@ function PricingSection() {
   );
 }
 
-// CTA Section
+// ---------------------------------------------------------------------- CTA
+
 function CTASection() {
   return (
-    <section className="relative py-32 px-6 bg-zinc-950 overflow-hidden">
-      <BackgroundBeams />
-
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-            Ready to build?
-          </h2>
-          <p className="text-lg text-zinc-400 max-w-xl mx-auto mb-10">
-            Join thousands of developers building with AI. Start free, no credit
-            card required.
-          </p>
+    <section className="relative py-32 md:py-44 px-6 overflow-hidden border-t border-border">
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 -z-10 h-[420px] bg-[radial-gradient(ellipse_50%_70%_at_50%_110%,var(--ring),transparent_65%)] opacity-[0.16]"
+      />
+      <motion.div {...reveal} className="max-w-4xl mx-auto text-center">
+        <p className="font-mono text-xs uppercase tracking-[0.25em] text-ring mb-6">
+          Get started
+        </p>
+        <h2 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-[-0.04em] leading-[0.98] text-balance">
+          One prompt from a running app.
+        </h2>
+        <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto text-pretty">
+          Free to start. No credit card, no setup — just describe what you want
+          to build.
+        </p>
+        <div className="mt-10">
           <SignUpButton mode="modal">
             <Button
               size="lg"
-              className="bg-white text-zinc-950 hover:bg-zinc-200 px-8 h-14 text-base font-medium group"
+              className="bg-foreground text-background hover:bg-foreground/90 h-14 px-9 text-base font-medium group active:scale-[0.98] transition-transform"
             >
               Start building free
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </SignUpButton>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </section>
   );
 }
 
-// Footer
+// ------------------------------------------------------------------- Footer
+
 function Footer() {
   return (
-    <footer className="py-12 px-6 bg-zinc-950 border-t border-zinc-800">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-            <Sparkles className="w-3 h-3 text-white" />
-          </div>
-          <span className="text-sm font-medium text-zinc-400">Polaris</span>
-        </div>
+    <footer className="border-t border-border py-10 px-6">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <Link href="/" aria-label="Polaris home">
+          <LogoMark />
+        </Link>
 
         <div className="flex items-center gap-6">
-          {["Privacy", "Terms", "Contact"].map((item) => (
-            <Link
-              key={item}
-              href="#"
-              className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-            >
-              {item}
-            </Link>
-          ))}
+          <Link
+            href="/projects"
+            className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Open app
+          </Link>
+          <SignUpButton mode="modal">
+            <button className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+              Create account
+            </button>
+          </SignUpButton>
         </div>
 
-        <p className="text-sm text-zinc-600">
-          Built with AI, for developers.
+        <p className="font-mono text-xs text-muted-foreground">
+          © {new Date().getFullYear()} Polaris
         </p>
       </div>
     </footer>
   );
 }
 
-// Main Landing Page
+// ---------------------------------------------------------------------- Page
+
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="dark min-h-screen bg-background text-foreground font-sans antialiased select-text overflow-x-clip">
+      {/* Film grain */}
+      <div
+        aria-hidden
+        className="fixed inset-0 z-[100] pointer-events-none opacity-[0.035] mix-blend-overlay"
+        style={{ backgroundImage: NOISE }}
+      />
       <Navigation />
-      <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <BentoSection />
-      <PricingSection />
-      <CTASection />
+      <main>
+        <HeroSection />
+        <Marquee />
+        <FeaturesSection />
+        <HowItWorksSection />
+        <StackSection />
+        <PricingSection />
+        <CTASection />
+      </main>
       <Footer />
     </div>
   );
