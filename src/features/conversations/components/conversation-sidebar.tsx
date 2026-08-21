@@ -64,7 +64,7 @@ export const ConversationSidebar = ({ projectId }: ConversationSidebarProps) => 
                     projectId,
                 },
             });
-        } catch (error) {
+        } catch {
             toast.error("Unable to cancel request");
         }
     };
@@ -77,7 +77,7 @@ export const ConversationSidebar = ({ projectId }: ConversationSidebarProps) => 
             });
             setSelectedConversationId(newConversationId);
             return newConversationId;
-        } catch (error) {
+        } catch {
             toast.error("Failed to create conversation");
             return null;
         }
@@ -107,7 +107,7 @@ export const ConversationSidebar = ({ projectId }: ConversationSidebarProps) => 
                     message: message.text,
                 },
             });
-        } catch (error) {
+        } catch {
             toast.error("Failed to send message");
         }
 

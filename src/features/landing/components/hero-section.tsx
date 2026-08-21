@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import { useAuth, SignUpButton } from "@clerk/nextjs";
 import { ArrowRight } from "lucide-react";
 
@@ -173,10 +173,6 @@ function ProductWindow() {
 
 export function HeroSection() {
     const ref = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: ref,
-        offset: ["start start", "end start"],
-    });
     const { isSignedIn } = useAuth();
 
     return (

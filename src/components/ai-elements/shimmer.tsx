@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/static-components -- `as` intentionally selects a dynamic motion element. */
+
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
 import { type CSSProperties, type ElementType, type JSX, memo, useMemo } from "react";
@@ -19,7 +21,10 @@ const ShimmerComponent = ({
     duration = 2,
     spread = 2,
 }: TextShimmerProps) => {
-    const MotionComponent = motion.create(Component as keyof JSX.IntrinsicElements);
+    const MotionComponent = useMemo(
+        () => motion.create(Component as keyof JSX.IntrinsicElements),
+        [Component],
+    );
 
     const dynamicSpread = useMemo(() => (children?.length ?? 0) * spread, [children, spread]);
 

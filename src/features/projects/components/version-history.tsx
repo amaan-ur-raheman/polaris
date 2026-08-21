@@ -23,13 +23,7 @@ import {
 } from "../hooks/use-versions";
 import { Id } from "@convex/_generated/dataModel";
 
-export const VersionHistory = ({
-    projectId,
-    onClose,
-}: {
-    projectId: Id<"projects">;
-    onClose?: () => void;
-}) => {
+export const VersionHistory = ({ projectId }: { projectId: Id<"projects"> }) => {
     const { versions, isLoading } = useVersions(projectId);
     const { create, isCreating } = useCreateVersion();
     const { restore, isRestoring } = useRestoreVersion();
@@ -87,7 +81,7 @@ export const VersionHistory = ({
                     </div>
                 ) : (
                     <div className="p-2">
-                        {versions.map((version, index) => (
+                        {versions.map((version) => (
                             <div
                                 key={version._id}
                                 className="group hover:bg-accent/50 relative mb-1 rounded-lg p-3 transition-colors"

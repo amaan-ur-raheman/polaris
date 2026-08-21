@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 
@@ -20,7 +20,7 @@ interface UseCollabResult {
     updatePeerCount: (count: number) => void;
 }
 
-export const useCollab = ({ fileId, projectId }: UseCollabOptions): UseCollabResult => {
+export const useCollab = ({ fileId }: UseCollabOptions): UseCollabResult => {
     const [isReady, setIsReady] = useState(false);
     const [peerCount, setPeerCount] = useState(0);
     const [documentState, setDocumentState] = useState<Uint8Array | null>(null);
@@ -32,10 +32,17 @@ export const useCollab = ({ fileId, projectId }: UseCollabOptions): UseCollabRes
     });
 
     useEffect(() => {
-        if (collaborativeDoc && collaborativeDoc.state) {
-            setDocumentState(new Uint8Array(collaborativeDoc.state));
-        }
-        setIsReady(true);
+        let cancelled = false;
+        queueMicrotask(() => {
+            if (cancelled) return;
+            setDocumentState(
+                collaborativeDoc?.state ? new Uint8Array(collaborativeDoc.state) : null,
+            );
+            setIsReady(true);
+        });
+        return () => {
+            cancelled = true;
+        };
     }, [collaborativeDoc]);
 
     const updatePeerCount = useCallback((count: number) => {

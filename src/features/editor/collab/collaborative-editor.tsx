@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import * as Y from "yjs";
 import { yCollab } from "y-codemirror.next";
-import { EditorView, basicSetup } from "codemirror";
+import { EditorView } from "codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
@@ -103,7 +103,7 @@ export const CollaborativeEditor = ({
             yDoc.destroy();
             provider.destroy();
         };
-    }, [fileId, projectId, initialContent, fileName, onContentChange]);
+    }, [fileId, projectId, initialContent, fileName, languageExtension, onContentChange]);
 
     useEffect(() => {
         let cleanup: (() => void) | undefined;

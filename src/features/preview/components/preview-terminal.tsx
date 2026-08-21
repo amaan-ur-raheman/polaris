@@ -38,11 +38,6 @@ export const PreviewTerminal = ({ output }: PreviewTerminalProps) => {
         terminalRef.current = terminal;
         fitAddonRef.current = fitAddon;
 
-        // Write existing output to the terminal
-        if (output) {
-            terminal.write(output);
-            lastLengthRef.current = output.length;
-        }
         requestAnimationFrame(() => fitAddon.fit());
 
         const resizeObserver = new ResizeObserver(() => fitAddon.fit());

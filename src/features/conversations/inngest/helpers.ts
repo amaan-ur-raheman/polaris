@@ -1,6 +1,6 @@
 import { createAgent, createNetwork, openai } from "@inngest/agent-kit";
 
-import { CODING_AGENT_SYSTEM_PROMPT, TITLE_GENERATOR_SYSTEM_PROMPT } from "./constant";
+import { TITLE_GENERATOR_SYSTEM_PROMPT } from "./constant";
 import { DEFAULT_CONVERSATION_TITLE } from "../constants";
 import { createReadFilesTool } from "./tools/read-file";
 import { createListFilesTool } from "./tools/list-files";

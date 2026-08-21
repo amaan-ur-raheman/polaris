@@ -3,7 +3,6 @@
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { EASE } from "./constants";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);

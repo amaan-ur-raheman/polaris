@@ -36,6 +36,8 @@ export const useCreateFile = () => {
         });
 
         if (existingFiles !== undefined) {
+            // Convex invokes optimistic update callbacks outside render.
+            // eslint-disable-next-line react-hooks/purity
             const now = Date.now();
             const newFile = {
                 _id: crypto.randomUUID() as Id<"files">,
@@ -72,6 +74,8 @@ export const useCreateFolder = () => {
         });
 
         if (existingFiles !== undefined) {
+            // Convex invokes optimistic update callbacks outside render.
+            // eslint-disable-next-line react-hooks/purity
             const now = Date.now();
             const newFolder = {
                 _id: crypto.randomUUID() as Id<"files">,

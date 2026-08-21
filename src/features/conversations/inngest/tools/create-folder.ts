@@ -53,7 +53,7 @@ export const createCreateFolderTool = ({ internalKey, projectId }: CreateFolderT
                             if (parentFolder.type !== "folder") {
                                 return `Error: The ID "${parentId}" is a file, not a folder. Use a folder ID as parentId.`;
                             }
-                        } catch (error) {
+                        } catch {
                             return `Error: Invalid parentId "${parentId}". Use listFiles to get the valid folder IDs, or use empty string for root level`;
                         }
                     }

@@ -20,6 +20,8 @@ export const useCreateProject = () => {
         const existingProjects = localStore.getQuery(api.projects.get);
 
         if (existingProjects !== undefined) {
+            // Convex invokes optimistic update callbacks outside render.
+            // eslint-disable-next-line react-hooks/purity
             const now = Date.now();
             const newProject = {
                 _id: crypto.randomUUID() as Id<"projects">,
@@ -49,6 +51,8 @@ export const useRenameProject = () => {
                 {
                     ...existingProject,
                     name: args.name,
+                    // Convex invokes optimistic update callbacks outside render.
+                    // eslint-disable-next-line react-hooks/purity
                     updatedAt: Date.now(),
                 },
             );

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import * as Y from "yjs";
 
 // Mock CodeMirror
@@ -75,6 +75,7 @@ vi.mock("./convex-provider", () => ({
         pollUpdates = vi.fn().mockResolvedValue(undefined);
         destroy = vi.fn();
         constructor(options: any) {
+            void options;
             this.document = new Y.Doc();
         }
     },

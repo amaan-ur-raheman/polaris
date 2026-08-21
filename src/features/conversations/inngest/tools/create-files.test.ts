@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { z } from "zod";
 
 // Mock the convex client before importing the tool
 vi.mock("@/lib/convex-client", () => ({

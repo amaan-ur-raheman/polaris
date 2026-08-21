@@ -153,10 +153,7 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                         <TooltipContent>Version History</TooltipContent>
                     </Tooltip>
                     <SheetContent className="w-[400px] p-0 sm:w-[540px]">
-                        <VersionHistory
-                            projectId={projectId}
-                            onClose={() => setShowVersionHistory(false)}
-                        />
+                        <VersionHistory projectId={projectId} />
                     </SheetContent>
                 </Sheet>
                 <UserButton />

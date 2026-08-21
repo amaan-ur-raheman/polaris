@@ -114,7 +114,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                     projectId,
                 },
             });
-        } catch (error) {
+        } catch {
             toast.error("Failed to cancel export. Please try again.");
         }
     };
@@ -127,7 +127,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                 },
             });
             setOpen(false);
-        } catch (error) {
+        } catch {
             toast.error("Failed to reset export. Please try again.");
         }
     };

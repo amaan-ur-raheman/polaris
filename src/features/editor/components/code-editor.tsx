@@ -55,6 +55,8 @@ export const CodeEditor = ({ fileName, initialValue = "", onChange }: CodeEditor
         return () => {
             view.destroy();
         };
+        // The editor is initialized once per language; file changes remount this component via key.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [languageExtension]);
 
     return <div ref={editorRef} className="bg-background size-full pl-4" />;

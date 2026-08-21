@@ -39,7 +39,7 @@ export const createScrapeUrlsTool = () => {
                                     content: result.markdown,
                                 });
                             }
-                        } catch (error) {
+                        } catch {
                             results.push({
                                 url,
                                 content: `Failed to scrape URL: ${url}`,

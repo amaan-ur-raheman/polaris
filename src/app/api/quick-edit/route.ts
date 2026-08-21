@@ -71,7 +71,7 @@ export async function POST(request: Request) {
                         }
 
                         return null;
-                    } catch (error) {
+                    } catch {
                         return null;
                     }
                 }),

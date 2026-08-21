@@ -22,6 +22,8 @@ export const useCreateConversation = () => {
         });
 
         if (existingConversations !== undefined) {
+            // Convex invokes optimistic update callbacks outside render.
+            // eslint-disable-next-line react-hooks/purity
             const now = Date.now();
             const newConversation = {
                 _id: crypto.randomUUID() as Id<"conversations">,
