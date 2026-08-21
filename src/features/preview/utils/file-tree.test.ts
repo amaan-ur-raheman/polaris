@@ -1,19 +1,22 @@
 import { describe, it, expect } from "vitest";
+import { Doc } from "@convex/_generated/dataModel";
 import { buildFileTree, getFilePath } from "./file-tree";
 
+type FileDoc = Doc<"files">;
+
 // Minimal mock of Convex Doc<"files">
-function makeFile(overrides: Partial<any> = {}) {
+function makeFile(overrides: Record<string, any> = {}): FileDoc {
     return {
-        _id: "id-" + Math.random().toString(36).slice(2, 8),
+        _id: ("id-" + Math.random().toString(36).slice(2, 8)) as any,
         _creationTime: Date.now(),
-        projectId: "proj-1",
+        projectId: "proj-1" as any,
         name: "file.ts",
         type: "file" as const,
         content: "",
-        parentId: undefined,
+        parentId: undefined as any,
         updatedAt: Date.now(),
         ...overrides,
-    };
+    } as FileDoc;
 }
 
 describe("buildFileTree", () => {
@@ -143,8 +146,8 @@ describe("getFilePath", () => {
             parentId: "f1",
         });
         const files = new Map([
-            ["f1", folder],
-        ]);
+            ["f1", folder as any],
+        ]) as any;
 
         expect(getFilePath(file, files)).toBe("src/main.ts");
     });
@@ -156,14 +159,14 @@ describe("getFilePath", () => {
         const files = new Map([
             ["f1", f1],
             ["f2", f2],
-        ]);
+        ]) as any;
 
         expect(getFilePath(file, files)).toBe("a/b/c.ts");
     });
 
     it("stops at missing parent", () => {
         const file = makeFile({ name: "orphan.ts", parentId: "missing" });
-        const files = new Map();
+        const files = new Map() as any;
 
         expect(getFilePath(file, files)).toBe("orphan.ts");
     });

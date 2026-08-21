@@ -13,6 +13,15 @@ import { verifyAuth } from "./auth";
 import * as files from "./files";
 
 const mockVerifyAuth = vi.mocked(verifyAuth);
+const MOCK_IDENTITY = {
+    tokenIdentifier: "token-test",
+    subject: "user-1",
+    issuer: "https://test.clerk.accounts.dev",
+} as any;
+const MOCK_IDENTITY_2 = {
+    ...MOCK_IDENTITY,
+    subject: "user-2",
+};
 
 function createMockCtx(overrides: Partial<any> = {}) {
     const mockQueryChain = {
@@ -45,7 +54,7 @@ describe("files", () => {
 
     describe("createFile", () => {
         it("creates a file in a project", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue({
                 _id: "proj-1",
@@ -70,7 +79,7 @@ describe("files", () => {
         });
 
         it("throws when file with same name exists", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue({
                 _id: "proj-1",
@@ -109,7 +118,7 @@ describe("files", () => {
 
     describe("createFolder", () => {
         it("creates a folder", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue({
                 _id: "proj-1",
@@ -129,7 +138,7 @@ describe("files", () => {
         });
 
         it("throws when folder with same name exists", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue({
                 _id: "proj-1",
@@ -149,7 +158,7 @@ describe("files", () => {
 
     describe("updateFile", () => {
         it("updates file content", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get
                 .mockResolvedValueOnce({ _id: "file-1", projectId: "proj-1" })
@@ -166,7 +175,7 @@ describe("files", () => {
         });
 
         it("throws when file not found", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get.mockResolvedValue(null);
 
@@ -179,7 +188,7 @@ describe("files", () => {
 
     describe("deleteFile", () => {
         it("deletes a file", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             const fileDoc = { _id: "file-1", projectId: "proj-1", type: "file" };
             const projectDoc = { _id: "proj-1", ownerId: "user-1" };
@@ -198,7 +207,7 @@ describe("files", () => {
         });
 
         it("throws when not owner", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-2" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY_2);
             const ctx = createMockCtx();
             ctx.db.get
                 .mockResolvedValueOnce({
@@ -216,7 +225,7 @@ describe("files", () => {
 
     describe("renameFile", () => {
         it("renames a file", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get
                 .mockResolvedValueOnce({
@@ -238,7 +247,7 @@ describe("files", () => {
         });
 
         it("throws when sibling with same name exists", async () => {
-            mockVerifyAuth.mockResolvedValue({ subject: "user-1" });
+            mockVerifyAuth.mockResolvedValue(MOCK_IDENTITY);
             const ctx = createMockCtx();
             ctx.db.get
                 .mockResolvedValueOnce({
