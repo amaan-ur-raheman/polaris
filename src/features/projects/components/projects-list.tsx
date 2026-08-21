@@ -49,7 +49,7 @@ const ContinueCard = ({ data }: { data: Doc<"projects"> }) => {
             <span className="text-xs text-muted-foreground">Last Updated</span>
             <Button
                 variant={"outline"}
-                className="h-auto items-start justify-start p-4 bg-background rounded-none flex flex-col gap-2"
+                className="h-auto items-start justify-start p-4 bg-background rounded-lg flex flex-col gap-2"
                 asChild
             >
                 <Link href={`/projects/${data._id}`} className="group">
@@ -93,6 +93,19 @@ export const ProjectsList = ({ onViewAll }: ProjectsListProps) => {
 
     if (projects === undefined) {
         return <Spinner className="size-6" />;
+    }
+
+    if (projects.length === 0) {
+        return (
+            <div className="flex flex-col gap-2">
+                <span className="text-xs text-muted-foreground">
+                    No projects yet
+                </span>
+                <p className="text-xs text-muted-foreground/70">
+                    Create a new project or import from GitHub to get started.
+                </p>
+            </div>
+        );
     }
 
     const [mostRecent, ...rest] = projects;
