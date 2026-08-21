@@ -1,4 +1,4 @@
-import { Doc, Id } from "./_generated/dataModel";
+import { Doc, Id } from "../../../convex/_generated/dataModel";
 
 /**
  * Build a file path by traversing the parent chain.

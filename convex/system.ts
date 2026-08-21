@@ -1,9 +1,13 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { validateInternalKey } from "./system-helpers";
-import { buildFileSnapshot, collectDescendantIds, nameExists } from "./system-files";
-import { versionsToDelete } from "./system-versions";
+import { validateInternalKey } from "../src/lib/convex/system-helpers";
+import {
+    buildFileSnapshot,
+    collectDescendantIds,
+    nameExists,
+} from "../src/lib/convex/system-files";
+import { versionsToDelete } from "../src/lib/convex/system-versions";
 
 export const getConversationById = query({
     args: {
@@ -368,7 +372,7 @@ export const deleteFile = mutation({
 
         // Delete all descendants, then the file itself
         for (const id of descendantIds) {
-            const item = await ctx.db.get(id);
+            const item = await ctx.db.get("files", id);
             if (item?.storageId) {
                 await ctx.storage.delete(item.storageId);
             }

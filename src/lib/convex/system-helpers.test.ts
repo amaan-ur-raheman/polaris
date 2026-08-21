@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { buildFilePath, buildFileSnapshot, collectDescendantIds, nameExists } from "./system-files";
 import { versionsToDelete } from "./system-versions";
-import type { Doc, Id } from "./_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 
 // ─── system-files.ts tests ───
 
