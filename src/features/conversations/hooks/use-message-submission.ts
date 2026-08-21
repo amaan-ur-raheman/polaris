@@ -25,9 +25,7 @@ export function useMessageSubmission({
     const conversationMessages = useMessages(activeConversationId);
 
     // Check if any message is currently processing
-    const currentlyProcessing = conversationMessages?.some(
-        (msg) => msg.status === "processing",
-    );
+    const currentlyProcessing = conversationMessages?.some((msg) => msg.status === "processing");
 
     const handleCancel = useCallback(async () => {
         try {

@@ -36,12 +36,13 @@ export const ConversationSidebar = ({ projectId }: ConversationSidebarProps) => 
         handleCreateConversation,
     } = useConversationManager({ projectId });
 
-    const { isProcessing, conversationMessages, handleSubmit, handleCancel } =
-        useMessageSubmission({
+    const { isProcessing, conversationMessages, handleSubmit, handleCancel } = useMessageSubmission(
+        {
             projectId,
             activeConversationId,
             onCreateConversation: handleCreateConversation,
-        });
+        },
+    );
 
     const onSubmit = async (message: PromptInputMessage) => {
         if (isProcessing && !message.text) {

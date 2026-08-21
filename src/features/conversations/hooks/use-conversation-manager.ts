@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from "react";
 
-import { useConversation, useConversations, useCreateConversation } from "../hooks/use-conversations";
+import {
+    useConversation,
+    useConversations,
+    useCreateConversation,
+} from "../hooks/use-conversations";
 import { DEFAULT_CONVERSATION_TITLE } from "../constants";
 import { Id } from "@convex/_generated/dataModel";
 
