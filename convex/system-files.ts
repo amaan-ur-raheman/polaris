@@ -41,10 +41,7 @@ export function buildFileSnapshot(
  * Recursively collect all descendant IDs of a folder.
  * Pure function — takes pre-fetched files, returns IDs to delete.
  */
-export function collectDescendantIds(
-    folderId: Id<"files">,
-    files: Doc<"files">[],
-): Id<"files">[] {
+export function collectDescendantIds(folderId: Id<"files">, files: Doc<"files">[]): Id<"files">[] {
     const children = files.filter((f) => f.parentId === folderId);
     const ids: Id<"files">[] = [];
 
@@ -68,7 +65,5 @@ export function nameExists(
     siblings: Doc<"files">[],
     excludeId?: Id<"files">,
 ): boolean {
-    return siblings.some(
-        (s) => s.name === name && s.type === type && s._id !== excludeId,
-    );
+    return siblings.some((s) => s.name === name && s.type === type && s._id !== excludeId);
 }

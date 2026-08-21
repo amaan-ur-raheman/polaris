@@ -363,9 +363,8 @@ export const deleteFile = mutation({
             .withIndex("by_project", (q) => q.eq("projectId", file.projectId))
             .collect();
 
-        const descendantIds = file.type === "folder"
-            ? collectDescendantIds(args.fileId, allFiles)
-            : [];
+        const descendantIds =
+            file.type === "folder" ? collectDescendantIds(args.fileId, allFiles) : [];
 
         // Delete all descendants, then the file itself
         for (const id of descendantIds) {

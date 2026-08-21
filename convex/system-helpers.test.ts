@@ -71,8 +71,23 @@ describe("buildFileSnapshot", () => {
 
     it("filters out folders and binary files", () => {
         const files = [
-            { _id: "1" as Id<"files">, _creationTime: 1, projectId: "p" as Id<"projects">, name: "src", type: "folder" as const, updatedAt: 1 },
-            { _id: "2" as Id<"files">, _creationTime: 1, projectId: "p" as Id<"projects">, name: "img.png", type: "file" as const, storageId: "s" as Id<"_storage">, updatedAt: 1 },
+            {
+                _id: "1" as Id<"files">,
+                _creationTime: 1,
+                projectId: "p" as Id<"projects">,
+                name: "src",
+                type: "folder" as const,
+                updatedAt: 1,
+            },
+            {
+                _id: "2" as Id<"files">,
+                _creationTime: 1,
+                projectId: "p" as Id<"projects">,
+                name: "img.png",
+                type: "file" as const,
+                storageId: "s" as Id<"_storage">,
+                updatedAt: 1,
+            },
         ] as Doc<"files">[];
         expect(buildFileSnapshot(files)).toEqual([]);
     });
@@ -80,8 +95,24 @@ describe("buildFileSnapshot", () => {
     it("builds snapshot with correct paths", () => {
         const parentId = "p1" as Id<"files">;
         const files = [
-            { _id: parentId, _creationTime: 1, projectId: "proj" as Id<"projects">, name: "src", type: "folder" as const, updatedAt: 1 },
-            { _id: "f1" as Id<"files">, _creationTime: 1, projectId: "proj" as Id<"projects">, name: "index.ts", type: "file" as const, content: "const x = 1;", parentId, updatedAt: 1 },
+            {
+                _id: parentId,
+                _creationTime: 1,
+                projectId: "proj" as Id<"projects">,
+                name: "src",
+                type: "folder" as const,
+                updatedAt: 1,
+            },
+            {
+                _id: "f1" as Id<"files">,
+                _creationTime: 1,
+                projectId: "proj" as Id<"projects">,
+                name: "index.ts",
+                type: "file" as const,
+                content: "const x = 1;",
+                parentId,
+                updatedAt: 1,
+            },
         ] as Doc<"files">[];
         const snapshot = buildFileSnapshot(files);
         expect(snapshot).toHaveLength(1);
@@ -101,8 +132,16 @@ describe("collectDescendantIds", () => {
     it("collects direct children", () => {
         const files = [
             { _id: "root" as Id<"files">, type: "folder" as const },
-            { _id: "child1" as Id<"files">, type: "file" as const, parentId: "root" as Id<"files"> },
-            { _id: "child2" as Id<"files">, type: "file" as const, parentId: "root" as Id<"files"> },
+            {
+                _id: "child1" as Id<"files">,
+                type: "file" as const,
+                parentId: "root" as Id<"files">,
+            },
+            {
+                _id: "child2" as Id<"files">,
+                type: "file" as const,
+                parentId: "root" as Id<"files">,
+            },
         ] as Doc<"files">[];
         const ids = collectDescendantIds("root" as Id<"files">, files);
         expect(ids).toContain("child1");
