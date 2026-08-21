@@ -15,11 +15,7 @@ import Link from "next/link";
 import { useForm } from "@tanstack/react-form";
 import { useClerk } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
@@ -105,9 +101,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                         return;
                     }
                 } else {
-                    toast.error(
-                        "Unable to export repository. Please try again.",
-                    );
+                    toast.error("Unable to export repository. Please try again.");
                 }
             }
         },
@@ -120,7 +114,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                     projectId,
                 },
             });
-        } catch (error) {
+        } catch {
             toast.error("Failed to cancel export. Please try again.");
         }
     };
@@ -133,7 +127,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                 },
             });
             setOpen(false);
-        } catch (error) {
+        } catch {
             toast.error("Failed to reset export. Please try again.");
         }
     };
@@ -142,10 +136,8 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
         if (exportStatus === "exporting") {
             return (
                 <div className="flex flex-col items-center gap-3">
-                    <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">
-                        Exporting to GitHub...
-                    </p>
+                    <LoaderIcon className="text-muted-foreground size-6 animate-spin" />
+                    <p className="text-muted-foreground text-sm">Exporting to GitHub...</p>
                     <Button
                         size="sm"
                         variant="outline"
@@ -160,20 +152,16 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
 
         if (exportStatus === "completed" && exportRepoUrl) {
             return (
-                <div className="flex flex-col gap-3 items-center">
+                <div className="flex flex-col items-center gap-3">
                     <CheckCircle2Icon className="size-6 text-emerald-500" />
                     <p className="text-sm font-medium">Repository created</p>
-                    <p className="text-xs text-muted-foreground text-center">
+                    <p className="text-muted-foreground text-center text-xs">
                         Your project has been exported to GitHub
                     </p>
-                    <div className="flex flex-col w-full gap-2">
+                    <div className="flex w-full flex-col gap-2">
                         <Button size={"sm"} className="w-full" asChild>
-                            <Link
-                                href={exportRepoUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <ExternalLinkIcon className="size-4 mr-1" />
+                            <Link href={exportRepoUrl} target="_blank" rel="noopener noreferrer">
+                                <ExternalLinkIcon className="mr-1 size-4" />
                                 View on GitHub
                             </Link>
                         </Button>
@@ -194,10 +182,8 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
             return (
                 <div className="flex flex-col items-center gap-3">
                     <XCircleIcon className="size-6 text-rose-500" />
-                    <p className="text-sm font-medium">
-                        Unable to export repository.
-                    </p>
-                    <p className="text-xs text-muted-foreground text-center">
+                    <p className="text-sm font-medium">Unable to export repository.</p>
+                    <p className="text-muted-foreground text-center text-xs">
                         Something went wrong. Please try again.
                     </p>
                     <Button
@@ -221,10 +207,8 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
             >
                 <div className="space-y-4">
                     <div className="space-y-1">
-                        <h4 className="font-medium text-sm">
-                            Export to GitHub
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
+                        <h4 className="text-sm font-medium">Export to GitHub</h4>
+                        <p className="text-muted-foreground text-xs">
                             Export your project to a GitHub Repository.
                         </p>
                     </div>
@@ -232,30 +216,21 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                     <form.Field name="repoName">
                         {(field) => {
                             const isInvalid =
-                                field.state.meta.isTouched &&
-                                !field.state.meta.isValid;
+                                field.state.meta.isTouched && !field.state.meta.isValid;
 
                             return (
                                 <Field data-invalid={isInvalid}>
-                                    <FieldLabel htmlFor={field.name}>
-                                        Repository Name
-                                    </FieldLabel>
+                                    <FieldLabel htmlFor={field.name}>Repository Name</FieldLabel>
                                     <Input
                                         id={field.name}
                                         name={field.name}
                                         value={field.state.value}
                                         onBlur={field.handleBlur}
-                                        onChange={(e) =>
-                                            field.handleChange(e.target.value)
-                                        }
+                                        onChange={(e) => field.handleChange(e.target.value)}
                                         aria-invalid={isInvalid}
                                         placeholder="my-project"
                                     />
-                                    {isInvalid && (
-                                        <FieldError
-                                            errors={field.state.meta.errors}
-                                        />
-                                    )}
+                                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                 </Field>
                             );
                         }}
@@ -265,25 +240,19 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                         {(field) => {
                             return (
                                 <Field>
-                                    <FieldLabel htmlFor={field.name}>
-                                        Visibility
-                                    </FieldLabel>
+                                    <FieldLabel htmlFor={field.name}>Visibility</FieldLabel>
                                     <Select
                                         value={field.state.value}
-                                        onValueChange={(
-                                            value: "public" | "private",
-                                        ) => field.handleChange(value)}
+                                        onValueChange={(value: "public" | "private") =>
+                                            field.handleChange(value)
+                                        }
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select visibility" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="private">
-                                                Private
-                                            </SelectItem>
-                                            <SelectItem value="public">
-                                                Public
-                                            </SelectItem>
+                                            <SelectItem value="private">Private</SelectItem>
+                                            <SelectItem value="public">Public</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </Field>
@@ -294,50 +263,31 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                     <form.Field name="description">
                         {(field) => {
                             const isInvalid =
-                                field.state.meta.isTouched &&
-                                !field.state.meta.isValid;
+                                field.state.meta.isTouched && !field.state.meta.isValid;
 
                             return (
                                 <Field data-invalid={isInvalid}>
-                                    <FieldLabel htmlFor={field.name}>
-                                        Description
-                                    </FieldLabel>
+                                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
                                     <Textarea
                                         id={field.name}
                                         name={field.name}
                                         value={field.state.value}
                                         onBlur={field.handleBlur}
-                                        onChange={(e) =>
-                                            field.handleChange(e.target.value)
-                                        }
+                                        onChange={(e) => field.handleChange(e.target.value)}
                                         aria-invalid={isInvalid}
                                         placeholder="A short description of the project"
                                         rows={2}
                                     />
-                                    {isInvalid && (
-                                        <FieldError
-                                            errors={field.state.meta.errors}
-                                        />
-                                    )}
+                                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                 </Field>
                             );
                         }}
                     </form.Field>
 
-                    <form.Subscribe
-                        selector={(state) => [
-                            state.canSubmit,
-                            state.isSubmitting,
-                        ]}
-                    >
+                    <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                         {([canSubmit, isSubmitting]) => (
-                            <Button
-                                type="submit"
-                                disabled={!canSubmit || isSubmitting}
-                            >
-                                {isSubmitting
-                                    ? "Creating…"
-                                    : "Create Repository"}
+                            <Button type="submit" disabled={!canSubmit || isSubmitting}>
+                                {isSubmitting ? "Creating…" : "Create Repository"}
                             </Button>
                         )}
                     </form.Subscribe>
@@ -365,7 +315,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <div className="flex items-center gap-1.5 h-full px-3 cursor-pointer text-muted-foreground border-l hover:bg-accent/30">
+                <div className="text-muted-foreground hover:bg-accent/30 flex h-full cursor-pointer items-center gap-1.5 border-l px-3">
                     {getStatusIcon()}
                     <span className="text-sm">Export</span>
                 </div>

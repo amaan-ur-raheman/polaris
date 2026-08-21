@@ -19,8 +19,7 @@ const paramsSchema = z.object({
 export const createReadFilesTool = ({ internalKey }: ReadFilesToolParams) => {
     return createTool({
         name: "readFiles",
-        description:
-            "Read the content of files from the project. Return file contents",
+        description: "Read the content of files from the project. Return file contents",
         parameters: z.object({
             fileIds: z.array(z.string()).describe("Array of file IDs to read"),
         }),
@@ -41,13 +40,10 @@ export const createReadFilesTool = ({ internalKey }: ReadFilesToolParams) => {
                     }[] = [];
 
                     for (const fileId of fileIds) {
-                        const file = await convex.query(
-                            api.system.getFileById,
-                            {
-                                internalKey,
-                                fileId: fileId as Id<"files">,
-                            },
-                        );
+                        const file = await convex.query(api.system.getFileById, {
+                            internalKey,
+                            fileId: fileId as Id<"files">,
+                        });
 
                         if (file && file.content) {
                             results.push({

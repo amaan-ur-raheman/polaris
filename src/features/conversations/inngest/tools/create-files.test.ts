@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { z } from "zod";
 
 // Mock the convex client before importing the tool
 vi.mock("@/lib/convex-client", () => ({
@@ -83,9 +82,7 @@ describe("createFiles tool", () => {
             type: "folder",
             name: "src",
         });
-        mockConvex.mutation.mockResolvedValue([
-            { name: "main.ts", error: null },
-        ]);
+        mockConvex.mutation.mockResolvedValue([{ name: "main.ts", error: null }]);
 
         const tool = createCreateFilesTool({ internalKey, projectId });
         const stepRun = vi.fn((_name: string, fn: () => Promise<any>) => fn());

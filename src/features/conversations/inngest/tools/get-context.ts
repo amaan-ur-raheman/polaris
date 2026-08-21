@@ -30,10 +30,7 @@ const CONFIG_FILES = [
     ".env.example",
 ];
 
-export const createGetContextTool = ({
-    internalKey,
-    projectId,
-}: GetContextToolParams) => {
+export const createGetContextTool = ({ internalKey, projectId }: GetContextToolParams) => {
     return createTool({
         name: "getContext",
         description:
@@ -43,20 +40,16 @@ export const createGetContextTool = ({
             try {
                 return await toolStep?.run("get-context", async () => {
                     // Get the full file tree
-                    const files = await convex.query(
-                        api.system.getProjectFiles,
-                        {
-                            internalKey,
-                            projectId,
-                        },
-                    );
+                    const files = await convex.query(api.system.getProjectFiles, {
+                        internalKey,
+                        projectId,
+                    });
 
                     if (!files || files.length === 0) {
                         return JSON.stringify({
                             fileTree: [],
                             configFiles: {},
-                            message:
-                                "This is an empty project. No files exist yet.",
+                            message: "This is an empty project. No files exist yet.",
                         });
                     }
 
@@ -80,18 +73,14 @@ export const createGetContextTool = ({
 
                     for (const configName of CONFIG_FILES) {
                         const configFile = files.find(
-                            (f) =>
-                                f.name === configName &&
-                                f.type === "file" &&
-                                f.content,
+                            (f) => f.name === configName && f.type === "file" && f.content,
                         );
 
                         if (configFile && configFile.content) {
                             // Truncate very large config files
                             configFiles[configName] =
                                 configFile.content.length > 5000
-                                    ? configFile.content.slice(0, 5000) +
-                                      "\n... (truncated)"
+                                    ? configFile.content.slice(0, 5000) + "\n... (truncated)"
                                     : configFile.content;
                         }
                     }
@@ -100,9 +89,7 @@ export const createGetContextTool = ({
                         fileTree,
                         configFiles,
                         totalFiles: files.length,
-                        totalFolders: files.filter(
-                            (f) => f.type === "folder",
-                        ).length,
+                        totalFolders: files.filter((f) => f.type === "folder").length,
                     });
                 });
             } catch (error) {

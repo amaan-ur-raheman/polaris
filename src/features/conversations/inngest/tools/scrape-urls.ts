@@ -4,9 +4,7 @@ import { createTool } from "@inngest/agent-kit";
 import { firecrawl } from "@/lib/firecrawl";
 
 const paramsSchema = z.object({
-    urls: z
-        .array(z.url("Invalid URL format"))
-        .min(1, "Provide at least one URL to scrape"),
+    urls: z.array(z.url("Invalid URL format")).min(1, "Provide at least one URL to scrape"),
 });
 
 export const createScrapeUrlsTool = () => {
@@ -15,9 +13,7 @@ export const createScrapeUrlsTool = () => {
         description:
             "Scrape content from URLs to get documentation or reference material. Use this when the user provides URLs or references external documentation. Returns markdown content from the scraped pages.",
         parameters: z.object({
-            urls: z
-                .array(z.string())
-                .describe("Array of URLs to scrape for content"),
+            urls: z.array(z.string()).describe("Array of URLs to scrape for content"),
         }),
         handler: async (params, { step: toolStep }) => {
             const parsed = paramsSchema.safeParse(params);
@@ -43,7 +39,7 @@ export const createScrapeUrlsTool = () => {
                                     content: result.markdown,
                                 });
                             }
-                        } catch (error) {
+                        } catch {
                             results.push({
                                 url,
                                 content: `Failed to scrape URL: ${url}`,

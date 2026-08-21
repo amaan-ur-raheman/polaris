@@ -90,6 +90,7 @@ COOP and COEP headers are set in next.config.ts for SharedArrayBuffer support.
 ## Environment variables
 
 **Required for core functionality:**
+
 - `NEXT_PUBLIC_CONVEX_URL` / `CONVEX_DEPLOYMENT` — Convex project
 - `POLARIS_CONVEX_INTERNAL_KEY` — Server side Convex access
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` / `CLERK_SECRET_KEY` / `CLERK_JWT_ISSUER_DOMAIN` — Authentication
@@ -98,6 +99,7 @@ COOP and COEP headers are set in next.config.ts for SharedArrayBuffer support.
 - `INNGEST_EVENT_KEY` / `INNGEST_SIGNING_KEY` — Background jobs
 
 **Optional:**
+
 - `GOOGLE_GENERATIVE_AI_API_KEY` / `ANTHROPIC_API_KEY` — Additional AI model providers
 - `FIRECRAWL_API_KEY` — Web scraping for AI context
 - `SENTRY_AUTH_TOKEN` — Error tracking

@@ -16,17 +16,13 @@ const paramsSchema = z.object({
         .min(1, "Provide at least one file ID"),
 });
 
-export const createDeleteFilesTool = ({
-    internalKey,
-}: DeleteFilesToolParams) => {
+export const createDeleteFilesTool = ({ internalKey }: DeleteFilesToolParams) => {
     return createTool({
         name: "deleteFiles",
         description:
             "Delete files or folders from the project. If deleting a folder, all its contents will be deleted recursively.",
         parameters: z.object({
-            fileIds: z
-                .array(z.string())
-                .describe("An array of file or folder IDs to delete"),
+            fileIds: z.array(z.string()).describe("An array of file or folder IDs to delete"),
         }),
         handler: async (params, { step: toolStep }) => {
             const parsed = paramsSchema.safeParse(params);
@@ -37,8 +33,7 @@ export const createDeleteFilesTool = ({
             const { fileIds } = parsed.data;
 
             // Validate all files exists before running the step
-            const filesToDelete: { id: string; name: string; type: string }[] =
-                [];
+            const filesToDelete: { id: string; name: string; type: string }[] = [];
 
             for (const fileId of fileIds) {
                 const file = await convex.query(api.system.getFileById, {
@@ -67,9 +62,7 @@ export const createDeleteFilesTool = ({
                             fileId: file.id as Id<"files">,
                         });
 
-                        results.push(
-                            `Deleted ${file.type} "${file.name}" successfully`,
-                        );
+                        results.push(`Deleted ${file.type} "${file.name}" successfully`);
                     }
 
                     return results.join("\n");

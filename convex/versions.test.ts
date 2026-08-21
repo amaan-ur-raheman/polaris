@@ -203,7 +203,7 @@ describe("Version Management", () => {
                 handler(ctx, {
                     internalKey: VALID_KEY,
                     versionId: "nonexistent" as any,
-                })
+                }),
             ).rejects.toThrow("Version not found");
         });
     });
@@ -236,7 +236,7 @@ describe("Version Management", () => {
                 handler(ctx, {
                     internalKey: VALID_KEY,
                     versionId: "nonexistent" as any,
-                })
+                }),
             ).rejects.toThrow("Version not found");
         });
     });

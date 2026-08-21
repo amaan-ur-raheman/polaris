@@ -1,7 +1,6 @@
 import * as Y from "yjs";
 
-const CONVEX_INTERNAL_KEY =
-    process.env.NEXT_PUBLIC_CONVEX_INTERNAL_KEY ?? "";
+const CONVEX_INTERNAL_KEY = process.env.NEXT_PUBLIC_CONVEX_INTERNAL_KEY ?? "";
 
 export interface ConvexSyncOptions {
     fileId: string;
@@ -44,13 +43,10 @@ export class ConvexSyncProvider {
     async loadDocument(): Promise<boolean> {
         try {
             // Try to load existing document state
-            const doc = await this.convexClient.query(
-                this.api.system.getCollaborativeDocument,
-                {
-                    internalKey: CONVEX_INTERNAL_KEY,
-                    fileId: this.fileId as any,
-                },
-            );
+            const doc = await this.convexClient.query(this.api.system.getCollaborativeDocument, {
+                internalKey: CONVEX_INTERNAL_KEY,
+                fileId: this.fileId as any,
+            });
 
             if (doc && doc.state) {
                 const state = new Uint8Array(doc.state);
@@ -70,16 +66,13 @@ export class ConvexSyncProvider {
         const state = Y.encodeStateAsUpdate(this.doc);
 
         try {
-            await this.convexClient.mutation(
-                this.api.system.upsertCollaborativeDocument,
-                {
-                    internalKey: CONVEX_INTERNAL_KEY,
-                    fileId: this.fileId as any,
-                    projectId: this.projectId as any,
-                    state,
-                    clock: this.clock,
-                },
-            );
+            await this.convexClient.mutation(this.api.system.upsertCollaborativeDocument, {
+                internalKey: CONVEX_INTERNAL_KEY,
+                fileId: this.fileId as any,
+                projectId: this.projectId as any,
+                state,
+                clock: this.clock,
+            });
         } catch (error) {
             console.error("Failed to save collaborative document:", error);
         }
@@ -94,16 +87,13 @@ export class ConvexSyncProvider {
         try {
             for (const update of updates) {
                 this.clock++;
-                await this.convexClient.mutation(
-                    this.api.system.createCollaborativeUpdate,
-                    {
-                        internalKey: CONVEX_INTERNAL_KEY,
-                        fileId: this.fileId as any,
-                        projectId: this.projectId as any,
-                        update,
-                        clock: this.clock,
-                    },
-                );
+                await this.convexClient.mutation(this.api.system.createCollaborativeUpdate, {
+                    internalKey: CONVEX_INTERNAL_KEY,
+                    fileId: this.fileId as any,
+                    projectId: this.projectId as any,
+                    update,
+                    clock: this.clock,
+                });
             }
 
             // After syncing updates, save the full state
@@ -165,11 +155,7 @@ export function yDocToString(doc: Y.Doc, fieldName: string = "content"): string 
 /**
  * Apply a string update to a Yjs document
  */
-export function stringToYDoc(
-    doc: Y.Doc,
-    content: string,
-    fieldName: string = "content",
-): void {
+export function stringToYDoc(doc: Y.Doc, content: string, fieldName: string = "content"): void {
     const text = doc.getText(fieldName);
     text.delete(0, text.length);
     text.insert(0, content);

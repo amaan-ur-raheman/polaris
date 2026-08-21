@@ -11,11 +11,7 @@ const Layout = async ({
 }) => {
     const { projectId } = await params;
 
-    return (
-        <ProjectIdLayout projectId={projectId as Id<"projects">}>
-            {children}
-        </ProjectIdLayout>
-    );
+    return <ProjectIdLayout projectId={projectId as Id<"projects">}>{children}</ProjectIdLayout>;
 };
 
 export default Layout;

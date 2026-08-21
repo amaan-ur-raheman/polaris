@@ -87,9 +87,7 @@ describe("files", () => {
             });
             // Mock existing file
             const mockQuery = ctx.db.query();
-            mockQuery.withIndex().collect.mockResolvedValue([
-                { name: "index.ts", type: "file" },
-            ]);
+            mockQuery.withIndex().collect.mockResolvedValue([{ name: "index.ts", type: "file" }]);
 
             const handler = (files as any).createFile.handler;
             await expect(
@@ -145,14 +143,12 @@ describe("files", () => {
                 ownerId: "user-1",
             });
             const mockQuery = ctx.db.query();
-            mockQuery.withIndex().collect.mockResolvedValue([
-                { name: "src", type: "folder" },
-            ]);
+            mockQuery.withIndex().collect.mockResolvedValue([{ name: "src", type: "folder" }]);
 
             const handler = (files as any).createFolder.handler;
-            await expect(
-                handler(ctx, { projectId: "proj-1", name: "src" }),
-            ).rejects.toThrow("Folder with same name already exists");
+            await expect(handler(ctx, { projectId: "proj-1", name: "src" })).rejects.toThrow(
+                "Folder with same name already exists",
+            );
         });
     });
 
@@ -180,9 +176,9 @@ describe("files", () => {
             ctx.db.get.mockResolvedValue(null);
 
             const handler = (files as any).updateFile.handler;
-            await expect(
-                handler(ctx, { id: "file-1", content: "" }),
-            ).rejects.toThrow("File not found");
+            await expect(handler(ctx, { id: "file-1", content: "" })).rejects.toThrow(
+                "File not found",
+            );
         });
     });
 
@@ -217,9 +213,7 @@ describe("files", () => {
                 .mockResolvedValueOnce({ _id: "proj-1", ownerId: "user-1" });
 
             const handler = (files as any).deleteFile.handler;
-            await expect(handler(ctx, { id: "file-1" })).rejects.toThrow(
-                "Unauthorized",
-            );
+            await expect(handler(ctx, { id: "file-1" })).rejects.toThrow("Unauthorized");
         });
     });
 
@@ -259,14 +253,14 @@ describe("files", () => {
                 .mockResolvedValueOnce({ _id: "proj-1", ownerId: "user-1" });
 
             const mockQuery = ctx.db.query();
-            mockQuery.withIndex().collect.mockResolvedValue([
-                { _id: "file-2", name: "taken.ts", type: "file" },
-            ]);
+            mockQuery
+                .withIndex()
+                .collect.mockResolvedValue([{ _id: "file-2", name: "taken.ts", type: "file" }]);
 
             const handler = (files as any).renameFile.handler;
-            await expect(
-                handler(ctx, { id: "file-1", newName: "taken.ts" }),
-            ).rejects.toThrow("already exists");
+            await expect(handler(ctx, { id: "file-1", newName: "taken.ts" })).rejects.toThrow(
+                "already exists",
+            );
         });
     });
 });

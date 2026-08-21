@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { ProjectsView } from "@/features/projects/components/projects-view";
 

@@ -28,10 +28,7 @@ interface ImportGithubDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-export const ImportGithubDialog = ({
-    open,
-    onOpenChange,
-}: ImportGithubDialogProps) => {
+export const ImportGithubDialog = ({ open, onOpenChange }: ImportGithubDialogProps) => {
     const router = useRouter();
     const { openUserProfile } = useClerk();
 
@@ -84,9 +81,7 @@ export const ImportGithubDialog = ({
                         return;
                     }
                 }
-                toast.error(
-                    "Unable to import repository. Please check the URL and try again",
-                );
+                toast.error("Unable to import repository. Please check the URL and try again");
             }
         },
     });
@@ -97,8 +92,8 @@ export const ImportGithubDialog = ({
                 <DialogHeader>
                     <DialogTitle>Import from GitHub</DialogTitle>
                     <DialogDescription>
-                        Enter a GitHub repository URL to import. A new project
-                        will be created with the repository contents.
+                        Enter a GitHub repository URL to import. A new project will be created with
+                        the repository contents.
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -110,14 +105,11 @@ export const ImportGithubDialog = ({
                     <form.Field name="url">
                         {(field) => {
                             const isInvalid =
-                                field.state.meta.isTouched &&
-                                !field.state.meta.isValid;
+                                field.state.meta.isTouched && !field.state.meta.isValid;
 
                             return (
                                 <Field data-invalid={isInvalid}>
-                                    <FieldLabel htmlFor={field.name}>
-                                        Repository URL
-                                    </FieldLabel>
+                                    <FieldLabel htmlFor={field.name}>Repository URL</FieldLabel>
                                     <Input
                                         id={field.name}
                                         name={field.name}
@@ -127,40 +119,22 @@ export const ImportGithubDialog = ({
                                         spellCheck={false}
                                         value={field.state.value}
                                         onBlur={field.handleBlur}
-                                        onChange={(e) =>
-                                            field.handleChange(e.target.value)
-                                        }
+                                        onChange={(e) => field.handleChange(e.target.value)}
                                         aria-invalid={isInvalid}
                                         placeholder="https://github.com/owner/repo…"
                                     />
-                                    {isInvalid && (
-                                        <FieldError
-                                            errors={field.state.meta.errors}
-                                        />
-                                    )}
+                                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                 </Field>
                             );
                         }}
                     </form.Field>
                     <DialogFooter className="mt-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => onOpenChange(false)}
-                        >
+                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Cancel
                         </Button>
-                        <form.Subscribe
-                            selector={(state) => [
-                                state.canSubmit,
-                                state.isSubmitting,
-                            ]}
-                        >
+                        <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                             {([canSubmit, isSubmitting]) => (
-                                <Button
-                                    type="submit"
-                                    disabled={!canSubmit || isSubmitting}
-                                >
+                                <Button type="submit" disabled={!canSubmit || isSubmitting}>
                                     {isSubmitting ? "Importing…" : "Import"}
                                 </Button>
                             )}

@@ -1,10 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-    PROJECT_TEMPLATES,
-    type ProjectTemplate,
-} from "../templates";
+import { PROJECT_TEMPLATES, type ProjectTemplate } from "../templates";
 
 interface TemplateSelectorProps {
     selectedTemplateId: string | null;
@@ -19,9 +16,7 @@ export function TemplateSelector({
 }: TemplateSelectorProps) {
     return (
         <div className={cn("space-y-2", className)}>
-            <label className="text-sm font-medium text-muted-foreground">
-                Start from template
-            </label>
+            <label className="text-muted-foreground text-sm font-medium">Start from template</label>
             <div className="grid grid-cols-2 gap-2">
                 {PROJECT_TEMPLATES.map((template) => (
                     <TemplateCard
@@ -29,11 +24,7 @@ export function TemplateSelector({
                         template={template}
                         isSelected={selectedTemplateId === template.id}
                         onSelect={() =>
-                            onSelect(
-                                selectedTemplateId === template.id
-                                    ? null
-                                    : template.id,
-                            )
+                            onSelect(selectedTemplateId === template.id ? null : template.id)
                         }
                     />
                 ))}
@@ -58,23 +49,19 @@ function TemplateCard({
             className={cn(
                 "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-colors",
                 "hover:bg-accent/50",
-                isSelected
-                    ? "border-primary bg-primary/5"
-                    : "border-border",
+                isSelected ? "border-primary bg-primary/5" : "border-border",
             )}
         >
             <div className="flex items-center gap-2">
                 <span className="text-lg">{template.icon}</span>
                 <span className="text-sm font-medium">{template.name}</span>
             </div>
-            <p className="text-xs text-muted-foreground line-clamp-2">
-                {template.description}
-            </p>
-            <div className="flex gap-1 mt-1">
+            <p className="text-muted-foreground line-clamp-2 text-xs">{template.description}</p>
+            <div className="mt-1 flex gap-1">
                 {template.tags.map((tag) => (
                     <span
                         key={tag}
-                        className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground"
+                        className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-[10px]"
                     >
                         {tag}
                     </span>

@@ -33,7 +33,7 @@ const Tab = ({
             aria-selected={isActive}
             onClick={onClick}
             className={cn(
-                "flex items-center gap-2 px-3 h-full cursor-pointer text-muted-foreground border-r hover:bg-accent/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring",
+                "text-muted-foreground hover:bg-accent/30 focus-visible:ring-ring flex h-full cursor-pointer items-center gap-2 border-r px-3 focus-visible:ring-1 focus-visible:outline-none focus-visible:ring-inset",
                 isActive && "bg-background text-foreground",
             )}
         >
@@ -43,13 +43,11 @@ const Tab = ({
 };
 
 export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
-    const [activeView, setActiveView] = useState<"editor" | "preview">(
-        "editor",
-    );
+    const [activeView, setActiveView] = useState<"editor" | "preview">("editor");
 
     return (
-        <div className="h-full flex flex-col">
-            <nav role="tablist" className="h-[35px] flex items-center bg-sidebar border-b">
+        <div className="flex h-full flex-col">
+            <nav role="tablist" className="bg-sidebar flex h-[35px] items-center border-b">
                 <Tab
                     label="Code"
                     isActive={activeView === "editor"}
@@ -60,23 +58,18 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
                     isActive={activeView === "preview"}
                     onClick={() => setActiveView("preview")}
                 />
-                <div className="flex-1 flex justify-end h-full">
+                <div className="flex h-full flex-1 justify-end">
                     <ExportPopover projectId={projectId} />
                 </div>
             </nav>
-            <div className="flex-1 relative">
+            <div className="relative flex-1">
                 <div
                     className={cn(
                         "absolute inset-0",
                         activeView === "editor" ? "visible" : "invisible",
                     )}
                 >
-                    <Allotment
-                        defaultSizes={[
-                            DEFAULT_SIDEBAR_WIDTH,
-                            DEFAULT_MAIN_SIZE,
-                        ]}
-                    >
+                    <Allotment defaultSizes={[DEFAULT_SIDEBAR_WIDTH, DEFAULT_MAIN_SIZE]}>
                         <Allotment.Pane
                             snap
                             minSize={MIN_SIDEBAR_WIDTH}

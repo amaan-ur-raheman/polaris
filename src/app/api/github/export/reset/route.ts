@@ -22,10 +22,7 @@ export async function POST(request: Request) {
 
     const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
     if (!internalKey) {
-        return NextResponse.json(
-            { error: "Internal key not configured" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Internal key not configured" }, { status: 500 });
     }
 
     // Clear export status

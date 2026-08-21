@@ -32,11 +32,7 @@ export const createMessage = mutation({
         role: v.union(v.literal("user"), v.literal("assistant")),
         content: v.string(),
         status: v.optional(
-            v.union(
-                v.literal("processing"),
-                v.literal("completed"),
-                v.literal("cancelled"),
-            ),
+            v.union(v.literal("processing"), v.literal("completed"), v.literal("cancelled")),
         ),
     },
     handler: async (ctx, args) => {
@@ -84,11 +80,7 @@ export const updateMessageStatus = mutation({
     args: {
         internalKey: v.string(),
         messageId: v.id("messages"),
-        status: v.union(
-            v.literal("processing"),
-            v.literal("completed"),
-            v.literal("cancelled"),
-        ),
+        status: v.union(v.literal("processing"), v.literal("completed"), v.literal("cancelled")),
     },
     handler: async (ctx, args) => {
         validateInternalKey(args.internalKey);
@@ -127,9 +119,7 @@ export const getRecentMessages = query({
 
         const messages = await ctx.db
             .query("messages")
-            .withIndex("by_conversation", (q) =>
-                q.eq("conversationId", args.conversationId),
-            )
+            .withIndex("by_conversation", (q) => q.eq("conversationId", args.conversationId))
             .order("asc")
             .collect();
 
@@ -225,9 +215,7 @@ export const createFile = mutation({
             )
             .collect();
 
-        const existing = files.find(
-            (file) => file.name === args.name && file.type === "file",
-        );
+        const existing = files.find((file) => file.name === args.name && file.type === "file");
 
         if (existing) {
             throw new Error("File already exists");
@@ -271,9 +259,7 @@ export const createFiles = mutation({
         const results: { name: string; fileId: string; error?: string }[] = [];
 
         for (const file of args.files) {
-            const existing = existingFiles.find(
-                (f) => f.name === file.name && f.type === "file",
-            );
+            const existing = existingFiles.find((f) => f.name === file.name && f.type === "file");
 
             if (existing) {
                 results.push({
@@ -318,9 +304,7 @@ export const createFolder = mutation({
             )
             .collect();
 
-        const existing = files.find(
-            (file) => file.name === args.name && file.type === "folder",
-        );
+        const existing = files.find((file) => file.name === args.name && file.type === "folder");
 
         if (existing) {
             throw new Error("Folder already exists");
@@ -368,9 +352,7 @@ export const renameFile = mutation({
         );
 
         if (existing) {
-            throw new Error(
-                `A ${file.type} with the name ${args.newName} already exists`,
-            );
+            throw new Error(`A ${file.type} with the name ${args.newName} already exists`);
         }
 
         await ctx.db.patch(args.fileId, {
@@ -408,9 +390,7 @@ export const deleteFile = mutation({
                 const children = await ctx.db
                     .query("files")
                     .withIndex("by_project_parent", (q) =>
-                        q
-                            .eq("projectId", item.projectId)
-                            .eq("parentId", fileId),
+                        q.eq("projectId", item.projectId).eq("parentId", fileId),
                     )
                     .collect();
 
@@ -489,9 +469,7 @@ export const createBinaryFile = mutation({
             )
             .collect();
 
-        const existing = files.find(
-            (file) => file.name === args.name && file.type === "file",
-        );
+        const existing = files.find((file) => file.name === args.name && file.type === "file");
 
         if (existing) {
             throw new Error("File already exists");
@@ -515,11 +493,7 @@ export const updateImportStatus = mutation({
         internalKey: v.string(),
         projectId: v.id("projects"),
         status: v.optional(
-            v.union(
-                v.literal("importing"),
-                v.literal("completed"),
-                v.literal("failed"),
-            ),
+            v.union(v.literal("importing"), v.literal("completed"), v.literal("failed")),
         ),
     },
     handler: async (ctx, args) => {
@@ -645,11 +619,9 @@ export const getVersions = query({
 
         return await ctx.db
             .query("versions")
-            .withIndex("by_project", (q) =>
-                q.eq("projectId", args.projectId),
-            )
+            .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
             .order("desc")
- .collect();
+            .collect();
     },
 });
 
@@ -666,15 +638,13 @@ export const createVersion = mutation({
         // Get all files for this project
         const files = await ctx.db
             .query("files")
-            .withIndex("by_project", (q) =>
-                q.eq("projectId", args.projectId),
-            )
+            .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
             .collect();
 
         // Build file paths by traversing parent chain
         const filesMap = new Map(files.map((f) => [f._id, f]));
 
-        const getFilePath = (file: typeof files[0]): string => {
+        const getFilePath = (file: (typeof files)[0]): string => {
             const parts: string[] = [file.name];
             let parentId = file.parentId;
             while (parentId) {
@@ -705,17 +675,12 @@ export const createVersion = mutation({
         // Enforce MAX_VERSIONS limit
         const allVersions = await ctx.db
             .query("versions")
-            .withIndex("by_project", (q) =>
-                q.eq("projectId", args.projectId),
-            )
+            .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
             .order("asc")
             .collect();
 
         if (allVersions.length > MAX_VERSIONS) {
-            const toDelete = allVersions.slice(
-                0,
-                allVersions.length - MAX_VERSIONS,
-            );
+            const toDelete = allVersions.slice(0, allVersions.length - MAX_VERSIONS);
             for (const v of toDelete) {
                 await ctx.db.delete(v._id);
             }
@@ -741,9 +706,7 @@ export const restoreVersion = mutation({
         // Delete all current files in the project
         const currentFiles = await ctx.db
             .query("files")
-            .withIndex("by_project", (q) =>
-                q.eq("projectId", version.projectId),
-            )
+            .withIndex("by_project", (q) => q.eq("projectId", version.projectId))
             .collect();
 
         for (const file of currentFiles) {

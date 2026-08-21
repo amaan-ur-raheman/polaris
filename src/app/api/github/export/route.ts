@@ -19,15 +19,11 @@ export async function POST(request: Request) {
 
     const hasPro = has({ plan: "pro" });
     if (!hasPro) {
-        return NextResponse.json(
-            { error: "Pro plan required" },
-            { status: 403 },
-        );
+        return NextResponse.json({ error: "Pro plan required" }, { status: 403 });
     }
 
     const body = await request.json();
-    const { projectId, repoName, visibility, description } =
-        requestSchema.parse(body);
+    const { projectId, repoName, visibility, description } = requestSchema.parse(body);
 
     const client = await clerkClient();
     const tokens = await client.users.getUserOauthAccessToken(userId, "github");
@@ -44,10 +40,7 @@ export async function POST(request: Request) {
 
     const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
     if (!internalKey) {
-        return NextResponse.json(
-            { error: "Server configuration error" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
     }
 
     const event = await inngest.send({

@@ -40,9 +40,7 @@ interface ConversationSidebarProps {
     projectId: Id<"projects">;
 }
 
-export const ConversationSidebar = ({
-    projectId,
-}: ConversationSidebarProps) => {
+export const ConversationSidebar = ({ projectId }: ConversationSidebarProps) => {
     const [input, setInput] = useState("");
     const [selectedConversationId, setSelectedConversationId] =
         useState<Id<"conversations"> | null>(null);
@@ -51,16 +49,13 @@ export const ConversationSidebar = ({
     const createConversation = useCreateConversation();
     const conversations = useConversations(projectId);
 
-    const activeConversationId =
-        selectedConversationId ?? conversations?.[0]?._id ?? null;
+    const activeConversationId = selectedConversationId ?? conversations?.[0]?._id ?? null;
 
     const activeConversation = useConversation(activeConversationId);
     const conversationMessages = useMessages(activeConversationId);
 
     // Check if any message is currently processing
-    const isProcessing = conversationMessages?.some(
-        (msg) => msg.status === "processing",
-    );
+    const isProcessing = conversationMessages?.some((msg) => msg.status === "processing");
 
     const handleCancel = async () => {
         try {
@@ -69,7 +64,7 @@ export const ConversationSidebar = ({
                     projectId,
                 },
             });
-        } catch (error) {
+        } catch {
             toast.error("Unable to cancel request");
         }
     };
@@ -82,7 +77,7 @@ export const ConversationSidebar = ({
             });
             setSelectedConversationId(newConversationId);
             return newConversationId;
-        } catch (error) {
+        } catch {
             toast.error("Failed to create conversation");
             return null;
         }
@@ -112,7 +107,7 @@ export const ConversationSidebar = ({
                     message: message.text,
                 },
             });
-        } catch (error) {
+        } catch {
             toast.error("Failed to send message");
         }
 
@@ -127,13 +122,12 @@ export const ConversationSidebar = ({
                 onOpenChange={setPastConversationsOpen}
                 onSelect={setSelectedConversationId}
             />
-            <div className="flex flex-col h-full bg-sidebar">
-                <div className="h-8.75 flex items-center justify-between border-b">
-                    <div className="text-sm truncate pl-3">
-                        {activeConversation?.title ??
-                            DEFAULT_CONVERSATION_TITLE}
+            <div className="bg-sidebar flex h-full flex-col">
+                <div className="flex h-8.75 items-center justify-between border-b">
+                    <div className="truncate pl-3 text-sm">
+                        {activeConversation?.title ?? DEFAULT_CONVERSATION_TITLE}
                     </div>
-                    <div className="flex items-center px-1 gap-1">
+                    <div className="flex items-center gap-1 px-1">
                         <Button
                             size={"icon-xs"}
                             variant={"highlight"}
@@ -158,7 +152,7 @@ export const ConversationSidebar = ({
                             <Message key={message._id} from={message.role}>
                                 <MessageContent>
                                     {message.status === "processing" ? (
-                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                        <div className="text-muted-foreground flex items-center gap-2">
                                             <LoaderIcon className="size-4 animate-spin" />
                                             <span>Thinking…</span>
                                         </div>
@@ -167,22 +161,16 @@ export const ConversationSidebar = ({
                                             <span>Request cancelled</span>
                                         </div>
                                     ) : (
-                                        <MessageResponse>
-                                            {message.content}
-                                        </MessageResponse>
+                                        <MessageResponse>{message.content}</MessageResponse>
                                     )}
                                 </MessageContent>
                                 {message.role === "assistant" &&
                                     message.status === "completed" &&
-                                    messageIndex ===
-                                        (conversationMessages?.length ?? 0) -
-                                            1 && (
+                                    messageIndex === (conversationMessages?.length ?? 0) - 1 && (
                                         <MessageActions>
                                             <MessageAction
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(
-                                                        message.content,
-                                                    );
+                                                    navigator.clipboard.writeText(message.content);
                                                 }}
                                                 label="Copy"
                                             >

@@ -46,10 +46,7 @@ export async function POST(request: Request) {
     const parsed = requestSchema.safeParse(body);
 
     if (!parsed.success) {
-        return NextResponse.json(
-            { error: "Invalid request body" },
-            { status: 400 },
-        );
+        return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const { filename, content, language } = parsed.data;

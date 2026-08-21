@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { Allotment } from "allotment";
-import {
-    Loader2Icon,
-    TerminalSquareIcon,
-    AlertTriangleIcon,
-    RefreshCwIcon,
-} from "lucide-react";
+import { Loader2Icon, TerminalSquareIcon, AlertTriangleIcon, RefreshCwIcon } from "lucide-react";
 
 import { useWebContainer } from "@/features/preview/hooks/use-webcontainer";
 import { PreviewSettingsPopover } from "@/features/preview/components/preview-settings-popover";
@@ -25,18 +20,17 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
     const project = useProject(projectId);
     const [showTerminal, setShowTerminal] = useState(true);
 
-    const { status, previewUrl, error, restart, terminalOutput } =
-        useWebContainer({
-            projectId,
-            enabled: true,
-            settings: project?.settings,
-        });
+    const { status, previewUrl, error, restart, terminalOutput } = useWebContainer({
+        projectId,
+        enabled: true,
+        settings: project?.settings,
+    });
 
     const isLoading = status === "booting" || status === "installing";
 
     return (
-        <div className="h-full flex flex-col bg-background">
-            <div className="h-8.75 flex items-center border-b bg-sidebar shrink-0">
+        <div className="bg-background flex h-full flex-col">
+            <div className="bg-sidebar flex h-8.75 shrink-0 items-center border-b">
                 <Button
                     size={"sm"}
                     variant={"ghost"}
@@ -49,21 +43,15 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
                     <RefreshCwIcon className="size-3" />
                 </Button>
 
-                <div className="flex-1 h-full flex items-center px-3 bg-background border-x text-xs text-muted-foreground truncate font-mono">
+                <div className="bg-background text-muted-foreground flex h-full flex-1 items-center truncate border-x px-3 font-mono text-xs">
                     {isLoading && (
                         <div className="flex items-center gap-1.5">
                             <Loader2Icon className="size-3 animate-spin" />
-                            {status === "booting"
-                                ? "Starting…"
-                                : "Installing…"}
+                            {status === "booting" ? "Starting…" : "Installing…"}
                         </div>
                     )}
-                    {previewUrl && (
-                        <span className="truncate">{previewUrl}</span>
-                    )}
-                    {!isLoading && !previewUrl && !error && (
-                        <span>Ready to preview</span>
-                    )}
+                    {previewUrl && <span className="truncate">{previewUrl}</span>}
+                    {!isLoading && !previewUrl && !error && <span>Ready to preview</span>}
                 </div>
 
                 <Button
@@ -84,21 +72,15 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
                 />
             </div>
 
-            <div className="flex-1 min-h-0">
+            <div className="min-h-0 flex-1">
                 <Allotment vertical>
                     <Allotment.Pane>
                         {error && (
-                            <div className="size-full flex items-center justify-center text-muted-foreground">
-                                <div className="flex flex-col items-center gap-2 max-w-md mx-auto text-center">
+                            <div className="text-muted-foreground flex size-full items-center justify-center">
+                                <div className="mx-auto flex max-w-md flex-col items-center gap-2 text-center">
                                     <AlertTriangleIcon className="size-6" />
-                                    <p className="text-sm font-medium">
-                                        {error}
-                                    </p>
-                                    <Button
-                                        size={"sm"}
-                                        variant={"outline"}
-                                        onClick={restart}
-                                    >
+                                    <p className="text-sm font-medium">{error}</p>
+                                    <Button size={"sm"} variant={"outline"} onClick={restart}>
                                         <RefreshCwIcon className="size-4" />
                                         Restart
                                     </Button>
@@ -107,13 +89,11 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
                         )}
 
                         {isLoading && !error && (
-                            <div className="size-full flex items-center justify-center text-muted-foreground">
-                                <div className="flex flex-col items-center gap-2 max-w-md mx-auto text-center">
+                            <div className="text-muted-foreground flex size-full items-center justify-center">
+                                <div className="mx-auto flex max-w-md flex-col items-center gap-2 text-center">
                                     <Loader2Icon className="size-6 animate-spin" />
                                     <p className="text-sm font-medium">
-                                        {status === "booting"
-                                            ? "Starting…"
-                                            : "Installing…"}
+                                        {status === "booting" ? "Starting…" : "Installing…"}
                                     </p>
                                 </div>
                             </div>
@@ -129,13 +109,9 @@ export const PreviewView = ({ projectId }: PreviewViewProps) => {
                     </Allotment.Pane>
 
                     {showTerminal && (
-                        <Allotment.Pane
-                            minSize={100}
-                            maxSize={500}
-                            preferredSize={200}
-                        >
-                            <div className="h-full flex flex-col bg-background border-t">
-                                <div className="h-7 flex items-center px-3 text-xs gap-1.5 text-muted-foreground border-b border-border/50 shrink-0">
+                        <Allotment.Pane minSize={100} maxSize={500} preferredSize={200}>
+                            <div className="bg-background flex h-full flex-col border-t">
+                                <div className="text-muted-foreground border-border/50 flex h-7 shrink-0 items-center gap-1.5 border-b px-3 text-xs">
                                     <TerminalSquareIcon className="size-3" />
                                     Terminal
                                 </div>

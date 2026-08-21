@@ -57,10 +57,7 @@ export const buildFileTree = (files: FileDoc[]): FileSystemTree => {
 /**
  * Get full path for a file by traversing parent chain
  */
-export const getFilePath = (
-    file: FileDoc,
-    filesMap: Map<Id<"files">, FileDoc>,
-): string => {
+export const getFilePath = (file: FileDoc, filesMap: Map<Id<"files">, FileDoc>): string => {
     const parts: string[] = [file.name];
     let parentId = file.parentId;
 

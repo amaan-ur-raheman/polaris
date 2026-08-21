@@ -8,10 +8,7 @@ export const useConversation = (id: Id<"conversations"> | null) => {
 };
 
 export const useMessages = (conversationId: Id<"conversations"> | null) => {
-    return useQuery(
-        api.conversations.getMessages,
-        conversationId ? { conversationId } : "skip",
-    );
+    return useQuery(api.conversations.getMessages, conversationId ? { conversationId } : "skip");
 };
 
 export const useConversations = (projectId: Id<"projects">) => {
@@ -19,33 +16,30 @@ export const useConversations = (projectId: Id<"projects">) => {
 };
 
 export const useCreateConversation = () => {
-    return useMutation(api.conversations.create).withOptimisticUpdate(
-        (localStore, args) => {
-            const existingConversations = localStore.getQuery(
+    return useMutation(api.conversations.create).withOptimisticUpdate((localStore, args) => {
+        const existingConversations = localStore.getQuery(api.conversations.getByProject, {
+            projectId: args.projectId,
+        });
+
+        if (existingConversations !== undefined) {
+            // Convex invokes optimistic update callbacks outside render.
+            // eslint-disable-next-line react-hooks/purity
+            const now = Date.now();
+            const newConversation = {
+                _id: crypto.randomUUID() as Id<"conversations">,
+                _creationTime: now,
+                projectId: args.projectId,
+                title: args.title,
+                updatedAt: now,
+            };
+
+            localStore.setQuery(
                 api.conversations.getByProject,
                 {
                     projectId: args.projectId,
                 },
+                [newConversation, ...existingConversations],
             );
-
-            if (existingConversations !== undefined) {
-                const now = Date.now();
-                const newConversation = {
-                    _id: crypto.randomUUID() as Id<"conversations">,
-                    _creationTime: now,
-                    projectId: args.projectId,
-                    title: args.title,
-                    updatedAt: now,
-                };
-
-                localStore.setQuery(
-                    api.conversations.getByProject,
-                    {
-                        projectId: args.projectId,
-                    },
-                    [newConversation, ...existingConversations],
-                );
-            }
-        },
-    );
+        }
+    });
 };

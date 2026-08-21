@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import * as Y from "yjs";
 import { yCollab } from "y-codemirror.next";
-import { EditorView, basicSetup } from "codemirror";
+import { EditorView } from "codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
@@ -103,7 +103,7 @@ export const CollaborativeEditor = ({
             yDoc.destroy();
             provider.destroy();
         };
-    }, [fileId, projectId, initialContent, fileName, onContentChange]);
+    }, [fileId, projectId, initialContent, fileName, languageExtension, onContentChange]);
 
     useEffect(() => {
         let cleanup: (() => void) | undefined;
@@ -119,7 +119,7 @@ export const CollaborativeEditor = ({
 
     return (
         <div className="relative size-full">
-            <div ref={editorRef} className="size-full pl-4 bg-background" />
+            <div ref={editorRef} className="bg-background size-full pl-4" />
             {isReady && (
                 <PresenceOverlay
                     fileId={fileId}
@@ -128,7 +128,7 @@ export const CollaborativeEditor = ({
                 />
             )}
             {peerCount > 0 && (
-                <div className="absolute top-2 right-4 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
+                <div className="text-muted-foreground bg-background/80 absolute top-2 right-4 rounded px-2 py-1 text-xs">
                     {peerCount + 1} editors
                 </div>
             )}

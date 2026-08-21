@@ -36,9 +36,7 @@ export const processMessage = inngest.createFunction(
 
             const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
             if (!internalKey) {
-                throw new NonRetriableError(
-                    "POLARIS_CONVEX_INTERNAL_KEY not configured",
-                );
+                throw new NonRetriableError("POLARIS_CONVEX_INTERNAL_KEY not configured");
             }
 
             await step.run("update-message-on-failure", async () => {
@@ -53,14 +51,11 @@ export const processMessage = inngest.createFunction(
     },
     { event: "message/sent" },
     async ({ event, step }) => {
-        const { messageId, conversationId, projectId, message } =
-            event.data as MessageEvent;
+        const { messageId, conversationId, projectId, message } = event.data as MessageEvent;
 
         const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
         if (!internalKey) {
-            throw new NonRetriableError(
-                "POLARIS_CONVEX_INTERNAL_KEY not configured",
-            );
+            throw new NonRetriableError("POLARIS_CONVEX_INTERNAL_KEY not configured");
         }
 
         await step.sleep("wait-for-db-sync", "1s");
@@ -76,16 +71,13 @@ export const processMessage = inngest.createFunction(
             throw new NonRetriableError("Conversation not found");
         }
 
-        const recentMessages = await step.run(
-            "get-recent-messages",
-            async () => {
-                return await convex.query(api.system.getRecentMessages, {
-                    internalKey,
-                    conversationId,
-                    limit: 10,
-                });
-            },
-        );
+        const recentMessages = await step.run("get-recent-messages", async () => {
+            return await convex.query(api.system.getRecentMessages, {
+                internalKey,
+                conversationId,
+                limit: 10,
+            });
+        });
 
         const systemPrompt = buildSystemPrompt(
             CODING_AGENT_SYSTEM_PROMPT,
@@ -105,10 +97,11 @@ export const processMessage = inngest.createFunction(
 
             if (title) {
                 await step.run("update-conversation-title", async () => {
-                    await convex.mutation(
-                        api.system.updateConversationTitle,
-                        { internalKey, conversationId, title },
-                    );
+                    await convex.mutation(api.system.updateConversationTitle, {
+                        internalKey,
+                        conversationId,
+                        title,
+                    });
                 });
             }
         }
@@ -118,12 +111,7 @@ export const processMessage = inngest.createFunction(
             throw new NonRetriableError("NVIDIA_API_KEY not configured");
         }
 
-        const codingAgent = createCodingAgent(
-            systemPrompt,
-            nvidiaApiKey,
-            projectId,
-            internalKey,
-        );
+        const codingAgent = createCodingAgent(systemPrompt, nvidiaApiKey, projectId, internalKey);
 
         const network = createAgentNetwork(codingAgent);
         const result = await network.run(message);

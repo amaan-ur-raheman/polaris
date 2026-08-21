@@ -15,11 +15,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -66,20 +62,13 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
     };
 
     return (
-        <nav className="flex items-center justify-between gap-x-2 p-2 bg-sidebar border-b">
+        <nav className="bg-sidebar flex items-center justify-between gap-x-2 border-b p-2">
             <div className="flex items-center gap-x-2">
                 <Breadcrumb>
                     <BreadcrumbList className="gap-0!">
                         <BreadcrumbItem>
-                            <BreadcrumbLink
-                                asChild
-                                className="flex items-center gap-1.5"
-                            >
-                                <Button
-                                    variant={"ghost"}
-                                    className="w-fit! p-1.5! h-7!"
-                                    asChild
-                                >
+                            <BreadcrumbLink asChild className="flex items-center gap-1.5">
+                                <Button variant={"ghost"} className="h-7! w-fit! p-1.5!" asChild>
                                     <Link href={"/"}>
                                         <Image
                                             src="/logo.svg"
@@ -89,8 +78,8 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                                         />
                                         <span
                                             className={cn(
-                                                "text-sm font-medium text-primary",
-                                                font.className
+                                                "text-primary text-sm font-medium",
+                                                font.className,
                                             )}
                                         >
                                             Polaris
@@ -99,7 +88,7 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                                 </Button>
                             </BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator className="ml-0! mr-1" />
+                        <BreadcrumbSeparator className="mr-1 ml-0!" />
                         <BreadcrumbItem>
                             {isRenaming ? (
                                 <input
@@ -110,12 +99,12 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                                     onFocus={(e) => e.currentTarget.select()}
                                     onBlur={handleSubmit}
                                     onKeyDown={handleKeyDown}
-                                    className="text-sm bg-transparent text-foreground outline-none focus:ring-1 focus:ring-inset focus:ring-ring font-medium max-w-40 truncate"
+                                    className="text-foreground focus:ring-ring max-w-40 truncate bg-transparent text-sm font-medium outline-none focus:ring-1 focus:ring-inset"
                                 />
                             ) : (
                                 <BreadcrumbPage
                                     onClick={handleRenameStart}
-                                    className="text-sm cursor-pointer hover:text-primary font-medium max-w-40 truncate"
+                                    className="hover:text-primary max-w-40 cursor-pointer truncate text-sm font-medium"
                                 >
                                     {project?.name ?? "Loading…"}
                                 </BreadcrumbPage>
@@ -126,14 +115,14 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                 {project?.importStatus === "importing" ? (
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <LoaderIcon className="size-4 text-muted-foreground animate-spin" />
+                            <LoaderIcon className="text-muted-foreground size-4 animate-spin" />
                         </TooltipTrigger>
                         <TooltipContent>Importing project…</TooltipContent>
                     </Tooltip>
                 ) : (
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <CloudCheckIcon className="size-4 text-muted-foreground" />
+                            <CloudCheckIcon className="text-muted-foreground size-4" />
                         </TooltipTrigger>
                         <TooltipContent>
                             Saved{" "}
@@ -147,25 +136,24 @@ export const Navbar = ({ projectId }: { projectId: Id<"projects"> }) => {
                 )}
             </div>
             <div className="flex items-center gap-2">
-                <Sheet
-                    open={showVersionHistory}
-                    onOpenChange={setShowVersionHistory}
-                >
+                <Sheet open={showVersionHistory} onOpenChange={setShowVersionHistory}>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Version history">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    aria-label="Version history"
+                                >
                                     <History className="h-4 w-4" />
                                 </Button>
                             </SheetTrigger>
                         </TooltipTrigger>
                         <TooltipContent>Version History</TooltipContent>
                     </Tooltip>
-                    <SheetContent className="w-[400px] sm:w-[540px] p-0">
-                        <VersionHistory
-                            projectId={projectId}
-                            onClose={() => setShowVersionHistory(false)}
-                        />
+                    <SheetContent className="w-[400px] p-0 sm:w-[540px]">
+                        <VersionHistory projectId={projectId} />
                     </SheetContent>
                 </Sheet>
                 <UserButton />

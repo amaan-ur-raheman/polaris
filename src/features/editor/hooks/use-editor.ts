@@ -11,14 +11,14 @@ export const useEditor = (projectId: Id<"projects">) => {
         (fileId: Id<"files">, options: { pinned: boolean }) => {
             store.openFile(projectId, fileId, options);
         },
-        [store, projectId]
+        [store, projectId],
     );
 
     const closeTab = useCallback(
         (fileId: Id<"files">) => {
             store.closeTab(projectId, fileId);
         },
-        [store, projectId]
+        [store, projectId],
     );
 
     const closeAllTabs = useCallback(() => {
@@ -29,7 +29,7 @@ export const useEditor = (projectId: Id<"projects">) => {
         (fileId: Id<"files">) => {
             store.setActiveTab(projectId, fileId);
         },
-        [store, projectId]
+        [store, projectId],
     );
 
     return {

@@ -8,9 +8,7 @@ import { aiModel } from "@/lib/ai-model";
 const suggestionSchema = z.object({
     suggestion: z
         .string()
-        .describe(
-            "The code to insert at cursor, or empty string if no completions needed",
-        ),
+        .describe("The code to insert at cursor, or empty string if no completions needed"),
 });
 
 const SUGGESTION_PROMPT = `You are a code suggestion assistant.
@@ -70,17 +68,11 @@ export async function POST(request: Request) {
         } = await request.json();
 
         if (!code) {
-            return NextResponse.json(
-                { error: "Code is required" },
-                { status: 400 },
-            );
+            return NextResponse.json({ error: "Code is required" }, { status: 400 });
         }
 
         if (lineNumber === undefined || lineNumber === null) {
-            return NextResponse.json(
-                { error: "lineNumber is required" },
-                { status: 400 },
-            );
+            return NextResponse.json({ error: "lineNumber is required" }, { status: 400 });
         }
 
         const prompt = SUGGESTION_PROMPT.replace("{fileName}", fileName)
@@ -101,9 +93,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ suggestion: output?.suggestion ?? "" });
     } catch (error) {
         console.error("Failed to generate suggestion:", error);
-        return NextResponse.json(
-            { error: "Failed to generate suggestion" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Failed to generate suggestion" }, { status: 500 });
     }
 }

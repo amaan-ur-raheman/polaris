@@ -23,10 +23,7 @@ const paramsSchema = z.object({
         .min(1, "Provide at least one file to create"),
 });
 
-export const createCreateFilesTool = ({
-    internalKey,
-    projectId,
-}: CreateFilesToolParams) => {
+export const createCreateFilesTool = ({ internalKey, projectId }: CreateFilesToolParams) => {
     return createTool({
         name: "createFiles",
         description:
@@ -40,9 +37,7 @@ export const createCreateFilesTool = ({
             files: z
                 .array(
                     z.object({
-                        name: z
-                            .string()
-                            .describe("The file name excluding the extension"),
+                        name: z.string().describe("The file name excluding the extension"),
                         content: z.string().describe("The content of the file"),
                     }),
                 )
@@ -63,13 +58,10 @@ export const createCreateFilesTool = ({
                     if (parentId && parentId !== "") {
                         try {
                             resolvedParentId = parentId as Id<"files">;
-                            const parentFolder = await convex.query(
-                                api.system.getFileById,
-                                {
-                                    internalKey,
-                                    fileId: resolvedParentId,
-                                },
-                            );
+                            const parentFolder = await convex.query(api.system.getFileById, {
+                                internalKey,
+                                fileId: resolvedParentId,
+                            });
 
                             if (!parentFolder) {
                                 return `Error: Parent folder with ID "${parentId}" not found. Use listFiles to get valid fileIDs`;
@@ -78,20 +70,17 @@ export const createCreateFilesTool = ({
                             if (parentFolder.type !== "folder") {
                                 return `Error: The ID "${parentId}" is a file, not a folder. Use a folder ID as parentId.`;
                             }
-                        } catch (error) {
+                        } catch {
                             return `Error: Invalid parentId "${parentId}". Use listFiles to get the valid folder IDs, or use empty string for root level`;
                         }
                     }
 
-                    const results = await convex.mutation(
-                        api.system.createFiles,
-                        {
-                            internalKey,
-                            projectId,
-                            parentId: resolvedParentId,
-                            files,
-                        },
-                    );
+                    const results = await convex.mutation(api.system.createFiles, {
+                        internalKey,
+                        projectId,
+                        parentId: resolvedParentId,
+                        files,
+                    });
 
                     const created = results.filter((r) => !r.error);
                     const failed = results.filter((r) => r.error);

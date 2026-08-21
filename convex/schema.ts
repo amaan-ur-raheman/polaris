@@ -7,11 +7,7 @@ export default defineSchema({
         ownerId: v.string(),
         updatedAt: v.number(),
         importStatus: v.optional(
-            v.union(
-                v.literal("importing"),
-                v.literal("completed"),
-                v.literal("failed"),
-            ),
+            v.union(v.literal("importing"), v.literal("completed"), v.literal("failed")),
         ),
         exportStatus: v.optional(
             v.union(
@@ -55,11 +51,7 @@ export default defineSchema({
         role: v.union(v.literal("user"), v.literal("assistant")),
         content: v.string(),
         status: v.optional(
-            v.union(
-                v.literal("processing"),
-                v.literal("completed"),
-                v.literal("cancelled"),
-            ),
+            v.union(v.literal("processing"), v.literal("completed"), v.literal("cancelled")),
         ),
     })
         .index("by_conversation", ["conversationId"])

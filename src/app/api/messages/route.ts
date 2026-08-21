@@ -22,10 +22,7 @@ export async function POST(request: Request) {
 
     const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
     if (!internalKey) {
-        return NextResponse.json(
-            { error: "Internal key not configured" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Internal key not configured" }, { status: 500 });
     }
 
     const body = await request.json();
@@ -38,22 +35,16 @@ export async function POST(request: Request) {
     });
 
     if (!conversation) {
-        return NextResponse.json(
-            { error: "Conversation not found" },
-            { status: 404 },
-        );
+        return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
     }
 
     const projectId = conversation.projectId;
 
     // Find all processing messages in this project
-    const processingMessages = await convex.query(
-        api.system.getProcessingMessages,
-        {
-            internalKey,
-            projectId,
-        },
-    );
+    const processingMessages = await convex.query(api.system.getProcessingMessages, {
+        internalKey,
+        projectId,
+    });
 
     if (processingMessages.length > 0) {
         // Cancel all processing messages
