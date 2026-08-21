@@ -22,6 +22,7 @@ export const TreeItemWrapper = ({
     onDelete,
     onCreateFile,
     onCreateFolder,
+    onKeyDown,
 }: {
     item: Doc<"files">;
     children: React.ReactNode;
@@ -33,6 +34,7 @@ export const TreeItemWrapper = ({
     onDelete?: () => void;
     onCreateFile?: () => void;
     onCreateFolder?: () => void;
+    onKeyDown?: (e: React.KeyboardEvent) => void;
 }) => {
     return (
         <ContextMenu>
@@ -45,6 +47,7 @@ export const TreeItemWrapper = ({
                             e.preventDefault();
                             onRename?.();
                         }
+                        onKeyDown?.(e);
                     }}
                     className={cn(
                         "group flex items-center gap-1 w-full h-5.5 hover:bg-accent/30 outline-none focus:ring-1 focus:ring-inset focus:ring-ring",
@@ -70,19 +73,19 @@ export const TreeItemWrapper = ({
                             onClick={onCreateFile}
                             className="text-sm"
                         >
-                            New File...
+                            New File…
                         </ContextMenuItem>
                         <ContextMenuItem
                             onClick={onCreateFolder}
                             className="text-sm"
                         >
-                            New Folder...
+                            New Folder…
                         </ContextMenuItem>
                         <ContextMenuSeparator />
                     </>
                 )}
                 <ContextMenuItem onClick={onRename} className="text-sm">
-                    Rename...
+                    Rename…
                     <ContextMenuShortcut>Enter</ContextMenuShortcut>
                 </ContextMenuItem>
                 <ContextMenuItem onClick={onDelete} className="text-sm">

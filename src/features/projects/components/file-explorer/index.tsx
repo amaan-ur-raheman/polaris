@@ -57,24 +57,28 @@ export const FileExplorer = ({ projectId }: { projectId: Id<"projects"> }) => {
     return (
         <div className="h-full bg-sidebar">
             <ScrollArea>
-                <div
-                    role="button"
-                    onClick={() => setIsOpen((value) => !value)}
-                    className="group/project cursor-pointer w-full text-left flex items-center gap-0.5 h-5.5 bg-accent font-bold"
-                >
-                    <ChevronRightIcon
-                        className={cn(
-                            "size-4 shrink-0 text-muted-foreground",
-                            isOpen && "rotate-90"
-                        )}
-                    />
-                    <p className="text-xs uppercase line-clamp-1">
-                        {project?.name ?? "Loading..."}
-                    </p>
-                    <div className="opacity-0 group-hover/project:opacity-100 transition-none duration-0 flex ml-auto">
+                <div className="group/project w-full flex items-center h-5.5 bg-accent font-bold">
+                    <button
+                        type="button"
+                        onClick={() => setIsOpen((value) => !value)}
+                        className="flex flex-1 min-w-0 items-center gap-0.5 h-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring"
+                        aria-expanded={isOpen}
+                    >
+                        <ChevronRightIcon
+                            className={cn(
+                                "size-4 shrink-0 text-muted-foreground",
+                                isOpen && "rotate-90"
+                            )}
+                        />
+                        <p className="text-xs uppercase line-clamp-1">
+                            {project?.name ?? "Loading…"}
+                        </p>
+                    </button>
+                    <div className="flex items-center pr-1 opacity-0 group-hover/project:opacity-100 focus-within:opacity-100">
                         <Button
                             variant="highlight"
                             size="icon-xs"
+                            aria-label="New file"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -87,6 +91,7 @@ export const FileExplorer = ({ projectId }: { projectId: Id<"projects"> }) => {
                         <Button
                             variant="highlight"
                             size="icon-xs"
+                            aria-label="New folder"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -99,6 +104,7 @@ export const FileExplorer = ({ projectId }: { projectId: Id<"projects"> }) => {
                         <Button
                             variant="highlight"
                             size="icon-xs"
+                            aria-label="Collapse all"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
