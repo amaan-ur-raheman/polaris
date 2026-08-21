@@ -1,13 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-    AlertTriangle,
-    Info,
-    CheckCircle,
-    X,
-    Loader2,
-} from "lucide-react";
+import { AlertTriangle, Info, CheckCircle, X, Loader2 } from "lucide-react";
 import type { CodeReviewSuggestion } from "../hooks/use-code-review";
 
 interface ReviewPanelProps {
@@ -53,20 +47,13 @@ export function ReviewPanel({
     }
 
     return (
-        <div
-            className={cn(
-                "border-t bg-background/95 backdrop-blur",
-                className,
-            )}
-        >
-            <div className="flex items-center justify-between px-3 py-2 border-b">
+        <div className={cn("bg-background/95 border-t backdrop-blur", className)}>
+            <div className="flex items-center justify-between border-b px-3 py-2">
                 <div className="flex items-center gap-2 text-sm">
                     {isReviewing ? (
                         <>
-                            <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
-                            <span className="text-muted-foreground">
-                                Reviewing {reviewedFile}…
-                            </span>
+                            <Loader2 className="text-muted-foreground size-3.5 animate-spin" />
+                            <span className="text-muted-foreground">Reviewing {reviewedFile}…</span>
                         </>
                     ) : suggestions.length === 0 ? (
                         <>
@@ -78,8 +65,7 @@ export function ReviewPanel({
                     ) : (
                         <span className="text-muted-foreground">
                             {suggestions.length} suggestion
-                            {suggestions.length !== 1 ? "s" : ""} in{" "}
-                            {reviewedFile}
+                            {suggestions.length !== 1 ? "s" : ""} in {reviewedFile}
                         </span>
                     )}
                 </div>
@@ -95,29 +81,20 @@ export function ReviewPanel({
             {!isReviewing && suggestions.length > 0 && (
                 <div className="max-h-40 overflow-y-auto">
                     {suggestions.map((suggestion, i) => {
-                        const config =
-                            SEVERITY_CONFIG[suggestion.severity];
+                        const config = SEVERITY_CONFIG[suggestion.severity];
                         const Icon = config.icon;
 
                         return (
                             <button
                                 key={i}
-                                onClick={() =>
-                                    suggestion.line &&
-                                    onNavigate?.(suggestion.line)
-                                }
+                                onClick={() => suggestion.line && onNavigate?.(suggestion.line)}
                                 className={cn(
-                                    "flex items-start gap-2 w-full px-3 py-2 text-left text-sm hover:bg-accent/50 transition-colors",
+                                    "hover:bg-accent/50 flex w-full items-start gap-2 px-3 py-2 text-left text-sm transition-colors",
                                     suggestion.line && "cursor-pointer",
                                 )}
                             >
-                                <Icon
-                                    className={cn(
-                                        "size-3.5 mt-0.5 shrink-0",
-                                        config.color,
-                                    )}
-                                />
-                                <div className="flex-1 min-w-0">
+                                <Icon className={cn("mt-0.5 size-3.5 shrink-0", config.color)} />
+                                <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2">
                                         <span
                                             className={cn(
@@ -128,12 +105,12 @@ export function ReviewPanel({
                                             {config.label}
                                         </span>
                                         {suggestion.line && (
-                                            <span className="text-[10px] text-muted-foreground">
+                                            <span className="text-muted-foreground text-[10px]">
                                                 Line {suggestion.line}
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                    <p className="text-muted-foreground mt-0.5 text-xs">
                                         {suggestion.message}
                                     </p>
                                 </div>

@@ -69,6 +69,7 @@
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - **[Next.js 16](https://nextjs.org/)** - React framework with App Router
 - **[React 19](https://react.dev/)** - Latest React with concurrent features
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe development
@@ -79,24 +80,28 @@
 - **[Allotment](https://github.com/johnwalley/allotment)** - Resizable split views
 
 ### Backend & Infrastructure
+
 - **[Convex](https://convex.dev/)** - Real-time backend with type-safe queries
 - **[Clerk](https://clerk.com/)** - Authentication and user management
 - **[Inngest](https://inngest.com/)** - Background job processing for AI workflows
 - **[Sentry](https://sentry.io/)** - Error tracking and monitoring
 
 ### AI & Code Execution
+
 - **[Vercel AI SDK](https://sdk.vercel.ai/)** - Unified AI interface
 - **[Inngest Agent Kit](https://www.inngest.com/docs/agent-kit)** - AI agent orchestration with tools
 - **[WebContainer API](https://webcontainers.io/)** - Browser-based Node.js runtime
 - **[xterm.js](https://xtermjs.org/)** - Terminal emulator
 
 ### AI Models
+
 - **[Groq](https://groq.com/)** - Fast inference with open-source models
 - **[OpenAI](https://openai.com/)** - GPT models
 - **[Anthropic](https://anthropic.com/)** - Claude AI
 - **[Google Gemini](https://ai.google.dev/)** - Gemini AI
 
 ### Integrations
+
 - **[Octokit](https://github.com/octokit)** - GitHub API integration
 - **[Firecrawl](https://firecrawl.dev/)** - Web scraping for AI context
 
@@ -112,52 +117,57 @@
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/amaan-ur-raheman/polaris.git
-   cd polaris
-   ```
+
+    ```bash
+    git clone https://github.com/amaan-ur-raheman/polaris.git
+    cd polaris
+    ```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+
+    ```bash
+    npm install
+    ```
 
 3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
 
-   Required environment variables:
-   ```env
-   # Convex
-   NEXT_PUBLIC_CONVEX_URL="your-convex-url"
-   CONVEX_DEPLOYMENT="your-deployment"
+    ```bash
+    cp .env.example .env.local
+    ```
 
-   # Clerk Authentication
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-key"
-   CLERK_SECRET_KEY="your-clerk-secret"
+    Required environment variables:
 
-   # AI Models (at least one required)
-   GROQ_API_KEY="your-groq-key"
-   OPENAI_API_KEY="your-openai-key"
+    ```env
+    # Convex
+    NEXT_PUBLIC_CONVEX_URL="your-convex-url"
+    CONVEX_DEPLOYMENT="your-deployment"
 
-   # GitHub Integration
-   GITHUB_TOKEN="your-github-token"
+    # Clerk Authentication
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-key"
+    CLERK_SECRET_KEY="your-clerk-secret"
 
-   # Inngest (for AI workflows)
-   INNGEST_EVENT_KEY="your-inngest-key"
-   INNGEST_SIGNING_KEY="your-signing-key"
+    # AI Models (at least one required)
+    GROQ_API_KEY="your-groq-key"
+    OPENAI_API_KEY="your-openai-key"
 
-   # Firecrawl (optional)
-   FIRECRAWL_API_KEY="your-firecrawl-key"
-   ```
+    # GitHub Integration
+    GITHUB_TOKEN="your-github-token"
+
+    # Inngest (for AI workflows)
+    INNGEST_EVENT_KEY="your-inngest-key"
+    INNGEST_SIGNING_KEY="your-signing-key"
+
+    # Firecrawl (optional)
+    FIRECRAWL_API_KEY="your-firecrawl-key"
+    ```
 
 4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
 
-   The app will be available at `http://localhost:3000`
+    ```bash
+    npm run dev
+    ```
+
+    The app will be available at `http://localhost:3000`
 
 ### Development with All Services
 
@@ -195,6 +205,7 @@ npm run dev:all
 - Continue the conversation to refine and iterate
 
 **Example prompts:**
+
 - "Create a React todo app with TypeScript"
 - "Add a dark mode toggle to the navbar"
 - "Create an API endpoint for user authentication"
@@ -209,11 +220,13 @@ npm run dev:all
 ### GitHub Integration
 
 **Import from GitHub:**
+
 1. Click "Import from GitHub"
 2. Enter repository URL
 3. Project files are cloned automatically
 
 **Export to GitHub:**
+
 1. Click the GitHub export button
 2. Choose to create a new repository or push to existing
 3. Your project is instantly available on GitHub
@@ -255,22 +268,23 @@ polaris/
 
 Polaris AI has access to the following tools for code generation:
 
-| Tool | Description |
-|------|-------------|
-| **listFiles** | List all files and folders in the project |
-| **readFiles** | Read content of specific files |
-| **createFiles** | Create multiple files in batch |
-| **updateFile** | Modify existing file content |
-| **deleteFiles** | Remove files or folders |
-| **createFolder** | Create new directories |
-| **renameFile** | Rename files or folders |
-| **scrapeUrls** | Fetch content from URLs for context |
+| Tool             | Description                               |
+| ---------------- | ----------------------------------------- |
+| **listFiles**    | List all files and folders in the project |
+| **readFiles**    | Read content of specific files            |
+| **createFiles**  | Create multiple files in batch            |
+| **updateFile**   | Modify existing file content              |
+| **deleteFiles**  | Remove files or folders                   |
+| **createFolder** | Create new directories                    |
+| **renameFile**   | Rename files or folders                   |
+| **scrapeUrls**   | Fetch content from URLs for context       |
 
 ---
 
 ## 🌐 Browser Compatibility
 
 Polaris uses WebContainer API which requires:
+
 - **Chrome/Edge** 102+ (recommended)
 - **Safari** 16.4+ (limited support)
 - **Firefox** - Not supported (WebContainer limitation)

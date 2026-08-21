@@ -19,18 +19,11 @@ interface CodeEditorProps {
     onChange: (value: string) => void;
 }
 
-export const CodeEditor = ({
-    fileName,
-    initialValue = "",
-    onChange,
-}: CodeEditorProps) => {
+export const CodeEditor = ({ fileName, initialValue = "", onChange }: CodeEditorProps) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
 
-    const languageExtension = useMemo(
-        () => getLanguageExtension(fileName),
-        [fileName]
-    );
+    const languageExtension = useMemo(() => getLanguageExtension(fileName), [fileName]);
 
     useEffect(() => {
         if (!editorRef.current) return;
@@ -64,5 +57,5 @@ export const CodeEditor = ({
         };
     }, [languageExtension]);
 
-    return <div ref={editorRef} className="size-full pl-4 bg-background" />;
+    return <div ref={editorRef} className="bg-background size-full pl-4" />;
 };

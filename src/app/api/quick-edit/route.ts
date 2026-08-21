@@ -9,9 +9,7 @@ import { aiModel } from "@/lib/ai-model";
 const quickEditSchema = z.object({
     editedCode: z
         .string()
-        .describe(
-            "The edited version of the selected code based on the instruction",
-        ),
+        .describe("The edited version of the selected code based on the instruction"),
 });
 
 const URL_REGEX = /https?:\/\/[^\s]+/g;
@@ -44,26 +42,17 @@ export async function POST(request: Request) {
     try {
         const { userId } = await auth();
         if (!userId) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 },
-            );
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         const { selectedCode, fullCode, instruction } = await request.json();
 
         if (!selectedCode) {
-            return NextResponse.json(
-                { error: "Selected code is required" },
-                { status: 400 },
-            );
+            return NextResponse.json({ error: "Selected code is required" }, { status: 400 });
         }
 
         if (!instruction) {
-            return NextResponse.json(
-                { error: "Instruction is required" },
-                { status: 400 },
-            );
+            return NextResponse.json({ error: "Instruction is required" }, { status: 400 });
         }
 
         const urls: string[] = instruction.match(URL_REGEX) || [];
@@ -107,9 +96,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ editedCode: output.editedCode });
     } catch (error) {
         console.error("Quick edit failed", error);
-        return NextResponse.json(
-            { error: "Failed to generate edited code" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Failed to generate edited code" }, { status: 500 });
     }
 }

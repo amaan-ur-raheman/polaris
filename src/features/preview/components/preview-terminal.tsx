@@ -74,7 +74,7 @@ export const PreviewTerminal = ({ output }: PreviewTerminalProps) => {
     return (
         <div
             ref={containerRef}
-            className="flex-1 min-h-0 p-3 [&_.xterm]:h-full! [&_.xterm-viewport]:h-full! [&_.xterm-screen]:h-full! bg-sidebar"
+            className="bg-sidebar min-h-0 flex-1 p-3 [&_.xterm]:h-full! [&_.xterm-screen]:h-full! [&_.xterm-viewport]:h-full!"
         />
     );
 };

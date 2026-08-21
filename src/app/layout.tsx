@@ -60,8 +60,7 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "Polaris - AI-Powered Full-Stack Development Environment",
-        description:
-            "Build, edit, and preview web applications with intelligent AI assistance.",
+        description: "Build, edit, and preview web applications with intelligent AI assistance.",
         images: ["/readme/poster.png"],
     },
     robots: {
@@ -89,9 +88,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body
-                className={`${inter.variable} ${plexMono.variable} antialiased`}
-            >
+            <body className={`${inter.variable} ${plexMono.variable} antialiased`}>
                 <Providers>
                     {children}
                     <Toaster richColors />

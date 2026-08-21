@@ -13,26 +13,26 @@ import { Footer } from "./footer";
 import { NOISE } from "./constants";
 
 export function LandingPage() {
-  return (
-    <AuthRedirect>
-      <div className="dark min-h-screen bg-background text-foreground font-sans antialiased select-text overflow-x-clip">
-        <div
-          aria-hidden
-          className="fixed inset-0 z-[100] pointer-events-none opacity-[0.035] mix-blend-overlay"
-          style={{ backgroundImage: NOISE }}
-        />
-        <Navigation />
-        <main>
-          <HeroSection />
-          <Marquee />
-          <FeaturesSection />
-          <HowItWorksSection />
-          <StackSection />
-          <PricingSection />
-          <CTASection />
-        </main>
-        <Footer />
-      </div>
-    </AuthRedirect>
-  );
+    return (
+        <AuthRedirect>
+            <div className="dark bg-background text-foreground min-h-screen overflow-x-clip font-sans antialiased select-text">
+                <div
+                    aria-hidden
+                    className="pointer-events-none fixed inset-0 z-[100] opacity-[0.035] mix-blend-overlay"
+                    style={{ backgroundImage: NOISE }}
+                />
+                <Navigation />
+                <main>
+                    <HeroSection />
+                    <Marquee />
+                    <FeaturesSection />
+                    <HowItWorksSection />
+                    <StackSection />
+                    <PricingSection />
+                    <CTASection />
+                </main>
+                <Footer />
+            </div>
+        </AuthRedirect>
+    );
 }

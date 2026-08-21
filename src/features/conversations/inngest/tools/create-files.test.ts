@@ -83,9 +83,7 @@ describe("createFiles tool", () => {
             type: "folder",
             name: "src",
         });
-        mockConvex.mutation.mockResolvedValue([
-            { name: "main.ts", error: null },
-        ]);
+        mockConvex.mutation.mockResolvedValue([{ name: "main.ts", error: null }]);
 
         const tool = createCreateFilesTool({ internalKey, projectId });
         const stepRun = vi.fn((_name: string, fn: () => Promise<any>) => fn());

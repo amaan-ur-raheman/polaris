@@ -13,19 +13,15 @@ import {
 
 import { Id } from "@convex/_generated/dataModel";
 
-export const FileBreadCrumbs = ({
-    projectId,
-}: {
-    projectId: Id<"projects">;
-}) => {
+export const FileBreadCrumbs = ({ projectId }: { projectId: Id<"projects"> }) => {
     const { activeTabId } = useEditor(projectId);
     const filePath = useFilePath(activeTabId);
 
     if (filePath === undefined || !activeTabId) {
         return (
-            <div className="p-2 bg-background pl-4 border-b">
+            <div className="bg-background border-b p-2 pl-4">
                 <Breadcrumb>
-                    <BreadcrumbList className="sm:gap-0.5 gap-0.5">
+                    <BreadcrumbList className="gap-0.5 sm:gap-0.5">
                         <BreadcrumbItem className="text-sm">
                             <BreadcrumbPage>&nbsp;</BreadcrumbPage>
                         </BreadcrumbItem>
@@ -36,9 +32,9 @@ export const FileBreadCrumbs = ({
     }
 
     return (
-        <div className="p-2 bg-background pl-4 border-b">
+        <div className="bg-background border-b p-2 pl-4">
             <Breadcrumb>
-                <BreadcrumbList className="sm:gap-0.5 gap-0.5">
+                <BreadcrumbList className="gap-0.5 sm:gap-0.5">
                     {filePath.map((item, index) => {
                         const isLast = index === filePath.length - 1;
 
@@ -55,9 +51,7 @@ export const FileBreadCrumbs = ({
                                             {item.name}
                                         </BreadcrumbPage>
                                     ) : (
-                                        <span className="text-muted-foreground">
-                                            {item.name}
-                                        </span>
+                                        <span className="text-muted-foreground">{item.name}</span>
                                     )}
                                 </BreadcrumbItem>
                                 {!isLast && <BreadcrumbSeparator />}

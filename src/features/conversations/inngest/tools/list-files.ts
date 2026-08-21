@@ -11,10 +11,7 @@ interface ListFilesToolParams {
     projectId: Id<"projects">;
 }
 
-export const createListFilesTool = ({
-    internalKey,
-    projectId,
-}: ListFilesToolParams) => {
+export const createListFilesTool = ({ internalKey, projectId }: ListFilesToolParams) => {
     return createTool({
         name: "listFiles",
         description:
@@ -23,13 +20,10 @@ export const createListFilesTool = ({
         handler: async (_, { step: toolStep }) => {
             try {
                 return await toolStep?.run("list-files", async () => {
-                    const files = await convex.query(
-                        api.system.getProjectFiles,
-                        {
-                            internalKey,
-                            projectId,
-                        },
-                    );
+                    const files = await convex.query(api.system.getProjectFiles, {
+                        internalKey,
+                        projectId,
+                    });
 
                     // Sort: folders first, the files alphabetically
                     const sorted = files.sort((a, b) => {

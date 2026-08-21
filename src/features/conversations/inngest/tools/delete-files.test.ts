@@ -41,10 +41,7 @@ describe("deleteFiles tool", () => {
         const tool = createDeleteFilesTool({ internalKey });
         const stepRun = vi.fn((_n: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            { fileIds: ["f1"] },
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({ fileIds: ["f1"] }, { step: { run: stepRun } });
 
         expect(result).toContain('Deleted file "test.ts"');
     });

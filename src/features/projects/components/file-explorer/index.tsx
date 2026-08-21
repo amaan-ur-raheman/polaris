@@ -1,9 +1,4 @@
-import {
-    ChevronRightIcon,
-    CopyMinusIcon,
-    FilePlusCornerIcon,
-    FolderPlusIcon,
-} from "lucide-react";
+import { ChevronRightIcon, CopyMinusIcon, FilePlusCornerIcon, FolderPlusIcon } from "lucide-react";
 import { useState } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,11 +7,7 @@ import { Button } from "@/components/ui/button";
 
 import { Id } from "@convex/_generated/dataModel";
 import { useProject } from "../../hooks/use-projects";
-import {
-    useCreateFile,
-    useCreateFolder,
-    useFolderContents,
-} from "../../hooks/use-files";
+import { useCreateFile, useCreateFolder, useFolderContents } from "../../hooks/use-files";
 import { CreateInput } from "./create-input";
 import { LoadingRow } from "./loading-row";
 import { Tree } from "./tree";
@@ -55,22 +46,22 @@ export const FileExplorer = ({ projectId }: { projectId: Id<"projects"> }) => {
     };
 
     return (
-        <div className="h-full bg-sidebar">
+        <div className="bg-sidebar h-full">
             <ScrollArea>
-                <div className="group/project w-full flex items-center h-5.5 bg-accent font-bold">
+                <div className="group/project bg-accent flex h-5.5 w-full items-center font-bold">
                     <button
                         type="button"
                         onClick={() => setIsOpen((value) => !value)}
-                        className="flex flex-1 min-w-0 items-center gap-0.5 h-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring"
+                        className="focus-visible:ring-ring flex h-full min-w-0 flex-1 cursor-pointer items-center gap-0.5 text-left focus-visible:ring-1 focus-visible:outline-none focus-visible:ring-inset"
                         aria-expanded={isOpen}
                     >
                         <ChevronRightIcon
                             className={cn(
-                                "size-4 shrink-0 text-muted-foreground",
-                                isOpen && "rotate-90"
+                                "text-muted-foreground size-4 shrink-0",
+                                isOpen && "rotate-90",
                             )}
                         />
-                        <p className="text-xs uppercase line-clamp-1">
+                        <p className="line-clamp-1 text-xs uppercase">
                             {project?.name ?? "Loading…"}
                         </p>
                     </button>

@@ -16,10 +16,7 @@ const paramsSchema = z.object({
     parentId: z.string(),
 });
 
-export const createCreateFolderTool = ({
-    internalKey,
-    projectId,
-}: CreateFolderToolParams) => {
+export const createCreateFolderTool = ({ internalKey, projectId }: CreateFolderToolParams) => {
     return createTool({
         name: "createFolder",
         description: "Create a new folder in the project.",
@@ -44,13 +41,10 @@ export const createCreateFolderTool = ({
                     // Validate parentId if provided
                     if (parentId) {
                         try {
-                            const parentFolder = await convex.query(
-                                api.system.getFileById,
-                                {
-                                    internalKey,
-                                    fileId: parentId as Id<"files">,
-                                },
-                            );
+                            const parentFolder = await convex.query(api.system.getFileById, {
+                                internalKey,
+                                fileId: parentId as Id<"files">,
+                            });
 
                             if (!parentFolder) {
                                 return `Error: Parent folder with ID "${parentId}" not found. Use listFiles to get valid fileIDs`;
@@ -64,17 +58,12 @@ export const createCreateFolderTool = ({
                         }
                     }
 
-                    const folderId = await convex.mutation(
-                        api.system.createFolder,
-                        {
-                            internalKey,
-                            projectId,
-                            name,
-                            parentId: parentId
-                                ? (parentId as Id<"files">)
-                                : undefined,
-                        },
-                    );
+                    const folderId = await convex.mutation(api.system.createFolder, {
+                        internalKey,
+                        projectId,
+                        name,
+                        parentId: parentId ? (parentId as Id<"files">) : undefined,
+                    });
 
                     return `Folder created with ID: ${folderId}`;
                 });

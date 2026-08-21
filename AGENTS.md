@@ -105,6 +105,7 @@ See `.env.example` for the full list.
 ### API routes
 
 All API routes are in `src/app/api/`. Key routes:
+
 - `POST /api/messages` - Send a message to the AI agent
 - `POST /api/messages/cancel` - Cancel an in progress message
 - `GET /api/suggestion` - Get code suggestions

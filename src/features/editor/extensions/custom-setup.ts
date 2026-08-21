@@ -39,8 +39,7 @@ export const customSetup: Extension = (() => [
     foldGutter({
         markerDOM(open) {
             const icon = document.createElement("div");
-            icon.className =
-                "flex items-center justify-center size-4 cursor-pointer pt-0.5";
+            icon.className = "flex items-center justify-center size-4 cursor-pointer pt-0.5";
             icon.innerHTML = open ? foldGutterOpenSvg : foldGutterClosedSvg;
 
             return icon;

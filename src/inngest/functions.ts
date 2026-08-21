@@ -24,7 +24,7 @@ export const demoGenerateText = inngest.createFunction(
                         formats: ["markdown"],
                     });
                     return result.markdown ?? null;
-                })
+                }),
             );
             return results.filter(Boolean).join("\n\n");
         });
@@ -44,7 +44,7 @@ export const demoGenerateText = inngest.createFunction(
                 },
             });
         });
-    }
+    },
 );
 
 export const demoError = inngest.createFunction(
@@ -54,5 +54,5 @@ export const demoError = inngest.createFunction(
         await step.run("fail", async () => {
             throw new Error("Inngest error: Background job failed!");
         });
-    }
+    },
 );

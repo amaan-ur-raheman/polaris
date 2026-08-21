@@ -30,31 +30,27 @@ export const RenameInput = ({
 
     return (
         <div
-            className="w-full flex items-center gap-1 h-5.5 bg-accent/30"
+            className="bg-accent/30 flex h-5.5 w-full items-center gap-1"
             style={{ paddingLeft: getItemPadding(level, type === "file") }}
         >
             <div className="flex items-center gap-0.5">
                 {type === "folder" && (
                     <ChevronRightIcon
                         className={cn(
-                            "size-4 shrink-0 text-muted-foreground",
-                            isOpen && "rotate-90"
+                            "text-muted-foreground size-4 shrink-0",
+                            isOpen && "rotate-90",
                         )}
                     />
                 )}
-                {type === "file" && (
-                    <FileIcon className="size-4" fileName={value} autoAssign />
-                )}
-                {type === "folder" && (
-                    <FolderIcon className="size-4" folderName={value} />
-                )}
+                {type === "file" && <FileIcon className="size-4" fileName={value} autoAssign />}
+                {type === "folder" && <FolderIcon className="size-4" folderName={value} />}
             </div>
             <input
                 autoFocus
                 type="text"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="flex-1 bg-transparent text-sm outline-none focus:ring-1 focus:ring-inset focus:ring-ring"
+                className="focus:ring-ring flex-1 bg-transparent text-sm outline-none focus:ring-1 focus:ring-inset"
                 onBlur={handleSubmit}
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {

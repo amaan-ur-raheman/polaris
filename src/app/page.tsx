@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Polaris - AI-Powered Development Environment",
-    description: "Build complete web applications with AI in your browser. No setup, no configuration, just code.",
+    description:
+        "Build complete web applications with AI in your browser. No setup, no configuration, just code.",
 };
 
 const Home = () => {

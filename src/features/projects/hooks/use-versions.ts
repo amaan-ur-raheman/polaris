@@ -23,16 +23,11 @@ export const useCreateVersion = () => {
     const [isCreating, setIsCreating] = useState(false);
 
     const create = useCallback(
-        async (
-            projectId: Id<"projects">,
-            label: string,
-            description?: string,
-        ) => {
+        async (projectId: Id<"projects">, label: string, description?: string) => {
             setIsCreating(true);
             try {
                 const versionId = await createVersion({
-                    internalKey:
-                        process.env.NEXT_PUBLIC_CONVEX_INTERNAL_KEY ?? "",
+                    internalKey: process.env.NEXT_PUBLIC_CONVEX_INTERNAL_KEY ?? "",
                     projectId,
                     label,
                     description,
@@ -57,8 +52,7 @@ export const useRestoreVersion = () => {
             setIsRestoring(true);
             try {
                 const result = await restoreVersion({
-                    internalKey:
-                        process.env.NEXT_PUBLIC_CONVEX_INTERNAL_KEY ?? "",
+                    internalKey: process.env.NEXT_PUBLIC_CONVEX_INTERNAL_KEY ?? "",
                     versionId,
                 });
                 return result;
@@ -81,8 +75,7 @@ export const useDeleteVersion = () => {
             setIsDeleting(true);
             try {
                 await deleteVersion({
-                    internalKey:
-                        process.env.NEXT_PUBLIC_CONVEX_INTERNAL_KEY ?? "",
+                    internalKey: process.env.NEXT_PUBLIC_CONVEX_INTERNAL_KEY ?? "",
                     versionId,
                 });
             } finally {

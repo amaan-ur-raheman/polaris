@@ -82,9 +82,7 @@ export const getFilePath = query({
         let currentId: Id<"files"> | undefined = args.id;
 
         while (currentId) {
-            const file = (await ctx.db.get("files", currentId)) as
-                | Doc<"files">
-                | undefined;
+            const file = (await ctx.db.get("files", currentId)) as Doc<"files"> | undefined;
 
             if (!file) break;
 
@@ -117,7 +115,7 @@ export const getFolderContents = query({
         const files = await ctx.db
             .query("files")
             .withIndex("by_project_parent", (q) =>
-                q.eq("projectId", args.projectId).eq("parentId", args.parentId)
+                q.eq("projectId", args.projectId).eq("parentId", args.parentId),
             )
             .collect();
 
@@ -156,13 +154,11 @@ export const createFile = mutation({
         const files = await ctx.db
             .query("files")
             .withIndex("by_project_parent", (q) =>
-                q.eq("projectId", args.projectId).eq("parentId", args.parentId)
+                q.eq("projectId", args.projectId).eq("parentId", args.parentId),
             )
             .collect();
 
-        const existing = files.find(
-            (file) => file.name === args.name && file.type === "file"
-        );
+        const existing = files.find((file) => file.name === args.name && file.type === "file");
 
         if (existing) throw new Error("File with same name already exists");
 
@@ -206,13 +202,11 @@ export const createFolder = mutation({
         const files = await ctx.db
             .query("files")
             .withIndex("by_project_parent", (q) =>
-                q.eq("projectId", args.projectId).eq("parentId", args.parentId)
+                q.eq("projectId", args.projectId).eq("parentId", args.parentId),
             )
             .collect();
 
-        const existing = files.find(
-            (file) => file.name === args.name && file.type === "folder"
-        );
+        const existing = files.find((file) => file.name === args.name && file.type === "folder");
 
         if (existing) throw new Error("Folder with same name already exists");
 
@@ -260,7 +254,7 @@ export const renameFile = mutation({
         const siblings = await ctx.db
             .query("files")
             .withIndex("by_project_parent", (q) =>
-                q.eq("projectId", file.projectId).eq("parentId", file.parentId)
+                q.eq("projectId", file.projectId).eq("parentId", file.parentId),
             )
             .collect();
 
@@ -268,13 +262,11 @@ export const renameFile = mutation({
             (sibling) =>
                 sibling.name === args.newName &&
                 sibling.type === file.type &&
-                sibling._id !== args.id
+                sibling._id !== args.id,
         );
 
         if (existing) {
-            throw new Error(
-                `A ${file.type} with this name already exists in this location`
-            );
+            throw new Error(`A ${file.type} with this name already exists in this location`);
         }
 
         // Update file name
@@ -326,7 +318,7 @@ export const deleteFile = mutation({
                 const children = await ctx.db
                     .query("files")
                     .withIndex("by_project_parent", (q) =>
-                        q.eq("projectId", item.projectId).eq("parentId", fileId)
+                        q.eq("projectId", item.projectId).eq("parentId", fileId),
                     )
                     .collect();
 

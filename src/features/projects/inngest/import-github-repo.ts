@@ -23,8 +23,7 @@ export const importGithubRepo = inngest.createFunction(
             const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
             if (!internalKey) return;
 
-            const { projectId } = event.data.event
-                .data as ImportGithubRepoEvent;
+            const { projectId } = event.data.event.data as ImportGithubRepoEvent;
 
             await step.run("set-failed-status", async () => {
                 await convex.mutation(api.system.updateImportStatus, {
@@ -37,14 +36,11 @@ export const importGithubRepo = inngest.createFunction(
     },
     { event: "github/import.repo" },
     async ({ event, step }) => {
-        const { owner, repo, projectId, githubToken } =
-            event.data as ImportGithubRepoEvent;
+        const { owner, repo, projectId, githubToken } = event.data as ImportGithubRepoEvent;
 
         const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
         if (!internalKey) {
-            throw new NonRetriableError(
-                "POLARIS_CONVEX_INTERNAL_KEY is not configured",
-            );
+            throw new NonRetriableError("POLARIS_CONVEX_INTERNAL_KEY is not configured");
         }
 
         const octokit = new Octokit({ auth: githubToken });
@@ -104,15 +100,12 @@ export const importGithubRepo = inngest.createFunction(
                 const parentPath = pathParts.join("/");
                 const parentId = parentPath ? map[parentPath] : undefined;
 
-                const folderId = await convex.mutation(
-                    api.system.createFolder,
-                    {
-                        internalKey,
-                        projectId,
-                        name,
-                        parentId,
-                    },
-                );
+                const folderId = await convex.mutation(api.system.createFolder, {
+                    internalKey,
+                    projectId,
+                    name,
+                    parentId,
+                });
 
                 map[folder.path] = folderId;
             }
@@ -121,9 +114,7 @@ export const importGithubRepo = inngest.createFunction(
         });
 
         // Get all files (blob) from the tree
-        const allFiles = tree.tree.filter(
-            (item) => item.type === "blob" && item.path && item.sha,
-        );
+        const allFiles = tree.tree.filter((item) => item.type === "blob" && item.path && item.sha);
 
         await step.run("create-files", async () => {
             for (const file of allFiles) {
@@ -144,17 +135,12 @@ export const importGithubRepo = inngest.createFunction(
                     const pathParts = file.path.split("/");
                     const name = pathParts.pop()!;
                     const parentPath = pathParts.join("/");
-                    const parentId = parentPath
-                        ? folderIdMap[parentPath]
-                        : undefined;
+                    const parentId = parentPath ? folderIdMap[parentPath] : undefined;
 
                     if (isBinary) {
-                        const uploadUrl = await convex.mutation(
-                            api.system.generateUploadUrl,
-                            {
-                                internalKey,
-                            },
-                        );
+                        const uploadUrl = await convex.mutation(api.system.generateUploadUrl, {
+                            internalKey,
+                        });
 
                         const { storageId } = await ky
                             .post(uploadUrl, {

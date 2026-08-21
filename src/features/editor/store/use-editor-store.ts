@@ -20,7 +20,7 @@ interface EditorState {
     openFile: (
         projectId: Id<"projects">,
         fileId: Id<"files">,
-        options: { pinned: boolean }
+        options: { pinned: boolean },
     ) => void;
     closeTab: (projectId: Id<"projects">, fileId: Id<"files">) => void;
     closeAllTabs: (projectId: Id<"projects">) => void;

@@ -21,9 +21,7 @@ describe("useEditorStore", () => {
 
     describe("openFile", () => {
         it("opens a file as preview", () => {
-            useEditorStore
-                .getState()
-                .openFile("proj-1" as any, "file-1" as any, { pinned: false });
+            useEditorStore.getState().openFile("proj-1" as any, "file-1" as any, { pinned: false });
 
             const state = useEditorStore.getState();
             const tabState = state.getTabState("proj-1" as any);
@@ -33,9 +31,7 @@ describe("useEditorStore", () => {
         });
 
         it("opens a file as pinned tab", () => {
-            useEditorStore
-                .getState()
-                .openFile("proj-1" as any, "file-1" as any, { pinned: true });
+            useEditorStore.getState().openFile("proj-1" as any, "file-1" as any, { pinned: true });
 
             const state = useEditorStore.getState();
             const tabState = state.getTabState("proj-1" as any);
@@ -126,9 +122,7 @@ describe("useEditorStore", () => {
 
             const state = useEditorStore.getState();
             expect(state.getTabState("proj-1" as any).openTabs).toEqual([]);
-            expect(state.getTabState("proj-2" as any).openTabs).toEqual([
-                "file-2",
-            ]);
+            expect(state.getTabState("proj-2" as any).openTabs).toEqual(["file-2"]);
         });
     });
 
@@ -140,9 +134,7 @@ describe("useEditorStore", () => {
             store.setActiveTab("proj-1" as any, "file-2" as any);
 
             const state = useEditorStore.getState();
-            expect(state.getTabState("proj-1" as any).activeTabId).toBe(
-                "file-2",
-            );
+            expect(state.getTabState("proj-1" as any).activeTabId).toBe("file-2");
         });
     });
 });

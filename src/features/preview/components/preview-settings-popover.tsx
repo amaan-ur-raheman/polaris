@@ -6,11 +6,7 @@ import { SettingsIcon } from "lucide-react";
 
 import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useUpdateProjectSettings } from "@/features/projects/hooks/use-projects";
@@ -89,27 +85,21 @@ export const PreviewSettingsPopover = ({
                 >
                     <div className="space-y-4">
                         <div className="space-y-1">
-                            <h4 className="font-medium text-sm">
-                                Preview Settings
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <h4 className="text-sm font-medium">Preview Settings</h4>
+                            <p className="text-muted-foreground text-xs">
                                 Configure how your project runs in the preview
                             </p>
                         </div>
                         <form.Field name="installCommand">
                             {(field) => (
                                 <Field>
-                                    <FieldLabel htmlFor={field.name}>
-                                        Install Command
-                                    </FieldLabel>
+                                    <FieldLabel htmlFor={field.name}>Install Command</FieldLabel>
                                     <Input
                                         id={field.name}
                                         name={field.name}
                                         value={field.state.value}
                                         onBlur={field.handleBlur}
-                                        onChange={(e) =>
-                                            field.handleChange(e.target.value)
-                                        }
+                                        onChange={(e) => field.handleChange(e.target.value)}
                                         placeholder="npm install"
                                     />
                                     <FieldDescription>
@@ -121,17 +111,13 @@ export const PreviewSettingsPopover = ({
                         <form.Field name="devCommand">
                             {(field) => (
                                 <Field>
-                                    <FieldLabel htmlFor={field.name}>
-                                        Start Command
-                                    </FieldLabel>
+                                    <FieldLabel htmlFor={field.name}>Start Command</FieldLabel>
                                     <Input
                                         id={field.name}
                                         name={field.name}
                                         value={field.state.value}
                                         onBlur={field.handleBlur}
-                                        onChange={(e) =>
-                                            field.handleChange(e.target.value)
-                                        }
+                                        onChange={(e) => field.handleChange(e.target.value)}
                                         placeholder="npm run dev"
                                     />
                                     <FieldDescription>
@@ -140,12 +126,7 @@ export const PreviewSettingsPopover = ({
                                 </Field>
                             )}
                         </form.Field>
-                        <form.Subscribe
-                            selector={(state) => [
-                                state.canSubmit,
-                                state.isSubmitting,
-                            ]}
-                        >
+                        <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                             {([canSubmit, isSubmitting]) => (
                                 <Button
                                     type="submit"
@@ -153,9 +134,7 @@ export const PreviewSettingsPopover = ({
                                     className="w-full"
                                     disabled={!canSubmit || isSubmitting}
                                 >
-                                    {isSubmitting
-                                        ? "Saving…"
-                                        : "Save Changes"}
+                                    {isSubmitting ? "Saving…" : "Save Changes"}
                                 </Button>
                             )}
                         </form.Subscribe>

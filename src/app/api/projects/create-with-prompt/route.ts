@@ -1,11 +1,6 @@
 import { z } from "zod";
 import { NextResponse } from "next/server";
-import {
-    adjectives,
-    animals,
-    colors,
-    uniqueNamesGenerator,
-} from "unique-names-generator";
+import { adjectives, animals, colors, uniqueNamesGenerator } from "unique-names-generator";
 
 import { auth } from "@clerk/nextjs/server";
 import { inngest } from "@/inngest/client";
@@ -29,20 +24,14 @@ export async function POST(request: Request) {
 
     const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
     if (!internalKey) {
-        return NextResponse.json(
-            { error: "Internal key not configured" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Internal key not configured" }, { status: 500 });
     }
 
     const body = await request.json();
     const parsed = requestSchema.safeParse(body);
 
     if (!parsed.success) {
-        return NextResponse.json(
-            { error: "Invalid request body" },
-            { status: 400 },
-        );
+        return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const { prompt, templateId } = parsed.data;
@@ -81,15 +70,12 @@ export async function POST(request: Request) {
                 if (folderCache.has(folderPath)) {
                     parentId = folderCache.get(folderPath);
                 } else {
-                    const folderId = await convex.mutation(
-                        api.system.createFolder,
-                        {
-                            internalKey,
-                            projectId,
-                            name: parts[i],
-                            parentId: parentId as any,
-                        },
-                    );
+                    const folderId = await convex.mutation(api.system.createFolder, {
+                        internalKey,
+                        projectId,
+                        name: parts[i],
+                        parentId: parentId as any,
+                    });
                     folderCache.set(folderPath, folderId);
                     parentId = folderId;
                 }

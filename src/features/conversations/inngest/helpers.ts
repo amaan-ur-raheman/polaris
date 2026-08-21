@@ -54,12 +54,8 @@ export function createTitleAgent(groqApiKey: string) {
 /**
  * Extract the title from agent output.
  */
-export function extractTitle(
-    output: any[],
-): string | null {
-    const textMessage = output.find(
-        (m: any) => m.type === "text" && m.role === "assistant",
-    );
+export function extractTitle(output: any[]): string | null {
+    const textMessage = output.find((m: any) => m.type === "text" && m.role === "assistant");
 
     if (!textMessage || textMessage.type !== "text") {
         return null;
@@ -68,7 +64,10 @@ export function extractTitle(
     const title =
         typeof textMessage.content === "string"
             ? textMessage.content.trim()
-            : textMessage.content.map((c: any) => c.text).join("").trim();
+            : textMessage.content
+                  .map((c: any) => c.text)
+                  .join("")
+                  .trim();
 
     return title || null;
 }
@@ -120,9 +119,7 @@ export function createAgentNetwork(codingAgent: ReturnType<typeof createAgent>) 
                 (m) => m.type === "text" && m.role === "assistant",
             );
 
-            const hasToolCall = lastResult?.output.some(
-                (m) => m.type === "tool_call",
-            );
+            const hasToolCall = lastResult?.output.some((m) => m.type === "tool_call");
 
             if (hasTextResponse && !hasToolCall) {
                 return undefined;
@@ -136,9 +133,7 @@ export function createAgentNetwork(codingAgent: ReturnType<typeof createAgent>) 
 /**
  * Extract the assistant's final text response from agent results.
  */
-export function extractAssistantResponse(
-    results: any[],
-): string {
+export function extractAssistantResponse(results: any[]): string {
     const lastResult = results.at(-1);
     const textMessage = lastResult?.output.find(
         (m: any) => m.type === "text" && m.role === "assistant",
@@ -154,9 +149,7 @@ export function extractAssistantResponse(
             : textMessage.content.map((c: any) => c.text).join("");
 
     // Remove <think> tags from reasoning models
-    return rawContent
-        .replace(/<think>[\s\S]*?<\/think>\s*/g, "")
-        .trim();
+    return rawContent.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
 }
 
 /**

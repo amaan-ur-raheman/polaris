@@ -25,8 +25,8 @@ export const UnauthenticatedView = () => {
     // Show loading state while checking auth
     if (!mounted || !isLoaded) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            <div className="bg-background flex min-h-screen items-center justify-center">
+                <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
             </div>
         );
     }

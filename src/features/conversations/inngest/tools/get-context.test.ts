@@ -26,10 +26,7 @@ describe("getContext tool", () => {
         const tool = createGetContextTool({ internalKey, projectId });
         const stepRun = vi.fn((_n: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            {},
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({}, { step: { run: stepRun } });
 
         const parsed = JSON.parse(result);
         expect(parsed.message).toContain("empty project");
@@ -63,10 +60,7 @@ describe("getContext tool", () => {
         const tool = createGetContextTool({ internalKey, projectId });
         const stepRun = vi.fn((_n: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            {},
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({}, { step: { run: stepRun } });
 
         const parsed = JSON.parse(result);
         expect(parsed.fileTree).toHaveLength(3);
@@ -85,10 +79,7 @@ describe("getContext tool", () => {
         const tool = createGetContextTool({ internalKey, projectId });
         const stepRun = vi.fn((_n: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            {},
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({}, { step: { run: stepRun } });
 
         const parsed = JSON.parse(result);
         expect(parsed.fileTree[0].type).toBe("folder");
@@ -112,10 +103,7 @@ describe("getContext tool", () => {
         const tool = createGetContextTool({ internalKey, projectId });
         const stepRun = vi.fn((_n: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            {},
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({}, { step: { run: stepRun } });
 
         const parsed = JSON.parse(result);
         expect(parsed.configFiles["package.json"]).toContain("truncated");
@@ -128,10 +116,7 @@ describe("getContext tool", () => {
         const tool = createGetContextTool({ internalKey, projectId });
         const stepRun = vi.fn((_n: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            {},
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({}, { step: { run: stepRun } });
 
         expect(result).toContain("Error");
         expect(result).toContain("DB connection failed");

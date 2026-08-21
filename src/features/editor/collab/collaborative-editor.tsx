@@ -119,7 +119,7 @@ export const CollaborativeEditor = ({
 
     return (
         <div className="relative size-full">
-            <div ref={editorRef} className="size-full pl-4 bg-background" />
+            <div ref={editorRef} className="bg-background size-full pl-4" />
             {isReady && (
                 <PresenceOverlay
                     fileId={fileId}
@@ -128,7 +128,7 @@ export const CollaborativeEditor = ({
                 />
             )}
             {peerCount > 0 && (
-                <div className="absolute top-2 right-4 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
+                <div className="text-muted-foreground bg-background/80 absolute top-2 right-4 rounded px-2 py-1 text-xs">
                     {peerCount + 1} editors
                 </div>
             )}

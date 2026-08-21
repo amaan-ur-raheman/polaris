@@ -75,9 +75,7 @@ describe("projects", () => {
             const ctx = createMockCtx();
 
             const handler = (projects as any).create.handler;
-            await expect(
-                handler(ctx, { name: "My Project" }),
-            ).rejects.toThrow("Not authenticated");
+            await expect(handler(ctx, { name: "My Project" })).rejects.toThrow("Not authenticated");
         });
     });
 
@@ -103,9 +101,7 @@ describe("projects", () => {
             ctx.db.get.mockResolvedValue(null);
 
             const handler = (projects as any).getById.handler;
-            await expect(handler(ctx, { id: "proj-1" })).rejects.toThrow(
-                "Project not found",
-            );
+            await expect(handler(ctx, { id: "proj-1" })).rejects.toThrow("Project not found");
         });
 
         it("throws when user is not owner", async () => {
@@ -118,9 +114,7 @@ describe("projects", () => {
             });
 
             const handler = (projects as any).getById.handler;
-            await expect(handler(ctx, { id: "proj-1" })).rejects.toThrow(
-                "Unauthorized",
-            );
+            await expect(handler(ctx, { id: "proj-1" })).rejects.toThrow("Unauthorized");
         });
     });
 
@@ -152,9 +146,9 @@ describe("projects", () => {
             });
 
             const handler = (projects as any).rename.handler;
-            await expect(
-                handler(ctx, { id: "proj-1", name: "New" }),
-            ).rejects.toThrow("Unauthorized");
+            await expect(handler(ctx, { id: "proj-1", name: "New" })).rejects.toThrow(
+                "Unauthorized",
+            );
         });
     });
 });

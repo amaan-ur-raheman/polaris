@@ -51,9 +51,7 @@ export const exportToGithub = inngest.createFunction(
 
         const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
         if (!internalKey) {
-            throw new NonRetriableError(
-                "POLARIS_CONVEX_INTERNAL_KEY is not configured",
-            );
+            throw new NonRetriableError("POLARIS_CONVEX_INTERNAL_KEY is not configured");
         }
 
         // Set status to exporting
@@ -86,18 +84,15 @@ export const exportToGithub = inngest.createFunction(
         await step.sleep("wait-for-repo-init", "3s");
 
         // Get the initial commit SHA
-        const initialCommitSha = await step.run(
-            "get-initial-commit",
-            async () => {
-                const { data: ref } = await octokit.rest.git.getRef({
-                    owner: user.login,
-                    repo: repoName,
-                    ref: "heads/main",
-                });
+        const initialCommitSha = await step.run("get-initial-commit", async () => {
+            const { data: ref } = await octokit.rest.git.getRef({
+                owner: user.login,
+                repo: repoName,
+                ref: "heads/main",
+            });
 
-                return ref.object.sha;
-            },
-        );
+            return ref.object.sha;
+        });
 
         // Fetch all project files with storage urls
         const files = await step.run("fetch-project-files", async () => {
@@ -136,9 +131,7 @@ export const exportToGithub = inngest.createFunction(
         const filePaths = buildFilePaths(files);
 
         // Filter to only actual files (not folders)
-        const fileEntries = Object.entries(filePaths).filter(
-            ([, file]) => file.type === "file",
-        );
+        const fileEntries = Object.entries(filePaths).filter(([, file]) => file.type === "file");
 
         if (fileEntries.length === 0) {
             throw new NonRetriableError("No files to export");

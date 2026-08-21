@@ -145,9 +145,7 @@ describe("getFilePath", () => {
             name: "main.ts",
             parentId: "f1",
         });
-        const files = new Map([
-            ["f1", folder as any],
-        ]) as any;
+        const files = new Map([["f1", folder as any]]) as any;
 
         expect(getFilePath(file, files)).toBe("src/main.ts");
     });

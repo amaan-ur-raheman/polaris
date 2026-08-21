@@ -28,10 +28,7 @@ export async function POST(request: Request) {
 
     const hasPro = has({ plan: "pro" });
     if (!hasPro) {
-        return NextResponse.json(
-            { error: "Pro plan required" },
-            { status: 403 },
-        );
+        return NextResponse.json({ error: "Pro plan required" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -54,10 +51,7 @@ export async function POST(request: Request) {
 
     const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
     if (!internalKey) {
-        return NextResponse.json(
-            { error: "Internal key not configured" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Internal key not configured" }, { status: 500 });
     }
 
     const projectId = await convex.mutation(api.system.createProject, {

@@ -11,11 +11,7 @@ export default defineConfig({
             provider: "v8",
             reporter: ["text", "json", "html"],
             include: ["src/**/*.{ts,tsx}", "convex/**/*.ts"],
-            exclude: [
-                "src/**/*.test.{ts,tsx}",
-                "src/**/*.d.ts",
-                "convex/_generated/**",
-            ],
+            exclude: ["src/**/*.test.{ts,tsx}", "src/**/*.d.ts", "convex/_generated/**"],
         },
     },
     resolve: {

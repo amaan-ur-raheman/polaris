@@ -77,15 +77,11 @@ const selectionTooltipField = StateField.define<readonly Tooltip[]>({
         }
         return tooltips;
     },
-    provide: (field) =>
-        showTooltip.computeN([field], (state) => state.field(field)),
+    provide: (field) => showTooltip.computeN([field], (state) => state.field(field)),
 });
 
 const captureViewExtension = EditorView.updateListener.of((update) => {
     editorView = update.view;
 });
 
-export const selectionTooltip = () => [
-    selectionTooltipField,
-    captureViewExtension,
-];
+export const selectionTooltip = () => [selectionTooltipField, captureViewExtension];

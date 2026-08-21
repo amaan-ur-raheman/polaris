@@ -30,10 +30,7 @@ describe("listFiles tool", () => {
         const tool = createListFilesTool({ internalKey, projectId });
         const stepRun = vi.fn((_name: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            {},
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({}, { step: { run: stepRun } });
 
         const parsed = JSON.parse(result);
         expect(parsed[0].type).toBe("folder");
@@ -48,10 +45,7 @@ describe("listFiles tool", () => {
         const tool = createListFilesTool({ internalKey, projectId });
         const stepRun = vi.fn((_name: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            {},
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({}, { step: { run: stepRun } });
 
         expect(JSON.parse(result)).toEqual([]);
     });
@@ -62,10 +56,7 @@ describe("listFiles tool", () => {
         const tool = createListFilesTool({ internalKey, projectId });
         const stepRun = vi.fn((_name: string, fn: () => Promise<any>) => fn());
 
-        const result = await (tool as any).handler(
-            {},
-            { step: { run: stepRun } },
-        );
+        const result = await (tool as any).handler({}, { step: { run: stepRun } });
 
         expect(result).toContain("Error");
         expect(result).toContain("DB connection failed");

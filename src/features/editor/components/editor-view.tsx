@@ -19,13 +19,9 @@ export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
     const activeFile = useFile(activeTabId);
     const updateFile = useUpdateFile();
     const timeoutRef = useRef<NodeJS.Timeout>(null);
-    const {
-        suggestions,
-        isReviewing,
-        reviewedFile,
-        requestReview,
-        clearReview,
-    } = useCodeReview({ debounceMs: 2000 });
+    const { suggestions, isReviewing, reviewedFile, requestReview, clearReview } = useCodeReview({
+        debounceMs: 2000,
+    });
 
     const isActiveBinaryFile = activeFile && activeFile.storageId;
     const isActiveTextFile = activeFile && !activeFile.storageId;
@@ -40,13 +36,13 @@ export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
     }, [activeTabId]);
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="flex h-full flex-col">
             <div className="flex items-center">
                 <TopNavigation projectId={projectId} />
             </div>
             {activeTabId && <FileBreadCrumbs projectId={projectId} />}
             {!activeFile && (
-                <div className="size-full flex items-center justify-center">
+                <div className="flex size-full items-center justify-center">
                     <Image
                         src={"/logo-alt.svg"}
                         alt="Polaris"
@@ -68,22 +64,18 @@ export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
 
                         timeoutRef.current = setTimeout(() => {
                             updateFile({ id: activeFile._id, content });
-                            requestReview(
-                                activeFile.name,
-                                content,
-                            );
+                            requestReview(activeFile.name, content);
                         }, DEBOUNCE_MS);
                     }}
                 />
             )}
             {isActiveBinaryFile && (
-                <div className="size-full flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-2.5 max-w-md text-center">
+                <div className="flex size-full items-center justify-center">
+                    <div className="flex max-w-md flex-col items-center gap-2.5 text-center">
                         <AlertTriangleIcon className="size-10 text-yellow-500" />
                         <p className="text-sm">
-                            The file is not displayed in the text editor because
-                            it is either binary or uses unsupported text
-                            encoding.
+                            The file is not displayed in the text editor because it is either binary
+                            or uses unsupported text encoding.
                         </p>
                     </div>
                 </div>

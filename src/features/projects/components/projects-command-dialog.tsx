@@ -16,20 +16,18 @@ import { Doc } from "@convex/_generated/dataModel";
 
 const getProjectIcon = (project: Doc<"projects">) => {
     if (project.importStatus === "completed") {
-        return <FaGithub className="size-4 text-muted-foreground" />;
+        return <FaGithub className="text-muted-foreground size-4" />;
     }
 
     if (project.importStatus === "failed") {
-        return <AlertCircleIcon className="size-4 text-muted-foreground" />;
+        return <AlertCircleIcon className="text-muted-foreground size-4" />;
     }
 
     if (project.importStatus === "importing") {
-        return (
-            <Loader2Icon className="size-4 text-muted-foreground animate-spin" />
-        );
+        return <Loader2Icon className="text-muted-foreground size-4 animate-spin" />;
     }
 
-    return <GlobeIcon className="size-4 text-muted-foreground" />;
+    return <GlobeIcon className="text-muted-foreground size-4" />;
 };
 
 interface ProjectsCommandDialogProps {
@@ -37,10 +35,7 @@ interface ProjectsCommandDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-export const ProjectsCommandDialog = ({
-    open,
-    onOpenChange,
-}: ProjectsCommandDialogProps) => {
+export const ProjectsCommandDialog = ({ open, onOpenChange }: ProjectsCommandDialogProps) => {
     const router = useRouter();
     const projects = useProjects();
 

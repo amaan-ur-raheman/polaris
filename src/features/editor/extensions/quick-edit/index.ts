@@ -60,8 +60,7 @@ const createQuickEditTooltip = (state: EditorState): readonly Tooltip[] => {
                 input.autofocus = true;
 
                 const buttonContainer = document.createElement("div");
-                buttonContainer.className =
-                    "flex items-center justify-between gap-2";
+                buttonContainer.className = "flex items-center justify-between gap-2";
 
                 const cancelButton = document.createElement("button");
                 cancelButton.type = "button";
@@ -166,8 +165,7 @@ const quickEditTooltipField = StateField.define<readonly Tooltip[]>({
         }
         return tooltips;
     },
-    provide: (field) =>
-        showTooltip.computeN([field], (state) => state.field(field)),
+    provide: (field) => showTooltip.computeN([field], (state) => state.field(field)),
 });
 
 const quickEditKeymap = keymap.of([
@@ -189,7 +187,7 @@ const quickEditKeymap = keymap.of([
 
 const captureViewExtension = EditorView.updateListener.of((update) => {
     editorView = update.view;
-})
+});
 
 export const quickEdit = (fileName: string) => [
     quickEditState,

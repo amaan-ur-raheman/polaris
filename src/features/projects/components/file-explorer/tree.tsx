@@ -113,71 +113,62 @@ export const Tree = ({
             );
         }
 
-    const handleDelete = () => {
-        closeTab(item._id);
-        deleteFile({ id: item._id });
-    };
+        const handleDelete = () => {
+            closeTab(item._id);
+            deleteFile({ id: item._id });
+        };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === "Backspace") {
-            e.preventDefault();
-            setConfirmDelete(true);
-        }
-    };
+        const handleKeyDown = (e: React.KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "Backspace") {
+                e.preventDefault();
+                setConfirmDelete(true);
+            }
+        };
 
-    return (
-        <>
-            <TreeItemWrapper
-                item={item}
-                level={level}
-                isActive={isActive}
-                onClick={() => openFile(item._id, { pinned: false })}
-                onDoubleClick={() => openFile(item._id, { pinned: true })}
-                onRename={() => setIsRenaming(true)}
-                onDelete={() => setConfirmDelete(true)}
-                onKeyDown={handleKeyDown}
-            >
-                <FileIcon fileName={filename} autoAssign className="size-4" />
-                <span className="truncate text-sm">{filename}</span>
-            </TreeItemWrapper>
-            <AlertDialog
-                open={confirmDelete}
-                onOpenChange={setConfirmDelete}
-            >
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            Delete {filename}?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This permanently removes the file. This action
-                            cannot be undone.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            className="bg-destructive text-white hover:bg-destructive/90"
-                            onClick={handleDelete}
-                        >
-                            Delete
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </>
-    );
-}
+        return (
+            <>
+                <TreeItemWrapper
+                    item={item}
+                    level={level}
+                    isActive={isActive}
+                    onClick={() => openFile(item._id, { pinned: false })}
+                    onDoubleClick={() => openFile(item._id, { pinned: true })}
+                    onRename={() => setIsRenaming(true)}
+                    onDelete={() => setConfirmDelete(true)}
+                    onKeyDown={handleKeyDown}
+                >
+                    <FileIcon fileName={filename} autoAssign className="size-4" />
+                    <span className="truncate text-sm">{filename}</span>
+                </TreeItemWrapper>
+                <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Delete {filename}?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This permanently removes the file. This action cannot be undone.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                className="bg-destructive hover:bg-destructive/90 text-white"
+                                onClick={handleDelete}
+                            >
+                                Delete
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </>
+        );
+    }
 
     const folderName = item.name;
     const folderRender = (
         <>
             <div className="flex items-center gap-0.5">
                 <ChevronRightIcon
-                    className={cn(
-                        "size-4 shrink-0 text-muted-foreground",
-                        isOpen && "rotate-90",
-                    )}
+                    className={cn("text-muted-foreground size-4 shrink-0", isOpen && "rotate-90")}
                 />
                 <FolderIcon folderName={folderName} className="size-4" />
                 <span className="truncate text-sm">{folderName}</span>
@@ -190,16 +181,14 @@ export const Tree = ({
             <>
                 <button
                     onClick={() => setIsOpen((prev) => !prev)}
-                    className="group flex items-center gap-1 h-5.5 hover:bg-accent/30 w-full"
+                    className="group hover:bg-accent/30 flex h-5.5 w-full items-center gap-1"
                     style={{ paddingLeft: getItemPadding(level, false) }}
                 >
                     {folderRender}
                 </button>
                 {isOpen && (
                     <>
-                        {folderContents === undefined && (
-                            <LoadingRow level={level + 1} />
-                        )}
+                        {folderContents === undefined && <LoadingRow level={level + 1} />}
                         <CreateInput
                             type={creating}
                             level={level + 1}
@@ -231,9 +220,7 @@ export const Tree = ({
                 />
                 {isOpen && (
                     <>
-                        {folderContents === undefined && (
-                            <LoadingRow level={level + 1} />
-                        )}
+                        {folderContents === undefined && <LoadingRow level={level + 1} />}
                         {folderContents?.map((subItem) => (
                             <Tree
                                 key={subItem._id}
@@ -271,9 +258,7 @@ export const Tree = ({
             </TreeItemWrapper>
             {isOpen && (
                 <>
-                    {folderContents === undefined && (
-                        <LoadingRow level={level + 1} />
-                    )}
+                    {folderContents === undefined && <LoadingRow level={level + 1} />}
                     {folderContents?.map((subItem) => (
                         <Tree
                             key={subItem._id}

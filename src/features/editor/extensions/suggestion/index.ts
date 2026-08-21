@@ -119,10 +119,7 @@ const createDebouncePlugin = (fileName: string) =>
 
                     currentAbortController = new AbortController();
                     try {
-                        const suggestion = await fetcher(
-                            payload,
-                            currentAbortController.signal,
-                        );
+                        const suggestion = await fetcher(payload, currentAbortController.signal);
                         isWaitingForSuggestion = false;
                         view.dispatch({
                             effects: setSuggestionEffect.of(suggestion),
@@ -162,12 +159,9 @@ const renderPlugin = ViewPlugin.fromClass(
             const docChanged = update.docChanged;
             const cursorMoved = update.selectionSet;
             const suggestionChanged = update.transactions.some((transaction) =>
-                transaction.effects.some((effect) =>
-                    effect.is(setSuggestionEffect),
-                ),
+                transaction.effects.some((effect) => effect.is(setSuggestionEffect)),
             );
-            const shouldRebuild =
-                docChanged || cursorMoved || suggestionChanged;
+            const shouldRebuild = docChanged || cursorMoved || suggestionChanged;
 
             if (shouldRebuild) {
                 this.decorations = this.build(update.view);

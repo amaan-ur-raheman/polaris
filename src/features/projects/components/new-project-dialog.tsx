@@ -31,10 +31,7 @@ interface NewProjectDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-export const NewProjectDialog = ({
-    open,
-    onOpenChange,
-}: NewProjectDialogProps) => {
+export const NewProjectDialog = ({ open, onOpenChange }: NewProjectDialogProps) => {
     const router = useRouter();
     const [input, setInput] = useState("");
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
@@ -46,9 +43,7 @@ export const NewProjectDialog = ({
         setIsSubmitting(true);
 
         try {
-            const template = selectedTemplateId
-                ? getTemplateById(selectedTemplateId)
-                : undefined;
+            const template = selectedTemplateId ? getTemplateById(selectedTemplateId) : undefined;
 
             const { projectId } = await ky
                 .post("/api/projects/create-with-prompt", {
@@ -72,7 +67,7 @@ export const NewProjectDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent showCloseButton={false} className="sm:max-w-lg p-0">
+            <DialogContent showCloseButton={false} className="p-0 sm:max-w-lg">
                 <DialogHeader className="hidden">
                     <DialogTitle>What do you want to build?</DialogTitle>
                     <DialogDescription>
@@ -96,9 +91,7 @@ export const NewProjectDialog = ({
                     </PromptInputBody>
                     <PromptInputFooter>
                         <PromptInputTools />
-                        <PromptInputSubmit
-                            disabled={!input.trim() || isSubmitting}
-                        />
+                        <PromptInputSubmit disabled={!input.trim() || isSubmitting} />
                     </PromptInputFooter>
                 </PromptInput>
             </DialogContent>
