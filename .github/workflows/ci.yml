@@ -38,6 +38,7 @@ jobs:
               run: bun run test:run
 
             - name: Build
+              if: ${{ secrets.NEXT_PUBLIC_CONVEX_URL != '' }}
               run: bun run build
               env:
                   NEXT_PUBLIC_CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL }}
