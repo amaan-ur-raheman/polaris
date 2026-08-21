@@ -7,7 +7,6 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbPage,
-    BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
@@ -56,9 +55,9 @@ export const FileBreadCrumbs = ({
                                             {item.name}
                                         </BreadcrumbPage>
                                     ) : (
-                                        <BreadcrumbLink href="#">
+                                        <span className="text-muted-foreground">
                                             {item.name}
-                                        </BreadcrumbLink>
+                                        </span>
                                     )}
                                 </BreadcrumbItem>
                                 {!isLast && <BreadcrumbSeparator />}

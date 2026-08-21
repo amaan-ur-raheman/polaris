@@ -93,7 +93,7 @@ export const ProjectsView = () => {
                             <Button
                                 variant={"outline"}
                                 onClick={() => setNewProjectDialogOpen(true)}
-                                className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-none"
+                                className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-lg"
                             >
                                 <div className="flex items-center justify-between w-full">
                                     <SparkleIcon className="size-4" />
@@ -106,7 +106,7 @@ export const ProjectsView = () => {
                             <Button
                                 variant={"outline"}
                                 onClick={() => setImportDialogOpen(true)}
-                                className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-none"
+                                className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-lg"
                             >
                                 <div className="flex items-center justify-between w-full">
                                     <FaGithub className="size-4" />
