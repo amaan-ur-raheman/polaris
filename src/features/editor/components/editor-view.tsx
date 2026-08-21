@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { AlertTriangleIcon } from "lucide-react";
 
@@ -12,28 +12,47 @@ import { CodeEditor } from "./code-editor";
 import { ReviewPanel } from "./review-panel";
 import { Id } from "@convex/_generated/dataModel";
 
-const DEBOUNCE_MS = 1500;
+const SAVE_DEBOUNCE_MS = 1500;
+const REVIEW_DEBOUNCE_MS = 2000;
+
+/**
+ * Custom hook for debounced file saving.
+ * Separated from code review to allow independent debounce timers.
+ */
+function useDebouncedSave(updateFile: (args: { id: Id<"files">; content: string }) => void) {
+    const timeoutRef = useRef<NodeJS.Timeout>(null);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, []);
+
+    const debouncedSave = useCallback(
+        (fileId: Id<"files">, content: string) => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => {
+                updateFile({ id: fileId, content });
+            }, SAVE_DEBOUNCE_MS);
+        },
+        [updateFile],
+    );
+
+    return debouncedSave;
+}
 
 export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
     const { activeTabId } = useEditor(projectId);
     const activeFile = useFile(activeTabId);
     const updateFile = useUpdateFile();
-    const timeoutRef = useRef<NodeJS.Timeout>(null);
+    const debouncedSave = useDebouncedSave(updateFile);
     const { suggestions, isReviewing, reviewedFile, requestReview, clearReview } = useCodeReview({
-        debounceMs: 2000,
+        debounceMs: REVIEW_DEBOUNCE_MS,
     });
 
     const isActiveBinaryFile = activeFile && activeFile.storageId;
     const isActiveTextFile = activeFile && !activeFile.storageId;
-
-    // Cleanup pending debounced updates on unmount or file change
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-        };
-    }, [activeTabId]);
 
     return (
         <div className="flex h-full flex-col">
@@ -58,14 +77,8 @@ export const EditorView = ({ projectId }: { projectId: Id<"projects"> }) => {
                     fileName={activeFile.name}
                     initialValue={activeFile.content}
                     onChange={(content: string) => {
-                        if (timeoutRef.current) {
-                            clearTimeout(timeoutRef.current);
-                        }
-
-                        timeoutRef.current = setTimeout(() => {
-                            updateFile({ id: activeFile._id, content });
-                            requestReview(activeFile.name, content);
-                        }, DEBOUNCE_MS);
+                        debouncedSave(activeFile._id, content);
+                        requestReview(activeFile.name, content);
                     }}
                 />
             )}
